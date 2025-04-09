@@ -1,22 +1,29 @@
 import React from 'react';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { Image, View, Text } from 'react-native';
 import { StyleSheet} from 'react-native';
 
-export default function MapPage() {
+export default function MapScreen() {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Voici la page Carte 🗺️</Text>
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 48.8566,      // Paris par exemple
+            longitude: 2.3522,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }}
+        />
       </View>
     );
   }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-});
+  
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    map: {
+      flex: 1,
+    },
+  });
