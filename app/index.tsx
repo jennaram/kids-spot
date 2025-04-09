@@ -1,15 +1,14 @@
-import { Text, View } from "react-native";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Geolocalisation from './geolocalisation';
+import RetourGeoloc from './retourGeoloc';
 
-export default function Index() {
+const Stack = createNativeStackNavigator();
+
+export default function App() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Kids Spot</Text>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen name="Geolocalisation" component={Geolocalisation} />
+      <Stack.Screen name="RetourGeoloc" component={RetourGeoloc} />
+    </Stack.Navigator>
   );
 }
