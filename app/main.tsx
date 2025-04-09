@@ -1,9 +1,17 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import { Image, View, Text } from 'react-native';
 import { StyleSheet} from 'react-native';
+import { mockPoints } from './points';
 
 export default function MapScreen() {
+  const [points, setPoints] = useState([]);
+
+  useEffect(() => {
+    setPoints(mockPoints); // simule un fetch de base de données
+  }, []);
+
     return (
       <View style={styles.container}>
         <MapView
@@ -14,7 +22,19 @@ export default function MapScreen() {
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
           }}
-        />
+          >
+          {points.map((points) => (
+            <Marker
+              key={points.id}
+              coordinate={{
+                latitude: points.latitude,
+                longitude: points.longitude,
+              }}
+              title={points.name}
+              description={points.description}
+            />
+          ))}
+        </MapView>
       </View>
     );
   }
