@@ -1,15 +1,14 @@
-import { Text, View } from "react-native";
+import { Text, View, Button } from "react-native";
+import { useRouter } from 'expo-router';
 
 export default function Index() {
+  const router = useRouter();
+  
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Kids Spot</Text>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Bienvenue sur Kids Spot </Text>
+      <Button title="Voir la carte" onPress={() => router.push('/main')} />
     </View>
+
   );
 }
