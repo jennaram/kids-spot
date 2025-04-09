@@ -5,6 +5,12 @@ import { Image, View, Text } from 'react-native';
 import { StyleSheet} from 'react-native';
 import { mockPoints } from './points';
 
+const iconByType = {
+  culturel: require('../assets/images/iconfun.png'),
+  restaurant: require('../assets/images/iconfood.png'),
+  loisirs: require('../assets/images/iconcultural.png'),
+};
+
 export default function MapScreen() {
   const [points, setPoints] = useState([]);
 
@@ -23,16 +29,22 @@ export default function MapScreen() {
             longitudeDelta: 0.05,
           }}
           >
-          {points.map((points) => (
-            <Marker
-              key={points.id}
-              coordinate={{
-                latitude: points.latitude,
-                longitude: points.longitude,
-              }}
-              title={points.name}
-              description={points.description}
-            />
+          {points.map((point) => (
+             <Marker
+             key={point.id}
+             coordinate={{
+               latitude: point.latitude,
+               longitude: point.longitude,
+             }}
+             title={point.name}
+             description={point.description}
+            >
+            <Image
+            source={iconByType[point.type]}
+            style={{ width: 40, height: 40 }}
+            resizeMode="contain"
+          />
+          </Marker>
           ))}
         </MapView>
       </View>

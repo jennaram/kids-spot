@@ -2,7 +2,7 @@ export const mockPoints = [
     {
       id: 1,
       name: "Parc Montsouris",
-      type: "parc",
+      type: "loisirs",
       latitude: 48.8216,
       longitude: 2.3387,
       description: "Grand parc avec aires de jeux",
@@ -18,7 +18,7 @@ export const mockPoints = [
     {
       id: 3,
       name: "Ludothèque Rigol'jeux",
-      type: "activite",
+      type: "culturel",
       latitude: 48.8261,
       longitude: 2.3314,
       description: "Espace jeux et animations pour enfants",
