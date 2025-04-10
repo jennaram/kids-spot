@@ -15,6 +15,10 @@ export default function Index() {
         title="Voir la carte" 
         onPress={() => router.push('/main')} // Affichera directement la carte AVEC la position utilisateur
       />
+       <Button 
+        title="Page Evenement" 
+        onPress={() => router.push('/evenement')}
+      />
     </View>
   );
 }
