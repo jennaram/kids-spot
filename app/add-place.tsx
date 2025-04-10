@@ -6,13 +6,17 @@ import { useRouter } from 'expo-router';
 
 const AddPlaceScreen = () => {
   const router = useRouter();
-  const [placeType, setPlaceType] = useState<'restaurant' | 'culture' | 'leisure'>('restaurant');
+  
+  // États du formulaire
+  const [placeType, setPlaceType] = useState('restaurant'); // Type par défaut
   const [placeName, setPlaceName] = useState('');
   const [address, setAddress] = useState('');
   const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null);
   const [description, setDescription] = useState('');
-  const [ageRange, setAgeRange] = useState('0-2');
-  const [rating, setRating] = useState(3);
+  const [ageRange, setAgeRange] = useState('0-2'); // Tranche d'âge par défaut
+  const [rating, setRating] = useState(3); // Note par défaut
+  
+  // Équipements disponibles (tous désactivés par défaut)
   const [equipments, setEquipments] = useState({
     strollerAccess: false,
     playArea: false,
@@ -21,29 +25,54 @@ const AddPlaceScreen = () => {
     changingTable: false
   });
 
+  // Correspondance entre types de lieux et icônes
   const placeIcons = {
     restaurant: require('../assets/images/user-location-restaurant.png'),
     culture: require('../assets/images/user-location-culture.png'),
     leisure: require('../assets/images/user-location-loisir.png'),
   };
 
+  /**
+   * Récupère la position actuelle de l'utilisateur
+   * et met à jour l'adresse approximative
+   */
   const handleGetCurrentLocation = async () => {
+    // 1. Demande de permission
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') return;
+    if (status !== 'granted') {
+      Alert.alert('Erreur', 'Permission de localisation refusée');
+      return;
+    }
 
+    // 2. Récupération de la position
     const currentLocation = await Location.getCurrentPositionAsync({});
     setLocation({
       latitude: currentLocation.coords.latitude,
       longitude: currentLocation.coords.longitude,
     });
+
+    // 3. Reverse geocoding pour obtenir l'adresse (simplifié)
+    const [addressResult] = await Location.reverseGeocodeAsync({
+      latitude: currentLocation.coords.latitude,
+      longitude: currentLocation.coords.longitude,
+    });
+    
+    if (addressResult) {
+      setAddress(`${addressResult.street}, ${addressResult.city}`);
+    }
   };
 
+  /**
+   * Validation et soumission du formulaire
+   */
   const handleSubmit = () => {
+    // Vérification des champs obligatoires
     if (!placeName || !address) {
       Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
       return;
     }
 
+    // Construction de l'objet lieu
     const newPlace = {
       name: placeName,
       type: placeType,
@@ -55,15 +84,17 @@ const AddPlaceScreen = () => {
       equipments
     };
 
-    console.log('Nouveau lieu:', newPlace);
+    console.log('Nouveau lieu:', newPlace); // Pour débogage
     Alert.alert('Succès', 'Lieu ajouté avec succès!');
-    router.back();
+    router.back(); // Retour à l'écran précédent
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+      {/* En-tête */}
       <Text style={styles.header}>Ajouter un lieu</Text>
 
+      {/* Section Type de lieu */}
       <View style={styles.section}>
         <Text style={styles.label}>Type de lieu*</Text>
         <View style={styles.radioContainer}>
@@ -82,6 +113,7 @@ const AddPlaceScreen = () => {
         </View>
       </View>
 
+      {/* Section Nom du lieu */}
       <View style={styles.section}>
         <Text style={styles.label}>Nom du lieu*</Text>
         <TextInput
@@ -92,10 +124,14 @@ const AddPlaceScreen = () => {
         />
       </View>
 
+      {/* Section Adresse */}
       <View style={styles.section}>
         <Text style={styles.label}>Adresse*</Text>
         <View style={styles.addressButtons}>
-          <TouchableOpacity style={styles.locationButton} onPress={handleGetCurrentLocation}>
+          <TouchableOpacity 
+            style={styles.locationButton} 
+            onPress={handleGetCurrentLocation}
+          >
             <Text style={styles.buttonText}>Utiliser ma position</Text>
           </TouchableOpacity>
         </View>
@@ -107,6 +143,7 @@ const AddPlaceScreen = () => {
         />
       </View>
 
+      {/* Mini-carte de prévisualisation */}
       {location && (
         <View style={styles.mapContainer}>
           <MapView
@@ -117,10 +154,11 @@ const AddPlaceScreen = () => {
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             }}
+            scrollEnabled={false} // Désactive le déplacement
           >
             <Marker coordinate={location}>
               <Image
-                source={placeIcons[placeType]}
+                source={placeIcons[placeType]} // Icône dynamique selon le type
                 style={{ width: 40, height: 40 }}
               />
             </Marker>
@@ -128,16 +166,17 @@ const AddPlaceScreen = () => {
         </View>
       )}
 
+      {/* Section Équipements */}
       <View style={styles.section}>
         <Text style={styles.label}>Équipements</Text>
         {Object.keys(equipments).map((item) => (
           <TouchableOpacity
             key={item}
             style={styles.checkbox}
-            onPress={() => setEquipments({...equipments, [item as keyof typeof equipments]: !equipments[item as keyof typeof equipments]})}
+            onPress={() => setEquipments({...equipments, [item]: !equipments[item]})}
           >
-            <View style={[styles.checkboxBox, equipments[item as keyof typeof equipments] && styles.checkboxSelected]}>
-              {equipments[item as keyof typeof equipments] && <Text style={styles.checkmark}>✓</Text>}
+            <View style={[styles.checkboxBox, equipments[item] && styles.checkboxSelected]}>
+              {equipments[item] && <Text style={styles.checkmark}>✓</Text>}
             </View>
             <Text style={styles.checkboxLabel}>
               {item === 'strollerAccess' ? 'Accès poussette' :
@@ -149,6 +188,7 @@ const AddPlaceScreen = () => {
         ))}
       </View>
 
+      {/* Section Tranche d'âge */}
       <View style={styles.section}>
         <Text style={styles.label}>Tranche d'âge</Text>
         <View style={styles.radioContainer}>
@@ -166,6 +206,7 @@ const AddPlaceScreen = () => {
         </View>
       </View>
 
+      {/* Section Description */}
       <View style={styles.section}>
         <Text style={styles.label}>Description</Text>
         <TextInput
@@ -177,6 +218,7 @@ const AddPlaceScreen = () => {
         />
       </View>
 
+      {/* Section Notation */}
       <View style={styles.section}>
         <Text style={styles.label}>Note (sur 5)</Text>
         <View style={styles.ratingContainer}>
@@ -188,6 +230,7 @@ const AddPlaceScreen = () => {
         </View>
       </View>
 
+      {/* Bouton de soumission */}
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitText}>Enregistrer</Text>
       </TouchableOpacity>
@@ -195,6 +238,7 @@ const AddPlaceScreen = () => {
   );
 };
 
+// Styles détaillés
 const styles = StyleSheet.create({
   container: {
     flex: 1,
