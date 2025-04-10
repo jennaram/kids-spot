@@ -73,6 +73,15 @@ const DetailsLieu = ({ route, navigation }) => {
           ))}
         </View>
 
+        {/* Conteneur des icônes */}
+        <View style={styles.iconsContainer}>
+          <MaterialIcons name="play" size={30} color="#333" />
+          <MaterialIcons name="stroller" size={30} color="#333" />
+          <MaterialIcons name="microwave" size={30} color="#333" />
+          <MaterialIcons name="baby-changing-station" size={30} color="#333" />
+          <MaterialIcons name="chair-alt" size={30} color="#333" />
+        </View>
+
         {/* Boutons d'action */}
         <View style={styles.actionsContainer}>
           <TouchableOpacity style={[styles.button, styles.avisButton]}>
@@ -202,6 +211,13 @@ const styles = StyleSheet.create({
   starIcon: {
     marginLeft: 5,
     marginRight: 5,
+  },
+  iconsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 20,
+    width: "100%",
+    maxWidth: 400,
   },
 });
 
