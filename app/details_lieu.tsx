@@ -1,16 +1,24 @@
-import React from 'react';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React from "react";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 
 const DetailsLieu = ({ route, navigation }) => {
   const lieu = {
     nom: "Parc Montsouris - Paris 14",
-    description: "Grand parc avec aires de jeux pour enfants et espace pique-nique. Parfait pour les familles avec des enfants de tous âges.",
+    description:
+      "Grand parc avec aires de jeux pour enfants et espace pique-nique. Parfait pour les familles avec des enfants de tous âges.",
     horaires: "Tous les jours de 7h à 20h",
     note: "4.8",
     avis: "180 avis membres",
     tranchesAge: ["0-2 ans", "3-6 ans", "7 ans +"],
-    imageUrl: require('../assets/images/parc_montsouris.jpg'),
+    imageUrl: require("../assets/images/parc_montsouris.jpg"),
   };
 
   return (
@@ -24,8 +32,8 @@ const DetailsLieu = ({ route, navigation }) => {
 
       {/* Conteneur de l'image */}
       <View style={styles.imageContainer}>
-        <Image 
-          source={lieu.imageUrl} 
+        <Image
+          source={lieu.imageUrl}
           style={styles.headerImage}
           resizeMode="cover"
         />
@@ -36,6 +44,12 @@ const DetailsLieu = ({ route, navigation }) => {
         {/* Note et avis */}
         <View style={styles.ratingContainer}>
           <Text style={styles.note}>{lieu.note}</Text>
+          <MaterialIcons
+            name="star"
+            size={18}
+            color="black"
+            style={styles.starIcon}
+          />
           <Text style={styles.avis}>{lieu.avis}</Text>
         </View>
 
@@ -64,11 +78,11 @@ const DetailsLieu = ({ route, navigation }) => {
           <TouchableOpacity style={[styles.button, styles.avisButton]}>
             <Text style={styles.buttonText}>Donner mon avis</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={[styles.button, styles.voirAvisButton]}>
             <Text style={styles.buttonText}>Voir les avis</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={[styles.button, styles.yAllerButton]}>
             <Text style={styles.buttonText}>Y aller</Text>
           </TouchableOpacity>
@@ -81,58 +95,58 @@ const DetailsLieu = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   shareButtonContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   shareButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     borderRadius: 20,
     padding: 8,
   },
   imageContainer: {
-    width: '100%',
+    width: "100%",
     marginTop: 10,
   },
   headerImage: {
-    width: '100%',
+    width: "100%",
     height: 250,
   },
   centeredContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 30,
   },
   ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 15,
     marginBottom: 10,
   },
   nom: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   note: {
     fontSize: 18,
-    color: '#FFD700',
-    fontWeight: 'bold',
+    color: "#FFD700",
+    fontWeight: "bold",
     marginRight: 10,
   },
   avis: {
     fontSize: 14,
-    color: 'gray',
+    color: "gray",
   },
   description: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#333',
-    textAlign: 'center',
+    color: "#333",
+    textAlign: "center",
     marginBottom: 20,
   },
   horairesContainer: {
@@ -140,18 +154,18 @@ const styles = StyleSheet.create({
   },
   horaires: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-    textAlign: 'center',
+    fontWeight: "500",
+    color: "#333",
+    textAlign: "center",
   },
   ageContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    justifyContent: "center",
+    flexWrap: "wrap",
     marginBottom: 25,
   },
   ageBadge: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
@@ -160,30 +174,34 @@ const styles = StyleSheet.create({
   },
   ageText: {
     fontSize: 14,
-    color: '#333',
+    color: "#333",
   },
   actionsContainer: {
-    width: '100%',
+    width: "100%",
     maxWidth: 400,
   },
   button: {
     padding: 16,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 12,
   },
   avisButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
   },
   voirAvisButton: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
   },
   yAllerButton: {
-    backgroundColor: '#FFA500',
+    backgroundColor: "#FFA500",
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+  starIcon: {
+    marginLeft: 5,
+    marginRight: 5,
   },
 });
 
