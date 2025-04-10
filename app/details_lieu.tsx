@@ -80,7 +80,7 @@ const DetailsLieu = ({ route, navigation }) => {
           <MaterialIcons name="stroller" size={30} color="#333" />
           <MaterialIcons name="microwave" size={30} color="#333" />
           <MaterialIcons name="baby-changing-station" size={30} color="#333" />
-          <MaterialIcons name="child-care" size={30} color="#333" />
+          <MaterialIcons name="restaurant" size={30} color="#333" />
         </View>
 
                 {/* Boutons d'action */}
