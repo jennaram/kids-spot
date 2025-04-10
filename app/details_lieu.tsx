@@ -1,4 +1,5 @@
 import React from "react";
+import Iconify from "react-native-iconify";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -75,22 +76,24 @@ const DetailsLieu = ({ route, navigation }) => {
 
         {/* Conteneur des icônes */}
         <View style={styles.iconsContainer}>
-          <MaterialIcons name="play" size={30} color="#333" />
+          <MaterialIcons name="sports-soccer" size={30} color="#333" />
           <MaterialIcons name="stroller" size={30} color="#333" />
           <MaterialIcons name="microwave" size={30} color="#333" />
           <MaterialIcons name="baby-changing-station" size={30} color="#333" />
-          <MaterialIcons name="chair-alt" size={30} color="#333" />
+          <MaterialIcons name="child-care" size={30} color="#333" />
         </View>
 
-        {/* Boutons d'action */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity style={[styles.button, styles.avisButton]}>
-            <Text style={styles.buttonText}>Donner mon avis</Text>
-          </TouchableOpacity>
+                {/* Boutons d'action */}
+                <View style={styles.actionsContainer}>
+          <View style={styles.rowButtons}>
+            <TouchableOpacity style={[styles.button, styles.avisButton]}>
+              <Text style={styles.buttonText}>Donner mon avis</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.voirAvisButton]}>
-            <Text style={styles.buttonText}>Voir les avis</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, styles.voirAvisButton]}>
+              <Text style={styles.buttonText}>Voir les avis</Text>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity style={[styles.button, styles.yAllerButton]}>
             <Text style={styles.buttonText}>Y aller</Text>
@@ -218,6 +221,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: "100%",
     maxWidth: 400,
+  },
+
+  rowButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly', // Espace entre les boutons
+    alignItems: 'center', // Aligner verticalement
+    marginBottom: 10, // Espacement avec le bouton "Y aller"
   },
 });
 
