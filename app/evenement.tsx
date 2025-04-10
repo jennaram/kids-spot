@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Animated, View } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import React, { useState, useRef } from 'react';
 
 const CustomCard = () => {
   const [flipped, setFlipped] = useState(false);
@@ -31,7 +31,6 @@ const CustomCard = () => {
   };
 
   return (
-    
     <View style={styles.cardContainer}>
       {/* Face avant */}
       <Animated.View
