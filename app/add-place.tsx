@@ -8,7 +8,7 @@ const AddPlaceScreen = () => {
   const router = useRouter();
   
   // États du formulaire
-  const [placeType, setPlaceType] = useState('restaurant'); // Type par défaut
+  const [placeType, setPlaceType] = useState<'restaurant' | 'culture' | 'leisure'>('restaurant'); // Type par défaut
   const [placeName, setPlaceName] = useState('');
   const [address, setAddress] = useState('');
   const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null);
@@ -173,10 +173,10 @@ const AddPlaceScreen = () => {
           <TouchableOpacity
             key={item}
             style={styles.checkbox}
-            onPress={() => setEquipments({...equipments, [item]: !equipments[item]})}
+            onPress={() => setEquipments({...equipments, [item as keyof typeof equipments]: !equipments[item as keyof typeof equipments]})}
           >
-            <View style={[styles.checkboxBox, equipments[item] && styles.checkboxSelected]}>
-              {equipments[item] && <Text style={styles.checkmark}>✓</Text>}
+            <View style={[styles.checkboxBox, equipments[item as keyof typeof equipments] && styles.checkboxSelected]}>
+              {equipments[item as keyof typeof equipments] && <Text style={styles.checkmark}>✓</Text>}
             </View>
             <Text style={styles.checkboxLabel}>
               {item === 'strollerAccess' ? 'Accès poussette' :
