@@ -3,11 +3,8 @@ import { View, Text, Image, Button, StyleSheet, ScrollView } from 'react-native'
 import MapView, { Marker } from 'react-native-maps';
 import { mockPoints } from './points';
 import { useRouter } from 'expo-router';
-import * as Location from 'expo-location';
-import { useFocusEffect } from 'expo-router';
 
 const iconByType = {
-  user: require('../assets/images/user-location.png'),
   culturel: require('../assets/images/iconfun.png'),
   restaurant: require('../assets/images/iconfood.png'),
   loisirs: require('../assets/images/iconcultural.png'),
@@ -32,6 +29,11 @@ export default function MapScreen() {
         setError('Permission de localisation refusée');
         return;
       }
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map'); // 🛠️ ça doit être dans le composant
+
+  useEffect(() => {
+    setPoints(mockPoints); // simule un fetch de base de données
+  }, []);
 
       const enabled = await Location.hasServicesEnabledAsync();
       if (!enabled) {
