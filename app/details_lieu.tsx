@@ -1,7 +1,6 @@
 import React from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import shareIcon from '@iconify/icons-material-symbols/share';
 
 const DetailsLieu = ({ route, navigation }) => {
   const lieu = {
@@ -11,21 +10,25 @@ const DetailsLieu = ({ route, navigation }) => {
     note: "4.8",
     avis: "180 avis membres",
     tranchesAge: ["0-2 ans", "3-6 ans", "7 ans +"],
-    imageUrl: require('../assets/images/parc_montsouris.jpg')
+    imageUrl: require('../assets/images/parc_montsouris.jpg'),
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {/* Conteneur de l'image avec bouton partager */}
+      {/* Bouton de partage au-dessus */}
+      <View style={styles.shareButtonContainer}>
+        <TouchableOpacity style={styles.shareButton}>
+          <MaterialIcons name="share" size={24} color="#333" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Conteneur de l'image */}
       <View style={styles.imageContainer}>
         <Image 
           source={lieu.imageUrl} 
           style={styles.headerImage}
           resizeMode="cover"
         />
-        <TouchableOpacity style={styles.shareButton}>
-        <MaterialIcons name="share" size={24} color="#333" />
-        </TouchableOpacity>
       </View>
 
       {/* Contenu centré */}
@@ -80,22 +83,23 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: 'white',
   },
+  shareButtonContainer: {
+    alignItems: 'flex-end',
+    padding: 10,
+    backgroundColor: 'white',
+  },
+  shareButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 20,
+    padding: 8,
+  },
   imageContainer: {
     width: '100%',
-    position: 'relative',
+    marginTop: 10,
   },
   headerImage: {
     width: '100%',
     height: 250,
-  },
-  shareButton: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 20,
-    padding: 8,
-    zIndex: 1,
   },
   centeredContent: {
     alignItems: 'center',
