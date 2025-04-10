@@ -1,123 +1,172 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import shareIcon from '@iconify/icons-material-symbols/share';
 
 const DetailsLieu = ({ route, navigation }) => {
-  // Vous pouvez passer les données du lieu via route.params depuis la carte
-  // Pour l'exemple, je vais utiliser des données statiques comme sur l'image
   const lieu = {
     nom: "Parc Montsouris - Paris 14",
-    description: "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    horaires: "Tous les jours de 11h à 23h",
-    note: "5/5",
-    avis: "205 avis membres",
-    tranchesAge: ["0-2 ans", "3-6 ans", "7 ans +"]
+    description: "Grand parc avec aires de jeux pour enfants et espace pique-nique. Parfait pour les familles avec des enfants de tous âges.",
+    horaires: "Tous les jours de 7h à 20h",
+    note: "4.8",
+    avis: "180 avis membres",
+    tranchesAge: ["0-2 ans", "3-6 ans", "7 ans +"],
+    imageUrl: require('../assets/images/parc_montsouris.jpg')
   };
 
   return (
-    <View style={styles.container}>
-      {/* En-tête avec nom et note */}
-      <View style={styles.header}>
-        <Text style={styles.note}>{lieu.note}</Text>
-        <Text style={styles.avis}>{lieu.avis}</Text>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {/* Conteneur de l'image avec bouton partager */}
+      <View style={styles.imageContainer}>
+        <Image 
+          source={lieu.imageUrl} 
+          style={styles.headerImage}
+          resizeMode="cover"
+        />
+        <TouchableOpacity style={styles.shareButton}>
+        <MaterialIcons name="share" size={24} color="#333" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Contenu centré */}
+      <View style={styles.centeredContent}>
+        {/* Note et avis */}
+        <View style={styles.ratingContainer}>
+          <Text style={styles.note}>{lieu.note}</Text>
+          <Text style={styles.avis}>{lieu.avis}</Text>
+        </View>
+
+        {/* Nom du lieu */}
         <Text style={styles.nom}>{lieu.nom}</Text>
-      </View>
 
-      {/* Description */}
-      <View style={styles.section}>
+        {/* Description */}
         <Text style={styles.description}>{lieu.description}</Text>
-      </View>
 
-      {/* Horaires */}
-      <View style={styles.section}>
-        <Text style={styles.horaires}>{lieu.horaires}</Text>
-      </View>
+        {/* Horaires */}
+        <View style={styles.horairesContainer}>
+          <Text style={styles.horaires}>{lieu.horaires}</Text>
+        </View>
 
-      {/* Tranches d'âge */}
-      <View style={styles.ageContainer}>
-        {lieu.tranchesAge.map((age, index) => (
-          <View key={index} style={styles.ageBadge}>
-            <Text style={styles.ageText}>{age}</Text>
-          </View>
-        ))}
-      </View>
+        {/* Tranches d'âge */}
+        <View style={styles.ageContainer}>
+          {lieu.tranchesAge.map((age, index) => (
+            <View key={index} style={styles.ageBadge}>
+              <Text style={styles.ageText}>{age}</Text>
+            </View>
+          ))}
+        </View>
 
-      {/* Boutons d'action */}
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity style={[styles.button, styles.avisButton]}>
-          <Text style={styles.buttonText}>Donner mon avis</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={[styles.button, styles.voirAvisButton]}>
-          <Text style={styles.buttonText}>Voir les avis</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={[styles.button, styles.yAllerButton]}>
-          <Text style={styles.buttonText}>Y aller</Text>
-        </TouchableOpacity>
+        {/* Boutons d'action */}
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity style={[styles.button, styles.avisButton]}>
+            <Text style={styles.buttonText}>Donner mon avis</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.button, styles.voirAvisButton]}>
+            <Text style={styles.buttonText}>Voir les avis</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.button, styles.yAllerButton]}>
+            <Text style={styles.buttonText}>Y aller</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
+  scrollContainer: {
+    flexGrow: 1,
     backgroundColor: 'white',
   },
-  header: {
-    marginBottom: 20,
+  imageContainer: {
+    width: '100%',
+    position: 'relative',
+  },
+  headerImage: {
+    width: '100%',
+    height: 250,
+  },
+  shareButton: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 20,
+    padding: 8,
+    zIndex: 1,
+  },
+  centeredContent: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 15,
+    marginBottom: 10,
   },
   nom: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 15,
+    textAlign: 'center',
   },
   note: {
     fontSize: 18,
-    color: '#FFD700', // Or pour la note
+    color: '#FFD700',
     fontWeight: 'bold',
+    marginRight: 10,
   },
   avis: {
     fontSize: 14,
     color: 'gray',
-    marginBottom: 10,
   },
   description: {
     fontSize: 16,
+    lineHeight: 24,
+    color: '#333',
+    textAlign: 'center',
     marginBottom: 20,
-    lineHeight: 22,
+  },
+  horairesContainer: {
+    marginBottom: 20,
   },
   horaires: {
     fontSize: 16,
     fontWeight: '500',
-    marginBottom: 20,
-  },
-  section: {
-    marginBottom: 15,
+    color: '#333',
+    textAlign: 'center',
   },
   ageContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 30,
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    marginBottom: 25,
   },
   ageBadge: {
     backgroundColor: '#f0f0f0',
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
+    marginHorizontal: 5,
+    marginBottom: 10,
   },
   ageText: {
     fontSize: 14,
+    color: '#333',
   },
   actionsContainer: {
-    marginTop: 20,
+    width: '100%',
+    maxWidth: 400,
   },
   button: {
-    padding: 15,
+    padding: 16,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 12,
   },
   avisButton: {
     backgroundColor: '#f0f0f0',
@@ -126,7 +175,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
   },
   yAllerButton: {
-    backgroundColor: '#FFA500', // Orange comme Burger King
+    backgroundColor: '#FFA500',
   },
   buttonText: {
     fontSize: 16,
