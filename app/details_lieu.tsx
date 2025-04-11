@@ -1,5 +1,6 @@
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/FontAwesome";
 import {
   View,
   Text,
@@ -21,6 +22,10 @@ const DetailsLieu = ({ route, navigation }) => {
     imageUrl: require("../assets/images/parc_montsouris.jpg"),
   };
 
+  function handleFavoriteToggle(event: GestureResponderEvent): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Bouton de partage au-dessus */}
@@ -36,10 +41,11 @@ const DetailsLieu = ({ route, navigation }) => {
           style={styles.headerImage}
           resizeMode="cover"
         />
-        {/* Icône de cœur pour les favoris */}
-        <TouchableOpacity style={styles.favoriteIconContainer}>
-          <MaterialIcons name="favorite-border" size={24} color="white" />
-        </TouchableOpacity>
+        <View style={styles.favoriteIconContainer}>
+          <TouchableOpacity onPress={handleFavoriteToggle}>
+            <MaterialIcons name="favorite-border" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Contenu centré */}
@@ -71,7 +77,7 @@ const DetailsLieu = ({ route, navigation }) => {
         <View style={styles.ageContainer}>
           {lieu.tranchesAge.map((age, index) => (
             <View key={index} style={styles.ageBadge}>
-              <Text style={styles.ageText}>{age}</Text>
+              <Text style={styles.ageBadgeText}>{age}</Text>
             </View>
           ))}
         </View>
@@ -141,10 +147,16 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: "100%",
     marginTop: 10,
+    padding: 15,
+    borderRadius: 15,
+    overflow: "hidden",
+    backgroundColor: "white",
+    position: "relative", // Permet le positionnement absolu des enfants
   },
   headerImage: {
     width: "100%",
     height: 250,
+    borderRadius: 15,
   },
   centeredContent: {
     alignItems: "center",
@@ -165,13 +177,25 @@ const styles = StyleSheet.create({
   },
   note: {
     fontSize: 18,
-    color: "#FFD700",
+    color: "#D37230",
     fontWeight: "bold",
     marginRight: 10,
   },
-  avis: {
-    fontSize: 14,
-    color: "gray",
+  avisButton: {
+    backgroundColor: "#D37230", // Couleur de fond orange
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+    marginHorizontal: 5,
+  },
+  voirAvisButton: {
+    backgroundColor: "#D37230", // Couleur de fond orange
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+    marginHorizontal: 5,
   },
   description: {
     fontSize: 16,
@@ -196,17 +220,19 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   ageBadge: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#28603E",
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
     marginHorizontal: 5,
     marginBottom: 10,
   },
-  ageText: {
+  ageBadgeText: {
+    color: "white",
     fontSize: 14,
-    color: "#333",
+    fontWeight: "bold",
   },
+
   actionsContainer: {
     width: "100%",
     maxWidth: 400,
@@ -227,9 +253,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
   },
   smallButtonText: {
-    fontSize: 12,
-    color: "#333",
+    color: "white", // Texte blanc
+    fontSize: 14,
+    fontWeight: "bold",
   },
+
   newButtonsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -259,13 +287,13 @@ const styles = StyleSheet.create({
   },
 
   favoriteIconContainer: {
-    position: "absolute", // Position absolue pour placer l'icône dans le conteneur
-    top: 10, // Distance depuis le haut
-    right: 10, // Distance depuis la droite
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fond semi-transparent pour contraste
-    borderRadius: 20, // Bordures arrondies
-    padding: 5, // Espacement interne
-    zIndex: 10, // Assure que l'icône est au-dessus de l'image
+    position: "absolute", // Position absolue pour placer l'icône
+    top: 20, // Distance depuis le haut
+    right: 20, // Distance depuis la droite
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fond semi-transparent
+    borderRadius: 20,
+    padding: 5,
+    zIndex: 10,
   },
 });
 
