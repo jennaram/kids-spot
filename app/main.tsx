@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Alert, Text } from 'react-native';
+import { View, Image, Alert, Text, Platform, Linking, Button } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from 'expo-router';
 
 const iconByType = {
-  user: require('../assets/images/user-location.png'), // Assurez-vous que ce chemin est correct
+  user: require('../assets/images/user-location.png'),
 };
 
 export default function MapScreen() {
@@ -13,68 +13,108 @@ export default function MapScreen() {
   const [locationSubscription, setLocationSubscription] = useState<Location.LocationSubscription | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Fonction pour démarrer le tracking
+  // Fonction améliorée pour le tracking
   const startLocationTracking = async () => {
     try {
-      // Demande de permission
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setError('Permission de localisation refusée');
-        return;
+      // Vérification spécifique Android
+      if (Platform.OS === 'android') {
+        const [hasPlayServices, permissionStatus] = await Promise.all([
+          Location.hasServicesEnabledAsync(),
+          Location.requestForegroundPermissionsAsync()
+        ]);
+
+        if (!hasPlayServices) {
+          Alert.alert(
+            'Services Google requis',
+            'Cette application nécessite Google Play Services pour la géolocalisation',
+            [
+              {
+                text: 'Activer',
+                onPress: () => Linking.openSettings()
+              },
+              { 
+                text: 'Annuler', 
+                style: 'cancel' 
+              }
+            ]
+          );
+          return;
+        }
+
+        if (permissionStatus.status !== 'granted') {
+          setError('Permission de localisation refusée');
+          return;
+        }
+      } 
+      // Logique iOS
+      else {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setError('Permission de localisation refusée');
+          return;
+        }
       }
 
-      // Vérification si le service est activé
-      const enabled = await Location.hasServicesEnabledAsync();
-      if (!enabled) {
-        setError('Activez le service de localisation');
-        return;
-      }
+      // Récupération de la position
+      const initialLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High
+      });
+      setUserLocation(initialLocation.coords);
 
-      // Configuration des options
-      const locationOptions = {
-        accuracy: Location.Accuracy.High,
-        distanceInterval: 5, // Mise à jour tous les 5 mètres
-        timeInterval: 3000, // Mise à jour toutes les 3 secondes
-      };
-
-      // Abonnement aux mises à jour de position
+      // Abonnement aux mises à jour
       const sub = await Location.watchPositionAsync(
-        locationOptions,
+        {
+          accuracy: Location.Accuracy.BestForNavigation,
+          distanceInterval: 10,
+          timeInterval: 5000,
+          mayShowUserSettingsDialog: true,
+        },
         (location) => {
-          const { latitude, longitude } = location.coords;
-          setUserLocation({ latitude, longitude });
+          setUserLocation(location.coords);
         }
       );
 
       setLocationSubscription(sub);
+
     } catch (err) {
       console.error('Erreur de géolocalisation:', err);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Une erreur inconnue est survenue');
-      }
+      setError(Platform.OS === 'android' 
+        ? 'Erreur des services Google - Redémarrez l\'application'
+        : 'Erreur de localisation');
     }
   };
+
+  // Timeout de secours pour Android
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (Platform.OS === 'android' && !userLocation) {
+        setError('Initialisation lente - Vérifiez votre connexion');
+      }
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [userLocation]);
 
   // Gestion du cycle de vie
   useFocusEffect(
     React.useCallback(() => {
       startLocationTracking();
-      
       return () => {
-        if (locationSubscription) {
-          locationSubscription.remove();
-        }
+        locationSubscription?.remove();
       };
     }, [])
   );
 
-  // Affichage conditionnel
   if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>{error}</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>{error}</Text>
+        {Platform.OS === 'android' && (
+          <Button
+            title="Vérifier Google Play Services"
+            onPress={() => Linking.openURL('market://details?id=com.google.android.gms')}
+          />
+        )}
       </View>
     );
   }
@@ -82,7 +122,7 @@ export default function MapScreen() {
   if (!userLocation) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Chargement de la position...</Text>
+        <Text>Chargement de votre position...</Text>
       </View>
     );
   }
@@ -97,13 +137,18 @@ export default function MapScreen() {
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         }}
-        showsUserLocation={false}
-        showsMyLocationButton={false}
+        showsUserLocation={false} // Désactivé car nous utilisons notre propre marqueur
+        showsMyLocationButton={true}
+        loadingEnabled={true}
+        userLocationPriority="high"
+        userLocationUpdateInterval={5000}
+        provider={Platform.OS === 'android' ? 'google' : undefined}
       >
+        {/* Marqueur personnalisé pour iOS et Android */}
         <Marker
           coordinate={userLocation}
           anchor={{ x: 0.5, y: 0.5 }}
-          tracksViewChanges={false}
+          tracksViewChanges={true}
         >
           <Image
             source={iconByType.user}
