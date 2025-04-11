@@ -8,15 +8,15 @@ const AddPlaceScreen = () => {
   const router = useRouter();
   
   // États du formulaire
-  const [placeType, setPlaceType] = useState<'restaurant' | 'culture' | 'leisure'>('restaurant'); // Type par défaut
+  const [placeType, setPlaceType] = useState<'restaurant' | 'culture' | 'leisure'>('restaurant');
   const [placeName, setPlaceName] = useState('');
   const [address, setAddress] = useState('');
   const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null);
   const [description, setDescription] = useState('');
-  const [ageRange, setAgeRange] = useState('0-2'); // Tranche d'âge par défaut
-  const [rating, setRating] = useState(3); // Note par défaut
+  const [ageRanges, setAgeRanges] = useState<string[]>(['0-2']);
+  const [rating, setRating] = useState(3);
   
-  // Équipements disponibles (tous désactivés par défaut)
+  // Équipements disponibles
   const [equipments, setEquipments] = useState({
     strollerAccess: false,
     playArea: false,
@@ -25,33 +25,25 @@ const AddPlaceScreen = () => {
     changingTable: false
   });
 
-  // Correspondance entre types de lieux et icônes
   const placeIcons = {
     restaurant: require('../assets/images/user-location-restaurant.png'),
     culture: require('../assets/images/user-location-culture.png'),
     leisure: require('../assets/images/user-location-loisir.png'),
   };
 
-  /**
-   * Récupère la position actuelle de l'utilisateur
-   * et met à jour l'adresse approximative
-   */
   const handleGetCurrentLocation = async () => {
-    // 1. Demande de permission
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Erreur', 'Permission de localisation refusée');
       return;
     }
 
-    // 2. Récupération de la position
     const currentLocation = await Location.getCurrentPositionAsync({});
     setLocation({
       latitude: currentLocation.coords.latitude,
       longitude: currentLocation.coords.longitude,
     });
 
-    // 3. Reverse geocoding pour obtenir l'adresse (simplifié)
     const [addressResult] = await Location.reverseGeocodeAsync({
       latitude: currentLocation.coords.latitude,
       longitude: currentLocation.coords.longitude,
@@ -62,39 +54,56 @@ const AddPlaceScreen = () => {
     }
   };
 
-  /**
-   * Validation et soumission du formulaire
-   */
   const handleSubmit = () => {
-    // Vérification des champs obligatoires
     if (!placeName || !address) {
       Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
       return;
     }
 
-    // Construction de l'objet lieu
     const newPlace = {
       name: placeName,
       type: placeType,
       address,
       location,
       description,
-      ageRange,
+      ageRanges,
       rating,
       equipments
     };
 
-    console.log('Nouveau lieu:', newPlace); // Pour débogage
+    console.log('Nouveau lieu:', newPlace);
     Alert.alert('Succès', 'Lieu ajouté avec succès!');
-    router.back(); // Retour à l'écran précédent
+    router.back();
+  };
+
+  const toggleAgeRange = (age: string) => {
+    setAgeRanges(prev => 
+      prev.includes(age) 
+        ? prev.filter(a => a !== age) 
+        : [...prev, age]
+    );
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* En-tête */}
-      <Text style={styles.header}>Ajouter un lieu</Text>
+      {/* Titre centré */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Ajouter un lieu</Text>
+      </View>
 
-      {/* Section Type de lieu */}
+      {/* Nom du lieu tout en haut */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Nom du lieu*</Text>
+        <TextInput
+          style={styles.input}
+          value={placeName}
+          onChangeText={setPlaceName}
+          placeholder="Nom du lieu"
+          autoFocus
+        />
+      </View>
+
+      {/* Type de lieu */}
       <View style={styles.section}>
         <Text style={styles.label}>Type de lieu*</Text>
         <View style={styles.radioContainer}>
@@ -104,7 +113,7 @@ const AddPlaceScreen = () => {
               style={[styles.radioButton, placeType === type && styles.radioSelected]}
               onPress={() => setPlaceType(type)}
             >
-              <Text style={styles.radioText}>
+              <Text style={[styles.radioText, placeType === type && styles.radioTextSelected]}>
                 {type === 'restaurant' ? 'Restaurant' : 
                  type === 'culture' ? 'Culturel' : 'Loisir'}
               </Text>
@@ -113,62 +122,9 @@ const AddPlaceScreen = () => {
         </View>
       </View>
 
-      {/* Section Nom du lieu */}
+      {/* Équipements */}
       <View style={styles.section}>
-        <Text style={styles.label}>Nom du lieu*</Text>
-        <TextInput
-          style={styles.input}
-          value={placeName}
-          onChangeText={setPlaceName}
-          placeholder="Nom du lieu"
-        />
-      </View>
-
-      {/* Section Adresse */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Adresse*</Text>
-        <View style={styles.addressButtons}>
-          <TouchableOpacity 
-            style={styles.locationButton} 
-            onPress={handleGetCurrentLocation}
-          >
-            <Text style={styles.buttonText}>Utiliser ma position</Text>
-          </TouchableOpacity>
-        </View>
-        <TextInput
-          style={styles.input}
-          value={address}
-          onChangeText={setAddress}
-          placeholder="Adresse complète"
-        />
-      </View>
-
-      {/* Mini-carte de prévisualisation */}
-      {location && (
-        <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-            scrollEnabled={false} // Désactive le déplacement
-          >
-            <Marker coordinate={location}>
-              <Image
-                source={placeIcons[placeType]} // Icône dynamique selon le type
-                style={{ width: 40, height: 40 }}
-              />
-            </Marker>
-          </MapView>
-        </View>
-      )}
-
-      {/* Section Équipements */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Équipements</Text>
+        <Text style={styles.label}>Équipements disponibles</Text>
         {Object.keys(equipments).map((item) => (
           <TouchableOpacity
             key={item}
@@ -188,25 +144,7 @@ const AddPlaceScreen = () => {
         ))}
       </View>
 
-      {/* Section Tranche d'âge */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Tranche d'âge</Text>
-        <View style={styles.radioContainer}>
-          {['0-2', '3-6', '7+'].map((age) => (
-            <TouchableOpacity
-              key={age}
-              style={[styles.radioButton, ageRange === age && styles.radioSelected]}
-              onPress={() => setAgeRange(age)}
-            >
-              <Text style={styles.radioText}>
-                {age === '0-2' ? '0-2 ans' : age === '3-6' ? '3-6 ans' : '7 ans et plus'}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      {/* Section Description */}
+      {/* Description */}
       <View style={styles.section}>
         <Text style={styles.label}>Description</Text>
         <TextInput
@@ -214,11 +152,71 @@ const AddPlaceScreen = () => {
           value={description}
           onChangeText={setDescription}
           multiline
-          placeholder="Description du lieu..."
+          placeholder="Décrivez le lieu..."
         />
       </View>
 
-      {/* Section Notation */}
+      {/* Tranche d'âge */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Tranche d'âge (plusieurs choix possibles)</Text>
+        <View style={styles.radioContainer}>
+          {['0-2', '3-6', '7+'].map((age) => (
+            <TouchableOpacity
+              key={age}
+              style={[styles.radioButton, ageRanges.includes(age) && styles.radioSelected]}
+              onPress={() => toggleAgeRange(age)}
+            >
+              <Text style={[styles.radioText, ageRanges.includes(age) && styles.radioTextSelected]}>
+                {age === '0-2' ? '0-2 ans' : age === '3-6' ? '3-6 ans' : '7 ans et plus'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Adresse */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Adresse*</Text>
+        <View style={styles.addressButtons}>
+          <TouchableOpacity 
+            style={styles.locationButton} 
+            onPress={handleGetCurrentLocation}
+          >
+            <Text style={styles.buttonText}>Utiliser ma position</Text>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          style={styles.input}
+          value={address}
+          onChangeText={setAddress}
+          placeholder="Adresse complète"
+        />
+      </View>
+
+      {/* Carte */}
+      {location && (
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+            scrollEnabled={false}
+          >
+            <Marker coordinate={location}>
+              <Image
+                source={placeIcons[placeType]}
+                style={{ width: 40, height: 40 }}
+              />
+            </Marker>
+          </MapView>
+        </View>
+      )}
+
+      {/* Notation */}
       <View style={styles.section}>
         <Text style={styles.label}>Note (sur 5)</Text>
         <View style={styles.ratingContainer}>
@@ -230,7 +228,7 @@ const AddPlaceScreen = () => {
         </View>
       </View>
 
-      {/* Bouton de soumission */}
+      {/* Bouton d'enregistrement */}
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitText}>Enregistrer</Text>
       </TouchableOpacity>
@@ -238,18 +236,20 @@ const AddPlaceScreen = () => {
   );
 };
 
-// Styles détaillés
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
     color: '#2c3e50',
   },
   section: {
@@ -282,18 +282,21 @@ const styles = StyleSheet.create({
     borderColor: '#bdc3c7',
   },
   radioSelected: {
-    backgroundColor: '#3498db',
-    borderColor: '#3498db',
+    backgroundColor: '#D37230',
+    borderColor: '#D37230',
   },
   radioText: {
     color: '#2c3e50',
+  },
+  radioTextSelected: {
+    color: 'white',
   },
   addressButtons: {
     flexDirection: 'row',
     marginBottom: 10,
   },
   locationButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#D37230',
     padding: 10,
     borderRadius: 8,
     marginRight: 10,
@@ -350,9 +353,9 @@ const styles = StyleSheet.create({
     color: '#f1c40f',
   },
   submitButton: {
-    backgroundColor: '#2ecc71',
-    padding: 15,
+    backgroundColor: '#D37230',
     borderRadius: 8,
+    padding: 15,
     alignItems: 'center',
     marginVertical: 20,
   },
