@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Alert, Text, Platform, Linking, Button } from 'react-native';
+import { View, Image, Alert, Text, Platform, Linking, Button, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';  // Importation de useNavigation
 
 const iconByType = {
-  user: require('../assets/images/user-location.png'),
+  user: require('../assets/images/user-location.png'),// Icône de la liste (assure-toi que l'icône existe bien)
+  switchmap: require('../assets/images/switchmap.png'),
 };
 
 export default function MapScreen() {
@@ -13,7 +15,9 @@ export default function MapScreen() {
   const [locationSubscription, setLocationSubscription] = useState<Location.LocationSubscription | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Fonction améliorée pour le tracking
+  const navigation = useNavigation();  // Création de la navigation
+
+  // Fonction pour démarrer le tracking
   const startLocationTracking = async () => {
     try {
       // Vérification spécifique Android
@@ -157,6 +161,23 @@ export default function MapScreen() {
           />
         </Marker>
       </MapView>
+
+      {/* Bouton pour naviguer vers listelieux.tsx */}
+      <TouchableOpacity
+        onPress={() => router.push('/listelieux')}
+        style={{
+          position: 'absolute',
+          bottom: 20,
+          right: 20,
+          borderRadius: 50, // Pour donner un effet circulaire
+          padding: 10,
+        }}
+      >
+         <Image
+          source={iconByType.switchmap}  // L'icône que tu veux afficher
+          style={{ width: 40, height: 40 }} // Taille de l'icône
+        />
+      </TouchableOpacity>
     </View>
   );
 }
