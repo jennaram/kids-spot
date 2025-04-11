@@ -5,6 +5,7 @@ export const mockPoints = [
       type: "loisirs",
       latitude: 48.8216,
       longitude: 2.3387,
+      horaires: '10h - 18h',
       description: "Grand parc avec aires de jeux",
     },
     {
@@ -13,6 +14,7 @@ export const mockPoints = [
       type: "restaurant",
       latitude: 48.8292,
       longitude: 2.3558,
+      horaires: '10h - 22h',
       description: "Restaurant kids-friendly avec coin jeux",
     },
     {
@@ -21,6 +23,7 @@ export const mockPoints = [
       type: "culturel",
       latitude: 48.8261,
       longitude: 2.3314,
+      horaires: '9h30 - 18h',
       description: "Espace jeux et animations pour enfants",
     },
   ];

@@ -1,6 +1,7 @@
 {
   "expo": {
     "newArchEnabled": true,
+    "scheme": "Kids-Spot",
     "name": "GeolocApp",
     "slug": "geoloc-app",
     "version": "1.0.0",
