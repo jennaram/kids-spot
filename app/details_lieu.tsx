@@ -30,13 +30,16 @@ const DetailsLieu = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Conteneur de l'image */}
       <View style={styles.imageContainer}>
         <Image
           source={lieu.imageUrl}
           style={styles.headerImage}
           resizeMode="cover"
         />
+        {/* Icône de cœur pour les favoris */}
+        <TouchableOpacity style={styles.favoriteIconContainer}>
+          <MaterialIcons name="favorite-border" size={24} color="white" />
+        </TouchableOpacity>
       </View>
 
       {/* Contenu centré */}
@@ -74,14 +77,13 @@ const DetailsLieu = ({ route, navigation }) => {
         </View>
 
         {/* Conteneur des icônes */}
-       <View style={styles.iconsContainer}>
-         <MaterialIcons name="sports-soccer" size={30} color="#333" />
-         <MaterialIcons name="stroller" size={30} color="#333" />
-         <MaterialIcons name="microwave" size={30} color="#333" />
-         <MaterialIcons name="baby-changing-station" size={30} color="#333" />
-         <MaterialIcons name="restaurant" size={30} color="#333" />
-       </View>
-
+        <View style={styles.iconsContainer}>
+          <MaterialIcons name="sports-soccer" size={30} color="#333" />
+          <MaterialIcons name="stroller" size={30} color="#333" />
+          <MaterialIcons name="microwave" size={30} color="#333" />
+          <MaterialIcons name="baby-changing-station" size={30} color="#333" />
+          <MaterialIcons name="restaurant" size={30} color="#333" />
+        </View>
 
         {/* Boutons et icônes */}
         <View style={styles.actionsContainer}>
@@ -91,7 +93,9 @@ const DetailsLieu = ({ route, navigation }) => {
               <Text style={styles.smallButtonText}>Donner mon avis</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
+            <TouchableOpacity
+              style={[styles.smallButton, styles.voirAvisButton]}
+            >
               <Text style={styles.smallButtonText}>Voir les avis</Text>
             </TouchableOpacity>
           </View>
@@ -253,7 +257,16 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
   },
- 
+
+  favoriteIconContainer: {
+    position: "absolute", // Position absolue pour placer l'icône dans le conteneur
+    top: 10, // Distance depuis le haut
+    right: 10, // Distance depuis la droite
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fond semi-transparent pour contraste
+    borderRadius: 20, // Bordures arrondies
+    padding: 5, // Espacement interne
+    zIndex: 10, // Assure que l'icône est au-dessus de l'image
+  },
 });
 
 export default DetailsLieu;
