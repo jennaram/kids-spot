@@ -1,5 +1,4 @@
 import React from "react";
-import Iconify from "react-native-iconify";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -74,30 +73,36 @@ const DetailsLieu = ({ route, navigation }) => {
           ))}
         </View>
 
-        {/* Conteneur des icônes */}
-        <View style={styles.iconsContainer}>
-          <MaterialIcons name="sports-soccer" size={30} color="#333" />
-          <MaterialIcons name="stroller" size={30} color="#333" />
-          <MaterialIcons name="microwave" size={30} color="#333" />
-          <MaterialIcons name="baby-changing-station" size={30} color="#333" />
-          <MaterialIcons name="restaurant" size={30} color="#333" />
-        </View>
-
-                {/* Boutons d'action */}
-                <View style={styles.actionsContainer}>
+        {/* Boutons et icônes */}
+        <View style={styles.actionsContainer}>
+          {/* Boutons "Donner mon avis" et "Voir les avis" alignés */}
           <View style={styles.rowButtons}>
-            <TouchableOpacity style={[styles.button, styles.avisButton]}>
-              <Text style={styles.buttonText}>Donner mon avis</Text>
+            <TouchableOpacity style={[styles.smallButton, styles.avisButton]}>
+              <Text style={styles.smallButtonText}>Donner mon avis</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.button, styles.voirAvisButton]}>
-              <Text style={styles.buttonText}>Voir les avis</Text>
+            <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
+              <Text style={styles.smallButtonText}>Voir les avis</Text>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={[styles.button, styles.yAllerButton]}>
-            <Text style={styles.buttonText}>Y aller</Text>
-          </TouchableOpacity>
+          {/* Icônes alignées horizontalement */}
+          <View style={styles.newButtonsContainer}>
+            <TouchableOpacity style={styles.iconButton}>
+              <MaterialIcons name="phone" size={24} color="#333" />
+              <Text style={styles.iconButtonText}>Appeler</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.iconButton}>
+              <MaterialIcons name="language" size={24} color="#333" />
+              <Text style={styles.iconButtonText}>Site web</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.iconButton}>
+              <MaterialIcons name="place" size={24} color="#333" />
+              <Text style={styles.iconButtonText}>Y aller</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -191,43 +196,43 @@ const styles = StyleSheet.create({
   actionsContainer: {
     width: "100%",
     maxWidth: 400,
+    marginTop: 20,
   },
-  button: {
-    padding: 16,
-    borderRadius: 8,
+  rowButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  smallButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
     alignItems: "center",
-    marginBottom: 12,
-  },
-  avisButton: {
+    marginHorizontal: 5,
     backgroundColor: "#f0f0f0",
   },
-  voirAvisButton: {
-    backgroundColor: "#e0e0e0",
+  smallButtonText: {
+    fontSize: 12,
+    color: "#333",
   },
-  yAllerButton: {
-    backgroundColor: "#FFA500",
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  starIcon: {
-    marginLeft: 5,
-    marginRight: 5,
-  },
-  iconsContainer: {
+  newButtonsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-    width: "100%",
-    maxWidth: 400,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
   },
-
-  rowButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly', // Espace entre les boutons
-    alignItems: 'center', // Aligner verticalement
-    marginBottom: 10, // Espacement avec le bouton "Y aller"
+  iconButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    flex: 1,
+  },
+  iconButtonText: {
+    fontSize: 12,
+    color: "#333",
+    marginTop: 5,
+    textAlign: "center",
   },
 });
 
