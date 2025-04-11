@@ -1,6 +1,5 @@
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Icon from "react-native-vector-icons/FontAwesome";
 import {
   View,
   Text,
@@ -22,19 +21,16 @@ const DetailsLieu = ({ route, navigation }) => {
     imageUrl: require("../assets/images/parc_montsouris.jpg"),
   };
 
-  function handleFavoriteToggle(event: GestureResponderEvent): void {
-    throw new Error("Function not implemented.");
+  function handleFavoriteToggle() {
+    console.log("Favori cliqué");
+  }
+
+  function handleShare() {
+    console.log("Partager cliqué");
   }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {/* Bouton de partage au-dessus */}
-      <View style={styles.shareButtonContainer}>
-        <TouchableOpacity style={styles.shareButton}>
-          <MaterialIcons name="share" size={24} color="#333" />
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.imageContainer}>
         <Image
           source={lieu.imageUrl}
@@ -50,18 +46,27 @@ const DetailsLieu = ({ route, navigation }) => {
 
       {/* Contenu centré */}
       <View style={styles.centeredContent}>
-        {/* Note et avis */}
-        <View style={styles.ratingContainer}>
-          <Text style={styles.note}>{lieu.note}</Text>
-          <MaterialIcons
-            name="star"
-            size={18}
-            color="black"
-            style={styles.starIcon}
-          />
-          <Text style={styles.avis}>{lieu.avis}</Text>
+        {/* Note, avis et bouton de partage */}
+        <View style={styles.ratingShareContainer}>
+          <View style={styles.ratingWrapper}>
+            <View style={styles.ratingContainer}>
+              <Text style={styles.note}>{lieu.note}</Text>
+              <MaterialIcons
+                name="star"
+                size={18}
+                color="black"
+                style={styles.starIcon}
+              />
+              <Text style={styles.avis}>{lieu.avis}</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.shareButton}
+            onPress={handleShare} // Fonction appelée lors du clic
+          >
+            <MaterialIcons name="share" size={24} color="#333" />
+          </TouchableOpacity>
         </View>
-
         {/* Nom du lieu */}
         <Text style={styles.nom}>{lieu.nom}</Text>
 
@@ -134,16 +139,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "white",
   },
-  shareButtonContainer: {
-    alignItems: "flex-end",
-    padding: 10,
-    backgroundColor: "white",
-  },
-  shareButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    borderRadius: 20,
-    padding: 8,
-  },
   imageContainer: {
     width: "100%",
     marginTop: 10,
@@ -151,7 +146,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     overflow: "hidden",
     backgroundColor: "white",
-    position: "relative", // Permet le positionnement absolu des enfants
+    position: "relative",
   },
   headerImage: {
     width: "100%",
@@ -163,11 +158,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 30,
   },
+  ratingShareContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 10,
+    marginTop: 15,
+    marginBottom: 10,
+  },
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 15,
-    marginBottom: 10,
   },
   nom: {
     fontSize: 24,
@@ -179,10 +181,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#D37230",
     fontWeight: "bold",
-    marginRight: 10,
+    marginRight: 5,
+  },
+  starIcon: {
+    marginRight: 5,
+  },
+  avis: {
+    fontSize: 16,
+    color: "#333",
+  },
+  shareButton: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 8,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
   },
   avisButton: {
-    backgroundColor: "#D37230", // Couleur de fond orange
+    backgroundColor: "#D37230",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -190,7 +209,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   voirAvisButton: {
-    backgroundColor: "#D37230", // Couleur de fond orange
+    backgroundColor: "#D37230",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -232,7 +251,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
   },
-
   actionsContainer: {
     width: "100%",
     maxWidth: 400,
@@ -250,14 +268,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: "center",
     marginHorizontal: 5,
-    backgroundColor: "#f0f0f0",
   },
   smallButtonText: {
-    color: "white", // Texte blanc
+    color: "white",
     fontSize: 14,
     fontWeight: "bold",
   },
-
   newButtonsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -277,7 +293,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: "center",
   },
-
   iconsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -285,15 +300,19 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
   },
-
   favoriteIconContainer: {
-    position: "absolute", // Position absolue pour placer l'icône
-    top: 20, // Distance depuis le haut
-    right: 20, // Distance depuis la droite
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fond semi-transparent
+    position: "absolute",
+    top: 20,
+    right: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 20,
     padding: 5,
     zIndex: 10,
+  },
+
+  ratingWrapper: {
+    flex: 1, // Prend tout l'espace disponible
+    alignItems: "center", // Centre horizontalement
   },
 });
 
