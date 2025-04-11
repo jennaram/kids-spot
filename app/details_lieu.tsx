@@ -73,6 +73,16 @@ const DetailsLieu = ({ route, navigation }) => {
           ))}
         </View>
 
+        {/* Conteneur des icônes */}
+       <View style={styles.iconsContainer}>
+         <MaterialIcons name="sports-soccer" size={30} color="#333" />
+         <MaterialIcons name="stroller" size={30} color="#333" />
+         <MaterialIcons name="microwave" size={30} color="#333" />
+         <MaterialIcons name="baby-changing-station" size={30} color="#333" />
+         <MaterialIcons name="restaurant" size={30} color="#333" />
+       </View>
+
+
         {/* Boutons et icônes */}
         <View style={styles.actionsContainer}>
           {/* Boutons "Donner mon avis" et "Voir les avis" alignés */}
@@ -227,6 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 10,
     flex: 1,
+    marginHorizontal: 10,
   },
   iconButtonText: {
     fontSize: 12,
@@ -234,6 +245,15 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: "center",
   },
+
+  iconsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 20,
+    width: "100%",
+    maxWidth: 400,
+  },
+ 
 });
 
 export default DetailsLieu;
