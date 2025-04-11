@@ -16,6 +16,7 @@ export default function Index() {
       />
       <Text>Bienvenue sur Kids Spot </Text>
       <Button title="Voir la carte" onPress={() => router.push('/main')} />
+      <Button title="Evenement" onPress={() => router.push('/evenement')} />
     </View>
   );
 }
