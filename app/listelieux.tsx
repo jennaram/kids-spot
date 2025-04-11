@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { mockPoints } from './points';
 import { useNavigation } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 export default function ListeLieux() {
   const navigation = useNavigation();

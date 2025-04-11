@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
+import * as Location from 'expo-location';
 
 export default function RetourGeoloc() {
   const { lat, lng, alt } = useLocalSearchParams();

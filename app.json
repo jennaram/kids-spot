@@ -1,9 +1,13 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "GeolocApp",
     "slug": "geoloc-app",
     "version": "1.0.0",
     "orientation": "portrait",
+    "experiments": {
+      "newArchEnabled": true
+    },
     "plugins": [
       [
         "expo-location",

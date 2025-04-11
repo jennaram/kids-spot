@@ -1,8 +1,11 @@
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Button, StyleSheet, ScrollView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { mockPoints } from './points';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 const iconByType = {
   culturel: require('../assets/images/iconfun.png'),
@@ -19,7 +22,7 @@ export default function MapScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setPoints(mockPoints);
+    setPoints(mockPoints); // Simule un fetch de base de données
   }, []);
 
   const startLocationTracking = async () => {
@@ -29,11 +32,6 @@ export default function MapScreen() {
         setError('Permission de localisation refusée');
         return;
       }
-  const [viewMode, setViewMode] = useState<'map' | 'list'>('map'); // 🛠️ ça doit être dans le composant
-
-  useEffect(() => {
-    setPoints(mockPoints); // simule un fetch de base de données
-  }, []);
 
       const enabled = await Location.hasServicesEnabledAsync();
       if (!enabled) {
