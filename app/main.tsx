@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, Button, StyleSheet, ScrollView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { mockPoints } from './points';
@@ -11,21 +11,18 @@ const iconByType = {
   culturel: require('../assets/images/iconfun.png'),
   restaurant: require('../assets/images/iconfood.png'),
   loisirs: require('../assets/images/iconcultural.png'),
+  user: require('../assets/images/iconuser.png'),
 };
 
 export default function MapScreen() {
-  const [points, setPoints] = useState([]);
+  const [points] = useState(mockPoints);
   const router = useRouter();
-  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+  const [viewMode] = useState<'map' | 'list'>('map');
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [locationSubscription, setLocationSubscription] = useState<Location.LocationSubscription | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const locationSubscriptionRef = React.useRef<Location.LocationSubscription | null>(null);
 
-  useEffect(() => {
-    setPoints(mockPoints); // Simule un fetch de base de données
-  }, []);
-
-  const startLocationTracking = async () => {
+  const startLocationTracking = useCallback(async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -39,38 +36,46 @@ export default function MapScreen() {
         return;
       }
 
-      const locationOptions = {
+      // Get initial position quickly
+      const initialLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
-        distanceInterval: 5,
-        timeInterval: 3000,
-      };
-
-      const sub = await Location.watchPositionAsync(locationOptions, (location) => {
-        const { latitude, longitude } = location.coords;
-        setUserLocation({ latitude, longitude });
       });
+      setUserLocation(initialLocation.coords);
 
-      setLocationSubscription(sub);
+      // Set up watcher for updates
+      const sub = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          distanceInterval: 5,
+          timeInterval: 3000,
+        },
+        (location) => {
+          setUserLocation(location.coords);
+        }
+      );
+
+      locationSubscriptionRef.current = sub;
     } catch (err) {
       console.error('Erreur de géolocalisation:', err);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Une erreur inconnue est survenue');
-      }
+      setError(err instanceof Error ? err.message : 'Une erreur inconnue est survenue');
     }
-  };
+  }, []);
+
+  const stopLocationTracking = useCallback(() => {
+    if (locationSubscriptionRef.current) {
+      locationSubscriptionRef.current.remove();
+      locationSubscriptionRef.current = null;
+    }
+  }, []);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       startLocationTracking();
 
       return () => {
-        if (locationSubscription) {
-          locationSubscription.remove();
-        }
+        stopLocationTracking();
       };
-    }, [])
+    }, [startLocationTracking, stopLocationTracking])
   );
 
   if (error) {
@@ -94,6 +99,12 @@ export default function MapScreen() {
       {viewMode === 'map' ? (
         <MapView
           style={styles.map}
+          initialRegion={{
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
           region={{
             latitude: userLocation.latitude,
             longitude: userLocation.longitude,
@@ -103,8 +114,16 @@ export default function MapScreen() {
           showsUserLocation={false}
           showsMyLocationButton={false}
         >
-          <Marker coordinate={userLocation} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false}>
-            <Image source={iconByType.user} style={{ width: 40, height: 40 }} resizeMode="contain" />
+          <Marker 
+            coordinate={userLocation} 
+            anchor={{ x: 0.5, y: 0.5 }}
+            tracksViewChanges={false}
+          >
+            <Image 
+              source={iconByType.user} 
+              style={styles.userMarker} 
+              resizeMode="contain" 
+            />
           </Marker>
 
           {points.map((point) => (
@@ -116,7 +135,7 @@ export default function MapScreen() {
             >
               <Image
                 source={iconByType[point.type]}
-                style={{ width: 40, height: 40 }}
+                style={styles.pointMarker}
                 resizeMode="contain"
               />
             </Marker>
@@ -134,7 +153,10 @@ export default function MapScreen() {
       )}
 
       <View style={styles.buttonContainer}>
-        <Button title="Afficher la liste complète" onPress={() => router.push('/listelieux')} />
+        <Button 
+          title="Afficher la liste complète" 
+          onPress={() => router.push('/listelieux')} 
+        />
       </View>
     </View>
   );
@@ -163,5 +185,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  userMarker: {
+    width: 40,
+    height: 40,
+  },
+  pointMarker: {
+    width: 40,
+    height: 40,
   },
 });

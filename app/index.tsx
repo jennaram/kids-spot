@@ -1,8 +1,7 @@
 import { Image, Text, View, Button } from "react-native";
 import { useRouter } from 'expo-router';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Geolocalisation from './geolocalisation';
-import RetourGeoloc from './retourGeoloc';
+
 
 const Stack = createNativeStackNavigator();
 
