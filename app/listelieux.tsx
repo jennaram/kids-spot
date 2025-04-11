@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { mockPoints } from './points';
-import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 
 const iconByType = {
   listIcon: require('../assets/images/switchlieux.png'), // Icône pour switch vers la map
 };
-
 
 // Fonction pour calculer la distance entre deux points GPS (en km)
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
@@ -22,12 +20,10 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const d = R * c; // Distance en km
-  return d;
+  return R * c;
 }
 
 export default function ListeLieux() {
-  const navigation = useNavigation();
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
@@ -46,16 +42,35 @@ export default function ListeLieux() {
     })();
   }, []);
 
-
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.listContainer}>
-        {mockPoints.map((point) => (
-          <TouchableOpacity key={point.id} style={styles.item}>
-            <Text style={styles.title}>{point.name}</Text>
-            <Text style={styles.description}>{point.description}</Text>
-          </TouchableOpacity>
-        ))}
+        {mockPoints.map((point) => {
+          const distance =
+            userLocation
+              ? getDistanceFromLatLonInKm(
+                  userLocation.latitude,
+                  userLocation.longitude,
+                  point.latitude,
+                  point.longitude
+                ).toFixed(2)
+              : null;
+
+          return (
+            <TouchableOpacity key={point.id} style={styles.item}>
+              <Text style={styles.title}>{point.name}</Text>
+              <Text style={styles.description}>{point.description}</Text>
+
+              {distance && (
+                <Text style={styles.info}>Distance : {distance} km</Text>
+              )}
+
+              {point.horaires && (
+                <Text style={styles.info}>Horaires : {point.horaires}</Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
 
       {/* Bouton en bas à droite */}
@@ -79,6 +94,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+    paddingBottom: 100, // pour éviter que la liste passe sous le bouton
   },
   item: {
     marginBottom: 12,
@@ -94,6 +110,11 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 14,
     color: '#555',
+  },
+  info: {
+    fontSize: 14,
+    color: '#333',
+    marginTop: 4,
   },
   floatingButton: {
     position: 'absolute',
