@@ -1,19 +1,29 @@
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import burgerMenuIcon from "../assets/images/burger_menu.png";
+import { ImageSourcePropType } from "react-native";
+
+// Remove the invalid module augmentation declaration for the image module
 
 const About = () => {
-  const handleContactPress = () => {
-    Alert.alert("Contactez-nous", "Merci de nous contacter à contact@kidsspot.com !");
+  const handleMenuPress = () => {
+    Alert.alert("Menu", "Menu burger cliqué !");
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>À propos</Text>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.burgerMenu} onPress={handleMenuPress}>
+          <Image source={burgerMenuIcon} style={styles.burgerIcon} />
+        </TouchableOpacity>
+        <Text style={styles.title}>À propos</Text>
+        <View style={{ width: 30 }} /> {/* Espace pour équilibrer le layout */}
+      </View>
       <View style={styles.textContainer}>
         <Text style={styles.description}>
-          Une app pensée <Text style={styles.bold}>PAR</Text> des parents,{" "}
-          <Text style={styles.bold}>POUR</Text> des parents !
+          "Une app pensée <Text style={styles.bold}>PAR</Text> des parents,{" "}
+          <Text style={styles.bold}>POUR</Text> des parents !"
         </Text>
         <Text style={styles.description}>
           Kids Spot, c'est le GPS des sorties familiales & kids-friendly en
@@ -56,7 +66,7 @@ const About = () => {
           </Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleContactPress}>
+      <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Nous contacter</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -69,15 +79,29 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
   },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  burgerMenu: {
+    padding: 5,
+  },
+  burgerIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
     color: "#333",
     textAlign: "center",
+    flex: 1,
   },
   textContainer: {
-    backgroundColor: "#f5f5f5", // Gris clair
+    backgroundColor: "#f5f5f5",
     borderRadius: 10,
     padding: 15,
     marginTop: 10,
@@ -92,19 +116,11 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: "bold",
   },
-  quote: {
-    fontStyle: "italic",
-    fontSize: 16,
-    lineHeight: 24,
-    marginBottom: 20,
-    color: "#555",
-    textAlign: "center",
-  },
   subtitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#D37230", // Couleur personnalisée
+    color: "#D37230",
     textAlign: "center",
   },
   bulletPoint: {
@@ -119,12 +135,12 @@ const styles = StyleSheet.create({
     color: "#555",
     textAlign: "center",
     flex: 1,
-    flexWrap: "wrap", // Permet d'envelopper le texte
-    maxWidth: "100%", // Limite la largeur pour forcer le retour à la ligne
+    flexWrap: "wrap",
+    maxWidth: "100%",
   },
   button: {
     marginTop: 20,
-    backgroundColor: "#D37230", // Couleur personnalisée
+    backgroundColor: "#D37230",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
