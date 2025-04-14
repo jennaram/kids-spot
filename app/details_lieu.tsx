@@ -9,7 +9,7 @@ import {
   ScrollView,
   Alert
 } from "react-native";
-import burgerMenuIcon from "../assets/images/burger_menu.png";
+import MenuBurger from "app/components/menuburger";
 
 const DetailsLieu = ({ route, navigation }) => {
   const lieu = {
@@ -36,130 +36,128 @@ const DetailsLieu = ({ route, navigation }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {/* Header avec burger menu cliquable */}
+    <View style={styles.mainContainer}>
+      {/* Header avec MenuBurger fixe en haut */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.burgerMenu} 
-          onPress={handleMenuPress}
-          activeOpacity={0.7}
-        >
-          <Image source={burgerMenuIcon} style={styles.burgerIcon} />
-        </TouchableOpacity>
+        <MenuBurger onPress={handleMenuPress} />
         <View style={{ flex: 1 }} />
       </View>
 
-      {/* Image principale */}
-      <View style={styles.imageContainer}>
-        <Image
-          source={lieu.imageUrl}
-          style={styles.headerImage}
-          resizeMode="cover"
-        />
-        <View style={styles.favoriteIconContainer}>
-          <TouchableOpacity onPress={handleFavoriteToggle}>
-            <MaterialIcons name="favorite-border" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Contenu principal */}
-      <View style={styles.centeredContent}>
-        <View style={styles.ratingShareContainer}>
-          <View style={styles.ratingWrapper}>
-            <View style={styles.ratingContainer}>
-              <Text style={styles.note}>{lieu.note}</Text>
-              <MaterialIcons
-                name="star"
-                size={18}
-                color="black"
-                style={styles.starIcon}
-              />
-              <Text style={styles.avis}>{lieu.avis}</Text>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-            <MaterialIcons name="share" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
-        
-        <Text style={styles.nom}>{lieu.nom}</Text>
-        <Text style={styles.description}>{lieu.description}</Text>
-        
-        <View style={styles.horairesContainer}>
-          <Text style={styles.horaires}>{lieu.horaires}</Text>
-        </View>
-        
-        <View style={styles.ageContainer}>
-          {lieu.tranchesAge.map((age, index) => (
-            <View key={index} style={styles.ageBadge}>
-              <Text style={styles.ageBadgeText}>{age}</Text>
-            </View>
-          ))}
-        </View>
-        
-        <View style={styles.iconsContainer}>
-          <MaterialIcons name="sports-soccer" size={30} color="#333" />
-          <MaterialIcons name="stroller" size={30} color="#333" />
-          <MaterialIcons name="microwave" size={30} color="#333" />
-          <MaterialIcons name="baby-changing-station" size={30} color="#333" />
-          <MaterialIcons name="restaurant" size={30} color="#333" />
-        </View>
-        
-        <View style={styles.actionsContainer}>
-          <View style={styles.rowButtons}>
-            <TouchableOpacity style={[styles.smallButton, styles.avisButton]}>
-              <Text style={styles.smallButtonText}>Donner mon avis</Text>
+      {/* Contenu scrollable */}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Image principale */}
+        <View style={styles.imageContainer}>
+          <Image
+            source={lieu.imageUrl}
+            style={styles.headerImage}
+            resizeMode="cover"
+          />
+          <View style={styles.favoriteIconContainer}>
+            <TouchableOpacity onPress={handleFavoriteToggle}>
+              <MaterialIcons name="favorite-border" size={24} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
-              <Text style={styles.smallButtonText}>Voir les avis</Text>
+          </View>
+        </View>
+
+        {/* Contenu principal */}
+        <View style={styles.centeredContent}>
+          <View style={styles.ratingShareContainer}>
+            <View style={styles.ratingWrapper}>
+              <View style={styles.ratingContainer}>
+                <Text style={styles.note}>{lieu.note}</Text>
+                <MaterialIcons
+                  name="star"
+                  size={18}
+                  color="black"
+                  style={styles.starIcon}
+                />
+                <Text style={styles.avis}>{lieu.avis}</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+              <MaterialIcons name="share" size={24} color="#333" />
             </TouchableOpacity>
           </View>
           
-          <View style={styles.newButtonsContainer}>
-            <TouchableOpacity style={styles.iconButton}>
-              <MaterialIcons name="phone" size={24} color="#333" />
-              <Text style={styles.iconButtonText}>Appeler</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
-              <MaterialIcons name="language" size={24} color="#333" />
-              <Text style={styles.iconButtonText}>Site web</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
-              <MaterialIcons name="place" size={24} color="#333" />
-              <Text style={styles.iconButtonText}>Y aller</Text>
-            </TouchableOpacity>
+          <Text style={styles.nom}>{lieu.nom}</Text>
+          <Text style={styles.description}>{lieu.description}</Text>
+          
+          <View style={styles.horairesContainer}>
+            <Text style={styles.horaires}>{lieu.horaires}</Text>
+          </View>
+          
+          <View style={styles.ageContainer}>
+            {lieu.tranchesAge.map((age, index) => (
+              <View key={index} style={styles.ageBadge}>
+                <Text style={styles.ageBadgeText}>{age}</Text>
+              </View>
+            ))}
+          </View>
+          
+          <View style={styles.iconsContainer}>
+            <MaterialIcons name="sports-soccer" size={30} color="#333" />
+            <MaterialIcons name="stroller" size={30} color="#333" />
+            <MaterialIcons name="microwave" size={30} color="#333" />
+            <MaterialIcons name="baby-changing-station" size={30} color="#333" />
+            <MaterialIcons name="restaurant" size={30} color="#333" />
+          </View>
+          
+          <View style={styles.actionsContainer}>
+            <View style={styles.rowButtons}>
+              <TouchableOpacity style={[styles.smallButton, styles.avisButton]}>
+                <Text style={styles.smallButtonText}>Donner mon avis</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
+                <Text style={styles.smallButtonText}>Voir les avis</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.newButtonsContainer}>
+              <TouchableOpacity style={styles.iconButton}>
+                <MaterialIcons name="phone" size={24} color="#333" />
+                <Text style={styles.iconButtonText}>Appeler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconButton}>
+                <MaterialIcons name="language" size={24} color="#333" />
+                <Text style={styles.iconButtonText}>Site web</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconButton}>
+                <MaterialIcons name="place" size={24} color="#333" />
+                <Text style={styles.iconButtonText}>Y aller</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingTop: 50,
+    backgroundColor: 'transparent',
+  },
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: "white",
-    paddingTop: 0,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 15,
-    paddingTop: 10,
-  },
-  burgerMenu: {
-    padding: 5,
-  },
-  burgerIcon: {
-    width: 30,
-    height: 30,
-    resizeMode: "contain",
+    paddingTop: 80, // Espace pour le header
   },
   imageContainer: {
     width: "100%",
-    marginTop: 0,
+    marginTop: 10, // Espace supplémentaire sous le header
     padding: 15,
     borderRadius: 15,
     overflow: "hidden",
