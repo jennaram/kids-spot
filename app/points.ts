@@ -168,6 +168,6 @@ export const mockPoints = [
     horaires: '11h - 21h',
     description: "Cuisine saine et ludique pour enfants",
     image: require('../assets/images/ImageDetail2.png'),
-    equipements: [""]
+    equipements: ["Chaise Haute", "Jeux pour enfants"]
   }
 ];
