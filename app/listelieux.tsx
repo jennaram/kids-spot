@@ -51,23 +51,28 @@ export default function ListeLieux() {
               ? getDistanceFromLatLonInKm(
                   userLocation.latitude,
                   userLocation.longitude,
-                  point.latitude,
-                  point.longitude
+                  point.position.latitude,
+                  point.position.longitude
                 ).toFixed(2)
               : null;
 
           return (
             <TouchableOpacity key={point.id} style={styles.item}>
-              <Text style={styles.title}>{point.name}</Text>
-              <Text style={styles.description}>{point.description}</Text>
-
-              {distance && (
-                <Text style={styles.info}>Distance : {distance} km</Text>
-              )}
-
-              {point.horaires && (
-                <Text style={styles.info}>Horaires : {point.horaires}</Text>
-              )}
+              <View style={styles.itemContent}>
+                {point.image && (
+                  <Image source={point.image} style={styles.image} />
+                )}
+                <View style={styles.textContainer}>
+                  <Text style={styles.title}>{point.nom}</Text>
+                  <Text style={styles.description}>{point.description}</Text>
+                  {point.horaires && (
+                    <Text style={styles.info}>Horaires : {point.horaires}</Text>
+                  )}
+                </View>
+                {distance && (
+                  <Text style={styles.distance}>{distance} km</Text>
+                )}
+              </View>
             </TouchableOpacity>
           );
         })}
@@ -94,13 +99,26 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
-    paddingBottom: 100, // pour éviter que la liste passe sous le bouton
+    paddingBottom: 100,
   },
   item: {
     marginBottom: 12,
-    padding: 16,
+    padding: 12,
     backgroundColor: '#f2f2f2',
     borderRadius: 10,
+  },
+  itemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  image: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  textContainer: {
+    flex: 1,
   },
   title: {
     fontWeight: 'bold',
@@ -115,6 +133,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     marginTop: 4,
+  },
+  distance: {
+    marginLeft: 8,
+    fontWeight: '600',
+    color: '#007AFF',
   },
   floatingButton: {
     position: 'absolute',
