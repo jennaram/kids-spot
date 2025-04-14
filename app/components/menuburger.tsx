@@ -27,7 +27,7 @@ const MenuBurger = () => {
       {/* Icône du menu burger */}
       <TouchableOpacity onPress={toggleMenu}>
         <Image
-          source={require("../assets/images/burger_menu.png")}
+          source={require("../../assets/images/burger_menu.png")}
           style={styles.menuIcon}
         />
       </TouchableOpacity>

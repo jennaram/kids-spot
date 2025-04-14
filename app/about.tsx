@@ -1,10 +1,7 @@
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
-import burgerMenuIcon from "../assets/images/burger_menu.png";
-import { ImageSourcePropType } from "react-native";
-
-// Remove the invalid module augmentation declaration for the image module
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import MenuBurger from "../app/components/menuburger"; // Import du composant MenuBurger
 
 const About = () => {
   const handleMenuPress = () => {
@@ -14,9 +11,8 @@ const About = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.burgerMenu} onPress={handleMenuPress}>
-          <Image source={burgerMenuIcon} style={styles.burgerIcon} />
-        </TouchableOpacity>
+        {/* Utilisation du composant MenuBurger */}
+        <MenuBurger onPress={handleMenuPress} />
         <Text style={styles.title}>À propos</Text>
         <View style={{ width: 30 }} /> {/* Espace pour équilibrer le layout */}
       </View>
@@ -84,14 +80,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 20,
-  },
-  burgerMenu: {
-    padding: 5,
-  },
-  burgerIcon: {
-    width: 30,
-    height: 30,
-    resizeMode: "contain",
   },
   title: {
     fontSize: 24,
