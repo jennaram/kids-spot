@@ -1,8 +1,12 @@
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
 
 const About = () => {
+  const handleContactPress = () => {
+    Alert.alert("Contactez-nous", "Merci de nous contacter à contact@kidsspot.com !");
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>À propos</Text>
@@ -52,7 +56,7 @@ const About = () => {
           </Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleContactPress}>
         <Text style={styles.buttonText}>Nous contacter</Text>
       </TouchableOpacity>
     </ScrollView>
