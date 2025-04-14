@@ -8,21 +8,35 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Image,
+  Dimensions,
+  ScrollView,
+  SafeAreaView
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Slider from '@react-native-community/slider';
+
+const { width } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }: { navigation: any }) {
-  const [pseudo, setPseudo] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [childrenCount, setChildrenCount] = useState('');
+  const [formData, setFormData] = useState({
+    pseudo: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+    childrenCount: '',
+    minAge: 0,
+    maxAge: 18,
+  });
   const [loading, setLoading] = useState(false);
 
+  const handleChange = (name: string, value: string | number) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleSignUp = () => {
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
@@ -37,170 +51,318 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     Alert.alert('Google Sign-In', 'Fonctionnalité à implémenter');
   };
 
+  // Utiliser cette fonction pour la navigation si vous utilisez Expo Router
+  const handleGoBack = () => {
+    if (navigation) {
+      navigation.goBack();
+    } else {
+      // Fallback si la navigation n'est pas disponible
+      Alert.alert('Navigation', 'Retour à l\'écran précédent');
+    }
+  };
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>Inscription</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        {/* Bouton Retour */}
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={handleGoBack}
+        >
+          <Ionicons name="arrow-back" size={24} color="#D37230" />
+        </TouchableOpacity>
 
-        <View style={styles.formContainer}>
-          {/* Pseudo */}
-          <Text style={styles.label}>Pseudo</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Choisissez un pseudo"
-            value={pseudo}
-            onChangeText={setPseudo}
-          />
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.content}>
+            <Text style={styles.title}>Inscription</Text>
 
-          {/* Email */}
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Votre adresse email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+            {/* Bouton Google amélioré */}
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={handleGoogleSignIn}
+              activeOpacity={0.8}
+            >
+              <View style={styles.googleIconContainer}>
+                <Image
+                  source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' }}
+                  style={styles.googleIcon}
+                />
+              </View>
+              <Text style={styles.googleButtonText}>Continuer avec Google</Text>
+            </TouchableOpacity>
 
-          {/* Mot de passe */}
-          <Text style={styles.label}>Mot de passe</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Créez un mot de passe"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+            <Text style={styles.separatorText}>ou</Text>
 
-          {/* Confirmation mot de passe */}
-          <Text style={styles.label}>Confirmer le mot de passe</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Confirmez votre mot de passe"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-          />
+            {/* Formulaire centré */}
+            <View style={styles.formContainer}>
+              {/* Pseudo et Email */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Pseudo</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Pseudo"
+                  value={formData.pseudo}
+                  onChangeText={(text) => handleChange('pseudo', text)}
+                />
+              </View>
 
-          {/* Téléphone */}
-          <Text style={styles.label}>Téléphone</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Votre numéro de téléphone"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-          />
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  value={formData.email}
+                  onChangeText={(text) => handleChange('email', text)}
+                  keyboardType="email-address"
+                />
+              </View>
 
-          {/* Nombre d'enfants */}
-          <Text style={styles.label}>Nombre d'enfants</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Combien d'enfants ?"
-            value={childrenCount}
-            onChangeText={setChildrenCount}
-            keyboardType="numeric"
-          />
+              {/* Mot de passe et confirmation */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Mot de passe</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Mot de passe"
+                  secureTextEntry
+                  value={formData.password}
+                  onChangeText={(text) => handleChange('password', text)}
+                />
+              </View>
 
-          {/* Bouton Google simplifié */}
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleGoogleSignIn}
-            disabled={loading}
-          >
-            <Image
-              source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' }}
-              style={styles.googleIcon}
-            />
-            <Text style={styles.googleButtonText}>Continuer avec Google</Text>
-          </TouchableOpacity>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Confirmation</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirmez"
+                  secureTextEntry
+                  value={formData.confirmPassword}
+                  onChangeText={(text) => handleChange('confirmPassword', text)}
+                />
+              </View>
 
-          {/* Bouton d'inscription */}
-          <TouchableOpacity
-            style={styles.signUpButton}
-            onPress={handleSignUp}
-            disabled={loading}
-          >
-            <Text style={styles.signUpButtonText}>
-              {loading ? 'Traitement...' : 'Valider l\'inscription'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+              {/* Téléphone et Nombre d'enfants */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Téléphone</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Téléphone"
+                  value={formData.phone}
+                  onChangeText={(text) => handleChange('phone', text)}
+                  keyboardType="phone-pad"
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Nombre d'enfants</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nombre"
+                  value={formData.childrenCount}
+                  onChangeText={(text) => handleChange('childrenCount', text)}
+                  keyboardType="numeric"
+                />
+              </View>
+
+              {/* Sliders pour les âges */}
+              <View style={styles.ageSection}>
+                <Text style={styles.label}>Âge des enfants</Text>
+                
+                <View style={styles.ageSlider}>
+                  <Text style={styles.ageText}>Min: {formData.minAge} ans</Text>
+                  <Slider
+                    style={styles.slider}
+                    minimumValue={0}
+                    maximumValue={18}
+                    step={1}
+                    value={formData.minAge}
+                    onValueChange={(value) => handleChange('minAge', value)}
+                    minimumTrackTintColor="#D37230"
+                    maximumTrackTintColor="#ddd"
+                    thumbTintColor="#D37230"
+                  />
+                </View>
+
+                <View style={styles.ageSlider}>
+                  <Text style={styles.ageText}>Max: {formData.maxAge} ans</Text>
+                  <Slider
+                    style={styles.slider}
+                    minimumValue={0}
+                    maximumValue={18}
+                    step={1}
+                    value={formData.maxAge}
+                    onValueChange={(value) => handleChange('maxAge', value)}
+                    minimumTrackTintColor="#D37230"
+                    maximumTrackTintColor="#ddd"
+                    thumbTintColor="#D37230"
+                  />
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.signUpButton}
+                onPress={handleSignUp}
+                disabled={loading}
+              >
+                <Text style={styles.signUpButtonText}>
+                  {loading ? 'Traitement...' : 'Valider l\'inscription'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
+            {/* Espace supplémentaire en bas pour le scrolling */}
+            <View style={styles.bottomPadding} />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
   },
   scrollContainer: {
     flexGrow: 1,
-    padding: 20,
+    alignItems: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 20,
+    left: 20,
+    zIndex: 10,
+    padding: 10,
+  },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 80,
+    paddingHorizontal: 20,
+    width: '100%',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
     color: '#333',
+    textAlign: 'center',
+    marginBottom: 25,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 20,
+    width: '90%',
+    maxWidth: 320,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 2,
+  },
+  googleIconContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 2,
+    marginRight: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+  googleIcon: {
+    width: 22,
+    height: 22,
+  },
+  googleButtonText: {
+    fontSize: 16,
+    color: '#444',
+    fontWeight: '600',
+  },
+  separatorText: {
+    textAlign: 'center',
+    color: '#999',
+    marginVertical: 15,
+    fontSize: 16,
   },
   formContainer: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 15, // Arrondi ajouté comme demandé
-    padding: 20,
+    width: '90%',
+    maxWidth: 320,
+    alignItems: 'center',
+  },
+  inputContainer: {
+    marginBottom: 15,
+    width: '100%',
   },
   label: {
-    marginTop: 10,
-    marginBottom: 5,
     fontSize: 14,
     color: '#555',
+    marginBottom: 5,
+    fontWeight: '500',
   },
   input: {
-    height: 40,
+    height: 45,
     borderColor: '#ddd',
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
+    borderRadius: 8,
+    paddingHorizontal: 15,
     backgroundColor: 'white',
+    fontSize: 15,
+    width: '100%',
+  },
+  ageSection: {
+    marginTop: 10,
+    marginBottom: 20,
+    width: '100%',
+  },
+  ageSlider: {
     marginBottom: 15,
+    width: '100%',
+  },
+  ageText: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 5,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
   },
   signUpButton: {
     backgroundColor: '#D37230',
     padding: 15,
-    borderRadius: 15, // Arrondi augmenté comme demandé
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 10,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
   signUpButtonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
   },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 12,
-    borderRadius: 15, // Même arrondi que les autres boutons
-    marginTop: 10,
-  },
-  googleIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 12,
-  },
-  googleButtonText: {
-    color: '#333',
-    fontWeight: 'bold',
-  },
+  bottomPadding: {
+    height: 30,
+  }
 });
