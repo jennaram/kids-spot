@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert
 } from "react-native";
+import burgerMenuIcon from "../assets/images/burger_menu.png";
 
 const DetailsLieu = ({ route, navigation }) => {
   const lieu = {
@@ -29,8 +31,25 @@ const DetailsLieu = ({ route, navigation }) => {
     console.log("Partager cliqué");
   }
 
+  function handleMenuPress() {
+    Alert.alert("Menu", "Menu burger cliqué !");
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {/* Header avec burger menu cliquable */}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.burgerMenu} 
+          onPress={handleMenuPress}
+          activeOpacity={0.7}
+        >
+          <Image source={burgerMenuIcon} style={styles.burgerIcon} />
+        </TouchableOpacity>
+        <View style={{ flex: 1 }} />
+      </View>
+
+      {/* Image principale */}
       <View style={styles.imageContainer}>
         <Image
           source={lieu.imageUrl}
@@ -44,9 +63,8 @@ const DetailsLieu = ({ route, navigation }) => {
         </View>
       </View>
 
-      {/* Contenu centré */}
+      {/* Contenu principal */}
       <View style={styles.centeredContent}>
-        {/* Note, avis et bouton de partage */}
         <View style={styles.ratingShareContainer}>
           <View style={styles.ratingWrapper}>
             <View style={styles.ratingContainer}>
@@ -60,25 +78,18 @@ const DetailsLieu = ({ route, navigation }) => {
               <Text style={styles.avis}>{lieu.avis}</Text>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.shareButton}
-            onPress={handleShare} // Fonction appelée lors du clic
-          >
+          <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
             <MaterialIcons name="share" size={24} color="#333" />
           </TouchableOpacity>
         </View>
-        {/* Nom du lieu */}
+        
         <Text style={styles.nom}>{lieu.nom}</Text>
-
-        {/* Description */}
         <Text style={styles.description}>{lieu.description}</Text>
-
-        {/* Horaires */}
+        
         <View style={styles.horairesContainer}>
           <Text style={styles.horaires}>{lieu.horaires}</Text>
         </View>
-
-        {/* Tranches d'âge */}
+        
         <View style={styles.ageContainer}>
           {lieu.tranchesAge.map((age, index) => (
             <View key={index} style={styles.ageBadge}>
@@ -86,8 +97,7 @@ const DetailsLieu = ({ route, navigation }) => {
             </View>
           ))}
         </View>
-
-        {/* Conteneur des icônes */}
+        
         <View style={styles.iconsContainer}>
           <MaterialIcons name="sports-soccer" size={30} color="#333" />
           <MaterialIcons name="stroller" size={30} color="#333" />
@@ -95,34 +105,26 @@ const DetailsLieu = ({ route, navigation }) => {
           <MaterialIcons name="baby-changing-station" size={30} color="#333" />
           <MaterialIcons name="restaurant" size={30} color="#333" />
         </View>
-
-        {/* Boutons et icônes */}
+        
         <View style={styles.actionsContainer}>
-          {/* Boutons "Donner mon avis" et "Voir les avis" alignés */}
           <View style={styles.rowButtons}>
             <TouchableOpacity style={[styles.smallButton, styles.avisButton]}>
               <Text style={styles.smallButtonText}>Donner mon avis</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.smallButton, styles.voirAvisButton]}
-            >
+            <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
               <Text style={styles.smallButtonText}>Voir les avis</Text>
             </TouchableOpacity>
           </View>
-
-          {/* Icônes alignées horizontalement */}
+          
           <View style={styles.newButtonsContainer}>
             <TouchableOpacity style={styles.iconButton}>
               <MaterialIcons name="phone" size={24} color="#333" />
               <Text style={styles.iconButtonText}>Appeler</Text>
             </TouchableOpacity>
-
             <TouchableOpacity style={styles.iconButton}>
               <MaterialIcons name="language" size={24} color="#333" />
               <Text style={styles.iconButtonText}>Site web</Text>
             </TouchableOpacity>
-
             <TouchableOpacity style={styles.iconButton}>
               <MaterialIcons name="place" size={24} color="#333" />
               <Text style={styles.iconButtonText}>Y aller</Text>
@@ -138,10 +140,26 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: "white",
+    paddingTop: 0,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+    paddingTop: 10,
+  },
+  burgerMenu: {
+    padding: 5,
+  },
+  burgerIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
   },
   imageContainer: {
     width: "100%",
-    marginTop: 10,
+    marginTop: 0,
     padding: 15,
     borderRadius: 15,
     overflow: "hidden",
@@ -309,10 +327,9 @@ const styles = StyleSheet.create({
     padding: 5,
     zIndex: 10,
   },
-
   ratingWrapper: {
-    flex: 1, // Prend tout l'espace disponible
-    alignItems: "center", // Centre horizontalement
+    flex: 1,
+    alignItems: "center",
   },
 });
 
