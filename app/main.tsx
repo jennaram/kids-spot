@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Alert, Text, Platform, Linking, Button, TouchableOpacity } from 'react-native';
+import { View, Image, Alert, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';  // Importation de useNavigation
 
+// Définition des icônes personnalisées
 const iconByType = {
   user: require('../assets/images/user-location.png'),// Icône de la liste (assure-toi que l'icône existe bien)
   switchmap: require('../assets/images/switchmap.png'),
 };
 
 export default function MapScreen() {
+  const router = useRouter();
+  // États pour gérer la position utilisateur et les erreurs
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [locationSubscription, setLocationSubscription] = useState<Location.LocationSubscription | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const navigation = useNavigation();  // Création de la navigation
 
-  // Fonction pour démarrer le tracking
+  const navigation = useNavigation();  // Création de la navigation
+
+  /**
+   * Fonction pour démarrer le tracking de la position
+   * Demande les permissions et récupère la position actuelle
+   */
   const startLocationTracking = async () => {
     try {
       // Vérification spécifique Android
@@ -99,7 +106,7 @@ export default function MapScreen() {
     return () => clearTimeout(timer);
   }, [userLocation]);
 
-  // Gestion du cycle de vie
+  // Rafraîchit la position quand l'écran obtient le focus
   useFocusEffect(
     React.useCallback(() => {
       startLocationTracking();
@@ -123,6 +130,7 @@ export default function MapScreen() {
     );
   }
 
+  // Affichage pendant le chargement
   if (!userLocation) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -133,12 +141,13 @@ export default function MapScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Carte principale */}
       <MapView
         style={{ flex: 1 }}
-        region={{
+        region={userLocation ? {
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
-          latitudeDelta: 0.005,
+          latitudeDelta: 0.005, // Niveau de zoom
           longitudeDelta: 0.005,
         }}
         showsUserLocation={false} // Désactivé car nous utilisons notre propre marqueur
