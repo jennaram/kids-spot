@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   equipButton: {
     paddingHorizontal: 12,
     justifyContent: 'center',
-    backgroundColor: '#34C759', // vert
+    backgroundColor: '#28603E', // vert
     borderRadius: 8,
   },
   filterRow: {
@@ -209,10 +209,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#FFA500', // orange
+    borderColor: '#D37230', // orange
   },
   filterButtonActive: {
-    backgroundColor: '#FFA500',
+    backgroundColor: '#D37230', //orange
   },
   filterText: {
     color: '#000',
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   distance: {
     marginLeft: 8,
     fontWeight: '600',
-    color: '#007AFF',
+    color: '#D37230', //orange
   },
   floatingButton: {
     position: 'absolute',
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   modalValidate: {
     marginTop: 16,
     padding: 10,
-    backgroundColor: '#34C759',
+    backgroundColor: '#28603E', //vert
     borderRadius: 8,
     alignItems: 'center',
   },
