@@ -21,6 +21,7 @@ export default function Index() {
       <Button title="Ajouter un lieux" onPress={() => router.push('/add-place')} />
       <Button title="Conexion" onPress={() => router.push('/login')} />
       <Button title="A propos" onPress={() => router.push('/about')} />
+      <Button title="Menu burger" onPress={() => router.push('/menuburger')} />
     </View>
   );
 }
