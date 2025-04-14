@@ -3,6 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet,
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
+import burgerMenuIcon from '../assets/images/burger_menu.png';
 
 const AddPlaceScreen = () => {
   const router = useRouter();
@@ -86,14 +87,21 @@ const AddPlaceScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* Titre centré */}
+      {/* Header avec icône burger et titre */}
       <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.burgerButton}>
+          <Image 
+            source={burgerMenuIcon} 
+            style={styles.burgerIcon} 
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
         <Text style={styles.header}>Ajouter un lieu</Text>
       </View>
 
       {/* Nom du lieu tout en haut */}
       <View style={styles.section}>
-        <Text style={styles.label}>Nom du lieu*</Text>
+        <Text style={styles.label}>Nom du lieu</Text>
         <TextInput
           style={styles.input}
           value={placeName}
@@ -103,9 +111,10 @@ const AddPlaceScreen = () => {
         />
       </View>
 
+      {/* Le reste de votre code existant... */}
       {/* Type de lieu */}
       <View style={styles.section}>
-        <Text style={styles.label}>Type de lieu*</Text>
+        <Text style={styles.label}>Type de lieu</Text>
         <View style={styles.radioContainer}>
           {['restaurant', 'culture', 'leisure'].map((type) => (
             <TouchableOpacity
@@ -244,13 +253,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   headerContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    paddingTop: 10,
+  },
+  burgerButton: {
+    padding: 10,
+    marginRight: 10,
+  },
+  burgerIcon: {
+    width: 41,
+    height: 34,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#2c3e50',
+    flex: 1,
   },
   section: {
     marginBottom: 20,
