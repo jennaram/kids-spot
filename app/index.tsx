@@ -18,6 +18,7 @@ export default function Index() {
       <Button title="Voir la carte" onPress={() => router.push('/main')} />
       <Button title="Evenement" onPress={() => router.push('/evenement')} />
       <Button title="Voir le detail des lieux" onPress={() => router.push('/details_lieu')} />
+      <Button title="Ajouter un lieux" onPress={() => router.push('/add-place')} />
     </View>
   );
 }

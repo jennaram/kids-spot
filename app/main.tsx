@@ -1,36 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Alert, Text } from 'react-native';
+import {
+  View,
+  Image,
+  Alert,
+  Text,
+  Platform,
+  Linking,
+  Button,
+  TouchableOpacity,
+} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { router, useFocusEffect, useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';  // Importation de useNavigation
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
-// Définition des icônes personnalisées
+// Icônes personnalisées
 const iconByType = {
-  user: require('../assets/images/user-location.png'),// Icône de la liste (assure-toi que l'icône existe bien)
+  user: require('../assets/images/user-location.png'),
   switchmap: require('../assets/images/switchmap.png'),
 };
 
 export default function MapScreen() {
   const router = useRouter();
-  // États pour gérer la position utilisateur et les erreurs
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const navigation = useNavigation(); // Si nécessaire plus tard
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [locationSubscription, setLocationSubscription] =
+    useState<Location.LocationSubscription | null>(null);
 
-
-  const navigation = useNavigation();  // Création de la navigation
-
-  /**
-   * Fonction pour démarrer le tracking de la position
-   * Demande les permissions et récupère la position actuelle
-   */
+  // Démarrage de la géolocalisation
   const startLocationTracking = async () => {
     try {
-      // Vérification spécifique Android
+      // Android : Vérifie les services et permissions
       if (Platform.OS === 'android') {
         const [hasPlayServices, permissionStatus] = await Promise.all([
           Location.hasServicesEnabledAsync(),
-          Location.requestForegroundPermissionsAsync()
+          Location.requestForegroundPermissionsAsync(),
         ]);
 
         if (!hasPlayServices) {
@@ -40,12 +48,12 @@ export default function MapScreen() {
             [
               {
                 text: 'Activer',
-                onPress: () => Linking.openSettings()
+                onPress: () => Linking.openSettings(),
               },
-              { 
-                text: 'Annuler', 
-                style: 'cancel' 
-              }
+              {
+                text: 'Annuler',
+                style: 'cancel',
+              },
             ]
           );
           return;
@@ -55,9 +63,8 @@ export default function MapScreen() {
           setError('Permission de localisation refusée');
           return;
         }
-      } 
-      // Logique iOS
-      else {
+      } else {
+        // iOS
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           setError('Permission de localisation refusée');
@@ -65,13 +72,11 @@ export default function MapScreen() {
         }
       }
 
-      // Récupération de la position
       const initialLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High
+        accuracy: Location.Accuracy.High,
       });
       setUserLocation(initialLocation.coords);
 
-      // Abonnement aux mises à jour
       const sub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.BestForNavigation,
@@ -85,16 +90,17 @@ export default function MapScreen() {
       );
 
       setLocationSubscription(sub);
-
     } catch (err) {
       console.error('Erreur de géolocalisation:', err);
-      setError(Platform.OS === 'android' 
-        ? 'Erreur des services Google - Redémarrez l\'application'
-        : 'Erreur de localisation');
+      setError(
+        Platform.OS === 'android'
+          ? "Erreur des services Google - Redémarrez l'application"
+          : 'Erreur de localisation'
+      );
     }
   };
 
-  // Timeout de secours pour Android
+  // Timeout en cas de chargement long
   useEffect(() => {
     const timer = setTimeout(() => {
       if (Platform.OS === 'android' && !userLocation) {
@@ -105,7 +111,7 @@ export default function MapScreen() {
     return () => clearTimeout(timer);
   }, [userLocation]);
 
-  // Rafraîchit la position quand l'écran obtient le focus
+  // Recharger la géoloc quand on revient sur l'écran
   useFocusEffect(
     React.useCallback(() => {
       startLocationTracking();
@@ -117,19 +123,24 @@ export default function MapScreen() {
 
   if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>{error}</Text>
+      <View
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}
+      >
+        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>
+          {error}
+        </Text>
         {Platform.OS === 'android' && (
           <Button
             title="Vérifier Google Play Services"
-            onPress={() => Linking.openURL('market://details?id=com.google.android.gms')}
+            onPress={() =>
+              Linking.openURL('market://details?id=com.google.android.gms')
+            }
           />
         )}
       </View>
     );
   }
 
-  // Affichage pendant le chargement
   if (!userLocation) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -140,23 +151,21 @@ export default function MapScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Carte principale */}
       <MapView
         style={{ flex: 1 }}
-        region={userLocation ? {
+        region={{
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
-          latitudeDelta: 0.005, // Niveau de zoom
+          latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         }}
-        showsUserLocation={false} // Désactivé car nous utilisons notre propre marqueur
+        showsUserLocation={false}
         showsMyLocationButton={true}
         loadingEnabled={true}
         userLocationPriority="high"
         userLocationUpdateInterval={5000}
         provider={Platform.OS === 'android' ? 'google' : undefined}
       >
-        {/* Marqueur personnalisé pour iOS et Android */}
         <Marker
           coordinate={userLocation}
           anchor={{ x: 0.5, y: 0.5 }}
@@ -170,20 +179,19 @@ export default function MapScreen() {
         </Marker>
       </MapView>
 
-      {/* Bouton pour naviguer vers listelieux.tsx */}
       <TouchableOpacity
         onPress={() => router.push('/listelieux')}
         style={{
           position: 'absolute',
           bottom: 20,
           right: 20,
-          borderRadius: 50, // Pour donner un effet circulaire
+          borderRadius: 50,
           padding: 10,
         }}
       >
-         <Image
-          source={iconByType.switchmap}  // L'icône que tu veux afficher
-          style={{ width: 40, height: 40 }} // Taille de l'icône
+        <Image
+          source={iconByType.switchmap}
+          style={{ width: 40, height: 40 }}
         />
       </TouchableOpacity>
     </View>
