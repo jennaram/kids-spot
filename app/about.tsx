@@ -1,6 +1,6 @@
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 
 const About = () => {
   return (
@@ -52,6 +52,9 @@ const About = () => {
           </Text>
         </View>
       </View>
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>Nous contacter</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -114,6 +117,18 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: "wrap", // Permet d'envelopper le texte
     maxWidth: "100%", // Limite la largeur pour forcer le retour à la ligne
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: "#D37230", // Couleur personnalisée
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
