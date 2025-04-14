@@ -17,7 +17,6 @@ export default function MapScreen() {
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const navigation = useNavigation();  // Création de la navigation
 
   const navigation = useNavigation();  // Création de la navigation
 
