@@ -20,6 +20,7 @@ export default function Index() {
       <Button title="Voir le detail des lieux" onPress={() => router.push('/details_lieu')} />
       <Button title="Ajouter un lieux" onPress={() => router.push('/add-place')} />
       <Button title="A propos" onPress={() => router.push('/about')} />
+      <Button title="Menu burger" onPress={() => router.push('/menuburger')} />
     </View>
   );
 }
