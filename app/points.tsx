@@ -15,6 +15,7 @@ export const mockPoints = [
     },
     horaires: '10h - 18h',
     description: "Grand parc avec aires de jeux",
+    image: require('../assets/images/ImageDetail2.png'),
     equipements: [""]
   },
   {
@@ -33,6 +34,7 @@ export const mockPoints = [
     },
     horaires: '10h - 22h',
     description: "Restaurant Kids-friendly avec coin jeux",
+    image: require('../assets/images/ImageDetail3.png'),
     equipements: [""]
   },
   {
@@ -51,6 +53,7 @@ export const mockPoints = [
     },
     horaires: '9h30- 18h',
     description: "Espace jeux et animations pour enfants",
+    image: require('../assets/images/ImageDetail4.png'),
     equipements: [""]
   },
   {
@@ -69,6 +72,7 @@ export const mockPoints = [
     },
     horaires: '10h - 17h30',
     description: "Ateliers créatifs et lectures pour enfants",
+    image: require('../assets/images/ImageDetails1.png'),
     equipements: [""]
   },
   {
@@ -87,6 +91,7 @@ export const mockPoints = [
     },
     horaires: '11h - 19h',
     description: "Promenade ludique en train miniature",
+    image: require('../assets/images/ImageDetail2.png'),
     equipements: [""]
   },
   {
@@ -105,6 +110,7 @@ export const mockPoints = [
     },
     horaires: '12h - 21h',
     description: "Restaurant avec menu enfant et salle de jeux",
+    image: require('../assets/images/ImageDetail3.png'),
     equipements: [""]
   },
   {
@@ -123,6 +129,7 @@ export const mockPoints = [
     },
     horaires: '9h - 18h',
     description: "Spectacles et expositions adaptés aux enfants",
+    image: require('../assets/images/ImageDetail4.png'),
     equipements: [""]
   },
   {
@@ -141,6 +148,7 @@ export const mockPoints = [
     },
     horaires: '10h - 19h',
     description: "Parc indoor avec trampolines et parcours ludiques",
+    image: require('../assets/images/ImageDetails1.png'),
     equipements: [""]
   },
   {
@@ -159,6 +167,7 @@ export const mockPoints = [
     },
     horaires: '11h - 21h',
     description: "Cuisine saine et ludique pour enfants",
-    equipements: [""]
+    image: require('../assets/images/ImageDetail2.png'),
+    equipements: ["Chaise Haute", "Jeux pour enfants"]
   }
 ];
