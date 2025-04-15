@@ -19,7 +19,7 @@ export default function Index() {
       <Button title="Evenement" onPress={() => router.push('/evenement')} />
       <Button title="Voir le detail des lieux" onPress={() => router.push('/details_lieu')} />
       <Button title="Ajouter un lieux" onPress={() => router.push('/add-place')} />
-      <Button title="Conexion" onPress={() => router.push('/login')} />
+      <Button title="Inscription" onPress={() => router.push('/registration')} />
       <Button title="A propos" onPress={() => router.push('/about')} />
       <Button title="Menu burger" onPress={() => router.push('/components/menuburger')} />
     </View>
