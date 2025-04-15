@@ -21,7 +21,8 @@ export default function Index() {
       <Button title="Ajouter un lieux" onPress={() => router.push('/add-place')} />
       <Button title="Inscription" onPress={() => router.push('/registration')} />
       <Button title="A propos" onPress={() => router.push('/about')} />
-      <Button title="Menu burger" onPress={() => router.push('/components/menuburger')} />
+      <Button title="Menu burger" onPress={() => router.push('/components/menuburger')}/>
+      <Button title="Login" onPress={() => router.push('/login')}/>
     </View>
   );
 }
