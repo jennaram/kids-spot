@@ -47,7 +47,7 @@ const CustomCard = () => {
         />
         <View style={styles.infoContainer}>
           <View style={styles.textContainer}>
-            <Text style={styles.title}>Titre de l'événement</Text>
+            <Text style={styles.title}>Titre de l'événement teste</Text>
             <Text style={styles.date}>12 avril 2025</Text>
           </View>
           <TouchableOpacity
