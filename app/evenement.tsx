@@ -1,9 +1,41 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import React, { useState, useRef } from 'react';
+import { useEffect } from 'react';
+
+
+interface Lieu {
+  nom: string;
+  type: string;
+  est_evenement: boolean;
+  adresse?: {
+    adresse?: string;
+    code_postal?: string;
+    ville?: string;
+  };
+  equipements?: string[];
+}
 
 const CustomCard = () => {
+  const [lieu, setLieu] = useState<Lieu | null>(null);
   const [flipped, setFlipped] = useState(false);
   const flipAnimation = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://seb-prod.alwaysdata.net/kidsspot/lieux/autour/12/12');
+        const data = await response.json();
+        console.log('Données reçues :', data); 
+        // Récupère le premier lieu qui est un événement
+        const event = data.lieux.find((l: Lieu) => l.est_evenement);
+        setLieu(event || null);
+      } catch (error) {
+        console.error('Erreur de récupération des données :', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const frontInterpolate = flipAnimation.interpolate({
     inputRange: [0, 180],
@@ -16,19 +48,19 @@ const CustomCard = () => {
   });
 
   const flipCard = () => {
-    if (flipped) {
-      Animated.spring(flipAnimation, {
-        toValue: 0,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.spring(flipAnimation, {
-        toValue: 180,
-        useNativeDriver: true,
-      }).start();
-    }
-    setFlipped(!flipped);
+    Animated.spring(flipAnimation, {
+      toValue: flipped ? 0 : 180,
+      useNativeDriver: true,
+    }).start(() => setFlipped(!flipped));
   };
+
+  if (!lieu) {
+    return (
+      <View style={styles.centered}>
+        <Text>Chargement...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.cardContainer}>
@@ -40,21 +72,16 @@ const CustomCard = () => {
           { zIndex: flipped ? 0 : 1 },
         ]}
       >
+        <View style={styles.cardContent}>
         <Image
           source={require('../assets/images/Logo.png')}
           style={styles.image}
           resizeMode="contain"
         />
-        <View style={styles.infoContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>Titre de l'événement teste</Text>
-            <Text style={styles.date}>12 avril 2025</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.infoButton}
-            onPress={flipCard}
-          >
-            <Text style={styles.infoText}>i</Text>
+          <Text style={styles.title}>{lieu.nom}</Text>
+          <Text style={styles.date}>{lieu.type}</Text>
+          <TouchableOpacity style={styles.infoButton} onPress={flipCard}>
+            <Text style={styles.infoText}>Voir les détails</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -68,70 +95,78 @@ const CustomCard = () => {
           { position: 'absolute', top: 0 },
         ]}
       >
-        <View style={{ padding: 20 }}>
-          <Text style={styles.modalTitle}>Détails de l'événement</Text>
+               <View style={styles.cardContent}>
+          <Text style={styles.modalTitle}>{lieu.nom}</Text>
           <Text style={styles.modalText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {lieu.adresse?.adresse}, {lieu.adresse?.code_postal} {lieu.adresse?.ville}
           </Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={flipCard}
-          >
+          <Text style={styles.modalText}>Type : {lieu.type}</Text>
+          <Text style={styles.modalText}>
+            Équipements : {lieu.equipements?.join(', ') || 'Non spécifiés'}
+          </Text>
+          <TouchableOpacity style={styles.closeButton} onPress={flipCard}>
             <Text style={{ color: '#fff', fontWeight: 'bold' }}>Retour</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
     </View>
+
   );
 };
 
 const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
   cardContainer: {
     width: '100%',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 20,
   },
   card: {
     width: '90%',
     height: 250,
-    borderRadius: 12,
-    overflow: 'hidden',
+    borderRadius: 16,
     backgroundColor: '#fff',
-    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 6,
+    justifyContent: 'center',
     backfaceVisibility: 'hidden',
   },
   cardBack: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8f9fa',
+  },
+  cardContent: {
+    padding: 20,
     justifyContent: 'center',
   },
-  image: {
-    width: '100%',
-    height: 180,
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    padding: 10,
-  },
-  textContainer: {
-    flexDirection: 'column',
-  },
   title: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
   },
   date: {
     fontSize: 14,
-    color: '#666',
+    color: '#555',
+    marginBottom: 16,
   },
   infoButton: {
     backgroundColor: '#007bff',
-    borderRadius: 20,
-    width: 30,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
   },
   infoText: {
     color: '#fff',
@@ -139,18 +174,21 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontWeight: '600',
+    color: '#222',
+    marginTop: 10,
   },
   modalText: {
     fontSize: 16,
-    color: '#333',
-    marginBottom: 20,
+    color: '#555',
+    marginBottom: 10,
   },
   closeButton: {
     backgroundColor: '#007bff',
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 8,
+    marginTop: 10,
     alignSelf: 'flex-end',
   },
 });
