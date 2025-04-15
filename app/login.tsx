@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,17 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
-  Dimensions,
-  ScrollView,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Slider from '@react-native-community/slider';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import { router } from 'expo-router';
 
-const { width } = Dimensions.get('window');
+// Import du logo Google - Assurez-vous que le chemin est correct
+const googleLogo = require('../assets/images/google-logo.png');
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen({ navigation }: { navigation: any }) {
   const [formData, setFormData] = useState({
@@ -25,13 +28,43 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     password: '',
     confirmPassword: '',
     phone: '',
-    childrenCount: '',
-    minAge: 0,
-    maxAge: 18,
   });
   const [loading, setLoading] = useState(false);
+  
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: "VOTRE_CLIENT_ID_ANDROID",
+    iosClientId: "VOTRE_CLIENT_ID_IOS",
+    webClientId: "VOTRE_CLIENT_ID_WEB",
+  });
 
-  const handleChange = (name: string, value: string | number) => {
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      if (authentication?.accessToken) {
+        getUserInfo(authentication.accessToken);
+      }
+    }
+  }, [response]);
+
+  const getUserInfo = async (token: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const userData = await response.json();
+      if (userData) {
+        navigation?.navigate('points') || router.replace('/points');
+      }
+    } catch (error) {
+      Alert.alert('Erreur', 'Échec de la connexion avec Google');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (name: string, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -43,22 +76,8 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      Alert.alert('Succès', 'Inscription réussie! Vérifiez votre email');
+      Alert.alert('Succès', 'Inscription réussie!');
     }, 1500);
-  };
-
-  const handleGoogleSignIn = () => {
-    Alert.alert('Google Sign-In', 'Fonctionnalité à implémenter');
-  };
-
-  // Utiliser cette fonction pour la navigation si vous utilisez Expo Router
-  const handleGoBack = () => {
-    if (navigation) {
-      navigation.goBack();
-    } else {
-      // Fallback si la navigation n'est pas disponible
-      Alert.alert('Navigation', 'Retour à l\'écran précédent');
-    }
   };
 
   return (
@@ -66,157 +85,102 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
-        {/* Bouton Retour */}
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={handleGoBack}
-        >
-          <Ionicons name="arrow-back" size={24} color="#D37230" />
-        </TouchableOpacity>
-
         <ScrollView 
-          contentContainerStyle={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.content}>
             <Text style={styles.title}>Inscription</Text>
 
-            {/* Bouton Google amélioré */}
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={handleGoogleSignIn}
-              activeOpacity={0.8}
-            >
-              <View style={styles.googleIconContainer}>
-                <Image
-                  source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' }}
-                  style={styles.googleIcon}
-                />
-              </View>
-              <Text style={styles.googleButtonText}>Continuer avec Google</Text>
-            </TouchableOpacity>
+            {/* Bouton Google avec logo local */}
+            <View style={styles.googleButtonWrapper}>
+              <TouchableOpacity
+                style={styles.googleButton}
+                onPress={() => promptAsync()}
+                disabled={!request || loading}
+              >
+                <View style={styles.googleButtonContent}>
+                  <Image
+                    source={googleLogo}
+                    style={styles.googleLogo}
+                  />
+                  <Text style={styles.googleButtonText}>
+                    {loading ? 'Connexion...' : 'Continuer avec Google'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
 
-            <Text style={styles.separatorText}>ou</Text>
+            <Text style={styles.separator}>ou</Text>
 
-            {/* Formulaire centré */}
+            {/* Formulaire d'inscription */}
             <View style={styles.formContainer}>
-              {/* Pseudo et Email */}
-              <View style={styles.inputContainer}>
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Pseudo</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Pseudo"
                   value={formData.pseudo}
-                  onChangeText={(text) => handleChange('pseudo', text)}
+                  onChangeText={(t) => handleChange('pseudo', t)}
+                  placeholder="Votre pseudo"
                 />
               </View>
 
-              <View style={styles.inputContainer}>
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Email</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Email"
                   value={formData.email}
-                  onChangeText={(text) => handleChange('email', text)}
+                  onChangeText={(t) => handleChange('email', t)}
                   keyboardType="email-address"
+                  placeholder="email@exemple.com"
                 />
               </View>
 
-              {/* Mot de passe et confirmation */}
-              <View style={styles.inputContainer}>
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Mot de passe</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Mot de passe"
-                  secureTextEntry
                   value={formData.password}
-                  onChangeText={(text) => handleChange('password', text)}
+                  onChangeText={(t) => handleChange('password', t)}
+                  secureTextEntry
+                  placeholder="••••••••"
                 />
               </View>
 
-              <View style={styles.inputContainer}>
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Confirmation</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Confirmez"
-                  secureTextEntry
                   value={formData.confirmPassword}
-                  onChangeText={(text) => handleChange('confirmPassword', text)}
+                  onChangeText={(t) => handleChange('confirmPassword', t)}
+                  secureTextEntry
+                  placeholder="••••••••"
                 />
               </View>
 
-              {/* Téléphone et Nombre d'enfants */}
-              <View style={styles.inputContainer}>
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Téléphone</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Téléphone"
                   value={formData.phone}
-                  onChangeText={(text) => handleChange('phone', text)}
+                  onChangeText={(t) => handleChange('phone', t)}
                   keyboardType="phone-pad"
+                  placeholder="06 12 34 56 78"
                 />
-              </View>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Nombre d'enfants</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Nombre"
-                  value={formData.childrenCount}
-                  onChangeText={(text) => handleChange('childrenCount', text)}
-                  keyboardType="numeric"
-                />
-              </View>
-
-              {/* Sliders pour les âges */}
-              <View style={styles.ageSection}>
-                <Text style={styles.label}>Âge des enfants</Text>
-                
-                <View style={styles.ageSlider}>
-                  <Text style={styles.ageText}>Min: {formData.minAge} ans</Text>
-                  <Slider
-                    style={styles.slider}
-                    minimumValue={0}
-                    maximumValue={18}
-                    step={1}
-                    value={formData.minAge}
-                    onValueChange={(value) => handleChange('minAge', value)}
-                    minimumTrackTintColor="#D37230"
-                    maximumTrackTintColor="#ddd"
-                    thumbTintColor="#D37230"
-                  />
-                </View>
-
-                <View style={styles.ageSlider}>
-                  <Text style={styles.ageText}>Max: {formData.maxAge} ans</Text>
-                  <Slider
-                    style={styles.slider}
-                    minimumValue={0}
-                    maximumValue={18}
-                    step={1}
-                    value={formData.maxAge}
-                    onValueChange={(value) => handleChange('maxAge', value)}
-                    minimumTrackTintColor="#D37230"
-                    maximumTrackTintColor="#ddd"
-                    thumbTintColor="#D37230"
-                  />
-                </View>
               </View>
 
               <TouchableOpacity
-                style={styles.signUpButton}
+                style={[styles.submitButton, loading && styles.disabledButton]}
                 onPress={handleSignUp}
                 disabled={loading}
               >
-                <Text style={styles.signUpButtonText}>
-                  {loading ? 'Traitement...' : 'Valider l\'inscription'}
+                <Text style={styles.submitButtonText}>
+                  {loading ? 'En cours...' : 'S\'inscrire'}
                 </Text>
               </TouchableOpacity>
             </View>
-            
-            {/* Espace supplémentaire en bas pour le scrolling */}
-            <View style={styles.bottomPadding} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -227,88 +191,78 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
-  scrollContainer: {
+  scrollContent: {
     flexGrow: 1,
-    alignItems: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 20,
-    left: 20,
-    zIndex: 10,
-    padding: 10,
+    paddingBottom: 40,
   },
   content: {
     flex: 1,
-    alignItems: 'center',
-    paddingTop: 80,
-    paddingHorizontal: 20,
-    width: '100%',
+    paddingHorizontal: 25,
+    paddingTop: 30,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#333',
     textAlign: 'center',
-    marginBottom: 25,
+    marginBottom: 30,
+    color: '#333',
+  },
+  googleButtonWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   googleButton: {
+    width: '100%',
+    maxWidth: 300,
+    height: 50,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    justifyContent: 'center',
+    elevation: 2,
+  },
+  googleButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 20,
-    width: '90%',
-    maxWidth: 320,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
+    paddingHorizontal: 15,
   },
-  googleIconContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 2,
+  googleLogo: {
+    width: 20,
+    height: 20,
     marginRight: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-  },
-  googleIcon: {
-    width: 22,
-    height: 22,
   },
   googleButtonText: {
     fontSize: 16,
     color: '#444',
-    fontWeight: '600',
+    fontWeight: '500',
   },
-  separatorText: {
+  separator: {
     textAlign: 'center',
     color: '#999',
     marginVertical: 15,
     fontSize: 16,
   },
   formContainer: {
-    width: '90%',
-    maxWidth: 320,
-    alignItems: 'center',
-  },
-  inputContainer: {
-    marginBottom: 15,
     width: '100%',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  inputGroup: {
+    marginBottom: 15,
   },
   label: {
     fontSize: 14,
@@ -317,52 +271,28 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   input: {
-    height: 45,
-    borderColor: '#ddd',
+    height: 50,
+    backgroundColor: '#fff',
     borderWidth: 1,
+    borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 15,
-    backgroundColor: 'white',
-    fontSize: 15,
-    width: '100%',
-  },
-  ageSection: {
-    marginTop: 10,
-    marginBottom: 20,
-    width: '100%',
-  },
-  ageSlider: {
-    marginBottom: 15,
-    width: '100%',
-  },
-  ageText: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 5,
-  },
-  slider: {
-    width: '100%',
-    height: 40,
-  },
-  signUpButton: {
-    backgroundColor: '#D37230',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  signUpButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
     fontSize: 16,
   },
-  bottomPadding: {
-    height: 30,
-  }
+  submitButton: {
+    height: 50,
+    backgroundColor: '#D37230',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
 });

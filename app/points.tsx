@@ -1,3 +1,21 @@
+import { View, Text } from 'react-native';
+import React from 'react';
+
+// Votre composant de points
+function PointsScreen() {
+  return (
+    <View>
+      <Text>Écran de points</Text>
+    </View>
+  );
+}
+
+// Ajoutez cet export par défaut
+export default PointsScreen;
+
+
+
+
 export const mockPoints = [
   {
     id: 1,
