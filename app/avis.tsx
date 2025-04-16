@@ -1,5 +1,7 @@
+import React from "react";
 import { Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useLocalSearchParams } from 'expo-router';
+
 
 export default function Index() {
   const { nomLieu } = useLocalSearchParams(); // ✅ récupère le nom passé depuis details_lieu.tsx

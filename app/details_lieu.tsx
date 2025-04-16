@@ -109,18 +109,12 @@ const DetailsLieu = ({ route, navigation }) => {
             <View style={styles.rowButtons}>
             <TouchableOpacity
               style={[styles.smallButton, styles.avisButton]}
-              onPress={() => router.push({
-                  pathname: "/avis",
-                  params: {
-                    nom: lieu.nom,
-                    description: lieu.description,
-                    horaires: lieu.horaires,
-                    note: lieu.note,
-                    avis: lieu.avis,
-                    // ajoute d'autres infos si besoin
-                  },
-                })
-              }>
+              onPress={() => {const nomLieu = lieu.nom; 
+                router.push({
+                  pathname: '/avis',
+                  params: { nomLieu: nomLieu }, // ajoute d'autres infos si besoin
+                });
+              }}>
               <Text style={styles.smallButtonText}>Donner mon avis</Text>
             </TouchableOpacity>
               <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
