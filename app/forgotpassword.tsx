@@ -19,7 +19,6 @@ export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
 
   const handleResetPassword = () => {
-    // Logique de réinitialisation
     router.replace('/login');
   };
 
@@ -33,43 +32,35 @@ export default function ForgotPasswordScreen() {
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.mainContainer}>
-            {/* Logo centré en haut */}
-            <View style={styles.logoContainer}>
-              <Image
-                source={appLogo}
-                style={styles.logo}
-                resizeMode="contain"
+          {/* Logo centré */}
+          <Image
+            source={appLogo}
+            style={styles.logo}
+          />
+          
+          {/* Conteneur pour le formulaire centré */}
+          <View style={styles.formContainer}>
+            {/* Groupe Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Adresse mail</Text>
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                placeholder="email@exemple.com"
+                placeholderTextColor="#999"
               />
             </View>
 
-            {/* Contenu centré */}
-            <View style={styles.formContainer}>
-              {/* Champ email */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Adresse mail</Text>
-                <TextInput
-                  style={styles.input}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  placeholder="email@exemple.com"
-                  placeholderTextColor="#999"
-                  autoCapitalize="none"
-                />
-              </View>
-
-              {/* Bouton de réinitialisation */}
-              <TouchableOpacity
-                style={styles.resetButton}
-                onPress={handleResetPassword}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.resetButtonText}>Réinitialiser mot de passe</Text>
-              </TouchableOpacity>
-            </View>
+            {/* Bouton centré */}
+            <TouchableOpacity
+              style={styles.resetButton}
+              onPress={handleResetPassword}
+            >
+              <Text style={styles.resetButtonText}>Réinitialiser mot de passe</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -87,46 +78,39 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-  },
-  mainContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-    paddingHorizontal: 25,
-  },
-  logoContainer: {
-    alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
-    marginBottom: 40,
+    alignItems: 'center',
+    padding: 20,
   },
   logo: {
-    width: 200,
-    height: 200,
-  },
-  formContainer: {
-    flex: 1,
-    justifyContent: 'center',
+    width: 150,
+    height: 150,
     marginBottom: 40,
   },
-  inputGroup: {
-    marginBottom: 30,
+  formContainer: {
     width: '100%',
+    maxWidth: 400, // Pour éviter que le formulaire ne s'étende trop sur tablette
+  },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 25,
   },
   label: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#555',
     marginBottom: 8,
-    fontWeight: '500',
+    textAlign: 'center',
   },
   input: {
     height: 50,
+    width: '100%',
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 15,
     fontSize: 16,
-    color: '#333',
+    textAlign: 'center',
   },
   resetButton: {
     height: 50,
@@ -134,12 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
-    elevation: 2, // Ombre pour Android
-    shadowColor: '#000', // Ombre pour iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    width: '100%',
   },
   resetButtonText: {
     color: '#fff',
