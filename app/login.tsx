@@ -21,7 +21,7 @@ const appLogo = require('../assets/images/Logo.png');
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen() {  // J'ai retiré { navigation } ici
+export default function LoginScreen() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -52,7 +52,7 @@ export default function LoginScreen() {  // J'ai retiré { navigation } ici
       
       const userData = await response.json();
       if (userData) {
-        router.replace('/points');  // Changé pour utiliser router au lieu de navigation
+        router.replace('/points');
       }
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion avec Google');
@@ -70,11 +70,10 @@ export default function LoginScreen() {  // J'ai retiré { navigation } ici
     // Ici vous ajouteriez votre logique de connexion
     setTimeout(() => {
       setLoading(false);
-      router.replace('/main');  // Changé pour utiliser router au lieu de navigation
+      router.replace('/main');
     }, 1500);
   };
 
-  // Tout le reste du code JSX reste strictement identique
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -130,7 +129,10 @@ export default function LoginScreen() {  // J'ai retiré { navigation } ici
             </TouchableOpacity>
 
             {/* Lien mot de passe oublié */}
-            <TouchableOpacity style={styles.forgotPasswordButton}>
+            <TouchableOpacity 
+              style={styles.forgotPasswordButton}
+              onPress={() => router.push('/forgot-password')}
+            >
               <Text style={styles.forgotPasswordText}>Mot de passe oublié ?</Text>
             </TouchableOpacity>
 
@@ -172,7 +174,6 @@ export default function LoginScreen() {  // J'ai retiré { navigation } ici
   );
 }
 
-// Le styleSheet reste absolument identique
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
