@@ -25,6 +25,7 @@ export default function Index() {
       <Button title="Menu burger" onPress={() => router.push('/components/menuburger')} />
       <Button title="Contact" onPress={() => router.push('/contact')} />
       <Button title="Connexion" onPress={() => router.push('/login')} />
+      <Button title="Avis" onPress={() => router.push('/avis')} /> 
        
     </View>
   );
