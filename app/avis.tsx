@@ -1,14 +1,10 @@
 import { Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter } from 'expo-router';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-const Stack = createNativeStackNavigator();
+import { useLocalSearchParams } from 'expo-router';
 
 export default function Index() {
-  const router = useRouter();
+  const { nomLieu } = useLocalSearchParams(); // ✅ récupère le nom passé depuis details_lieu.tsx
 
   // Données fictives pour l'exemple
-  const lieu = "Parc Floral de Paris";
   const nomUtilisateur = "Jean Dupont";
   const emailUtilisateur = "jean.dupont@example.com";
 
@@ -23,8 +19,8 @@ export default function Index() {
 
       {/* Encadré gris avec les infos de l'avis */}
       <View style={styles.formContainer}>
-        {/* Titre du lieu */}
-        <Text style={styles.lieuTitre}>{lieu}</Text>
+        {/* Titre du lieu venant de la route */}
+        <Text style={styles.lieuTitre}>{nomLieu || "Nom du lieu"}</Text>
 
         {/* Infos utilisateur affichées */}
         <Text style={styles.staticText}>Nom : {nomUtilisateur}</Text>
