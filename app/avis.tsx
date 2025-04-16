@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { toast } from 'react-toastify'; // Assurez-vous d'avoir installé react-toastify pour la gestion des notifications (si nécessaire)
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -95,7 +95,7 @@ export default function Index() {
 
       {/* Bouton Valider */}
       <View style={{ alignItems: 'center', padding: 20 }}>
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <TouchableOpacity style={styles.submitButton} onPress={() => router.push('/details_lieu')}>
           <Text style={styles.submitButtonText}>Valider votre avis !</Text>
         </TouchableOpacity>
       </View>
