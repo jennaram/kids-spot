@@ -12,9 +12,8 @@ import {
 } from "react-native";
 import MenuBurger from "app/components/menuburger";
 
-const router = useRouter();
-
 const DetailsLieu = ({ route, navigation }) => {
+  const router = useRouter();
   const lieu = {
     nom: "Parc Montsouris - Paris 14",
     description:
