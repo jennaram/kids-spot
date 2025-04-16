@@ -1,4 +1,4 @@
-import { TouchableOpacity, Image } from 'react-native';
+import { TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useNavigation } from 'expo-router';
 
 export default function MenuBurger() {
@@ -7,12 +7,24 @@ export default function MenuBurger() {
   return (
     <TouchableOpacity 
       onPress={() => navigation.toggleDrawer()}
-      style={{ marginLeft: 15 }}
+      style={styles.touchable}
     >
       <Image
         source={require("../../assets/images/burger_menu.png")}
-        style={{ width: 30, height: 30 }}
+        style={styles.image}
       />
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  touchable: {
+    marginLeft: 15,
+    marginTop: 15, // Ajout d'une marge supérieure pour descendre l'image
+  },
+  image: {
+    width: 30,
+    height: 30,
+    marginTop: 15,
+  },
+});
