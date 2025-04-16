@@ -69,7 +69,7 @@ const Favoris = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Favoris</Text>
+      <Text style={styles.title}>FAVORIS</Text>
       {favoris.length > 0 ? (
         <FlatList
           data={favoris}
