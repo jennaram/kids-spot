@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   activeItem: {
-    // Vous pouvez ajouter des styles pour l'élément actif si nécessaire
+    
   }
 });
 

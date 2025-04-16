@@ -1,45 +1,60 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, SafeAreaView } from 'react-native';
 import React, { useState, useRef } from 'react';
 import { useEffect } from 'react';
-import NavBar from './components/NavBar';
+import Layout from './components/LayoutNav';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types/navigation';
 interface Lieu {
+  id: number;
   nom: string;
-  type: string;
-  est_evenement: boolean;
-  adresse?: {
-    adresse?: string;
-    code_postal?: string;
-    ville?: string;
+  horaires: string;
+  adresse: {
+    adresse: string;
+    code_postal: string;
+    ville: string;
   };
-  equipements?: string[];
+  type: {
+    id: number;
+    nom: string;
+  }[];
+  est_evenement: boolean;
+  date_evenement: {
+    debut: string | null;
+    fin: string | null;
+  };
+  position: {
+    latitude: number;
+    longitude: number;
+    distance_km: number;
+  };
+  equipements: string[];
+  ages: string[];
 }
+
 
 const CustomCard = () => {
   const [lieu, setLieu] = useState<Lieu | null>(null);
   const [flipped, setFlipped] = useState(false);
   const flipAnimation = useRef(new Animated.Value(0)).current;
-  const [activeTab, setActiveTab] = useState<'map' | 'calendar' | 'add' | 'favorite'>('map');
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('https://seb-prod.alwaysdata.net/kidsspot/lieux/autour/12/12');
         const data = await response.json();
-        console.log('Données reçues :', data); 
+        //console.log('Données reçues :', data); 
         // Récupère le premier lieu qui est un événement
-        const event = data.lieux.find((l: Lieu) => l.est_evenement);
+        const event = data.data.find((l: Lieu) => l.est_evenement);
         setLieu(event || null);
       } catch (error) {
-        console.error('Erreur de récupération des données :', error);
+        //console.error('Erreur de récupération des données :', error);
       }
     };
 
     fetchData();
   }, []);
-  const handleTabPress = (tab: 'map' | 'calendar' | 'add' | 'favorite') => {
-    setActiveTab(tab);
-   
-  };
 
   const frontInterpolate = flipAnimation.interpolate({
     inputRange: [0, 180],
@@ -60,83 +75,79 @@ const CustomCard = () => {
 
   if (!lieu) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <Layout 
+        activeTab="calendar"
+        onMapPress={() => navigation.navigate('Map')}
+        onCalendarPress={() => navigation.navigate('Calendar')}
+        onAddPress={() => navigation.navigate('Add')}
+        onFavoritePress={() => navigation.navigate('Favorites')}
+      >
         <View style={styles.centered}>
           <Text>Chargement...</Text>
         </View>
-        <NavBar
-          onMapPress={() => handleTabPress('map')}
-          onCalendarPress={() => handleTabPress('calendar')}
-          onAddPress={() => handleTabPress('add')}
-          onFavoritePress={() => handleTabPress('favorite')}
-          activeTab={activeTab}
-        />
-      </SafeAreaView>
+      </Layout>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-    <View style={styles.container}>
-      <View style={styles.cardContainer}>
-        {/* Face avant */}
-        <Animated.View
-          style={[
-            styles.card,
-            { transform: [{ rotateY: frontInterpolate }] },
-            { zIndex: flipped ? 0 : 1 },
-          ]}
-        >
-          <View style={styles.cardContent}>
-            <Image
-              source={require('../assets/images/Logo.png')}
-              style={styles.image}
-              resizeMode="contain"
-            />
-            <Text style={styles.title}>{lieu.nom}</Text>
-            <Text style={styles.date}>{lieu.type}</Text>
-            <TouchableOpacity style={styles.infoButton} onPress={flipCard}>
-              <Text style={styles.infoText}>Voir les détails</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
+    <Layout
+      activeTab="calendar" 
+      onMapPress={() => navigation.navigate('Map')}
+      onCalendarPress={() => navigation.navigate('Calendar')}
+      onAddPress={() => navigation.navigate('Add')}
+      onFavoritePress={() => navigation.navigate('Favorites')}
+    >
+      <View style={styles.container}>
+        <View style={styles.cardContainer}>
+          {/* Face avant */}
+          <Animated.View
+            style={[
+              styles.card,
+              { transform: [{ rotateY: frontInterpolate }] },
+              { zIndex: flipped ? 0 : 1 },
+            ]}
+          >
+            <View style={styles.cardContent}>
+              <Image
+                source={require('../assets/images/Logo.png')}
+                style={styles.image}
+                resizeMode="contain"
+              />
+              <Text style={styles.title}>{lieu.nom}</Text>
+              <Text style={styles.date}>{lieu.nom}</Text>
+              <TouchableOpacity style={styles.infoButton} onPress={flipCard}>
+                <Text style={styles.infoText}>Voir les détails</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
 
-        {/* Face arrière */}
-        <Animated.View
-          style={[
-            styles.card,
-            styles.cardBack,
-            { transform: [{ rotateY: backInterpolate }] },
-            { position: 'absolute', top: 0 },
-          ]}
-        >
-          <View style={styles.cardContent}>
-            <Text style={styles.modalTitle}>{lieu.nom}</Text>
-            <Text style={styles.modalText}>
-              {lieu.adresse?.adresse}, {lieu.adresse?.code_postal} {lieu.adresse?.ville}
-            </Text>
-            <Text style={styles.modalText}>Type : {lieu.type}</Text>
-            <Text style={styles.modalText}>
-              Équipements : {lieu.equipements?.join(', ') || 'Non spécifiés'}
-            </Text>
-            <TouchableOpacity style={styles.closeButton} onPress={flipCard}>
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>Retour</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
+          {/* Face arrière */}
+          <Animated.View
+            style={[
+              styles.card,
+              styles.cardBack,
+              { transform: [{ rotateY: backInterpolate }] },
+              { position: 'absolute', top: 0 },
+            ]}
+          >
+            <View style={styles.cardContent}>
+              <Text style={styles.modalTitle}>{lieu.nom}</Text>
+              <Text style={styles.modalText}>
+                {lieu.adresse?.adresse}, {lieu.adresse?.code_postal} {lieu.adresse?.ville}
+              </Text>
+              <Text style={styles.modalText}>Type : {lieu.type.map(t => t.nom).join(', ')}</Text>
+              <Text style={styles.modalText}>
+                Équipements : {lieu.equipements?.join(', ') || 'Non spécifiés'}
+              </Text>
+              <TouchableOpacity style={styles.closeButton} onPress={flipCard}>
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Retour</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </View>
       </View>
-    </View>
-
-    {/* Barre de navigation */}
-    <NavBar
-      onMapPress={() => handleTabPress('map')}
-      onCalendarPress={() => handleTabPress('calendar')}
-      onAddPress={() => handleTabPress('add')}
-      onFavoritePress={() => handleTabPress('favorite')}
-      activeTab={activeTab}
-    />
-  </SafeAreaView>
-);
+    </Layout>
+  );
 };
 
 const styles = StyleSheet.create({
