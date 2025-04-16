@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -10,6 +11,8 @@ import {
   Alert
 } from "react-native";
 import MenuBurger from "app/components/menuburger";
+
+const router = useRouter();
 
 const DetailsLieu = ({ route, navigation }) => {
   const lieu = {
@@ -104,9 +107,16 @@ const DetailsLieu = ({ route, navigation }) => {
           
           <View style={styles.actionsContainer}>
             <View style={styles.rowButtons}>
-              <TouchableOpacity style={[styles.smallButton, styles.avisButton]}>
-                <Text style={styles.smallButtonText}>Donner mon avis</Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.smallButton, styles.avisButton]}
+              onPress={() => {const nomLieu = lieu.nom; 
+                router.push({
+                  pathname: '/avis',
+                  params: { nomLieu: nomLieu }, // ajoute d'autres infos si besoin
+                });
+              }}>
+              <Text style={styles.smallButtonText}>Donner mon avis</Text>
+            </TouchableOpacity>
               <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
                 <Text style={styles.smallButtonText}>Voir les avis</Text>
               </TouchableOpacity>
