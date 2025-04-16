@@ -9,7 +9,10 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  Modal,
+  Pressable,
+  Alert
 } from 'react-native';
 import { router } from 'expo-router';
 
@@ -17,8 +20,19 @@ const appLogo = require('../assets/images/Logo.png');
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleResetPassword = () => {
+    // Vérification basique de l'email (vous devrez adapter cette logique)
+    if (email.includes('@') && email.includes('.')) {
+      setShowConfirmation(true);
+    } else {
+      Alert.alert('Erreur', 'Veuillez entrer une adresse email valide');
+    }
+  };
+
+  const closeModalAndRedirect = () => {
+    setShowConfirmation(false);
     router.replace('/login');
   };
 
@@ -34,14 +48,10 @@ export default function ForgotPasswordScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Logo centré */}
-          <Image
-            source={appLogo}
-            style={styles.logo}
-          />
-          
-          {/* Conteneur pour le formulaire centré */}
+          <Image source={appLogo} style={styles.logo} />
+
+          {/* Conteneur formulaire */}
           <View style={styles.formContainer}>
-            {/* Groupe Input */}
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Adresse mail</Text>
               <TextInput
@@ -51,10 +61,10 @@ export default function ForgotPasswordScreen() {
                 keyboardType="email-address"
                 placeholder="email@exemple.com"
                 placeholderTextColor="#999"
+                autoCapitalize="none"
               />
             </View>
 
-            {/* Bouton centré */}
             <TouchableOpacity
               style={styles.resetButton}
               onPress={handleResetPassword}
@@ -63,6 +73,38 @@ export default function ForgotPasswordScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
+
+        {/* Popup de confirmation */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={showConfirmation}
+          onRequestClose={closeModalAndRedirect}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              {/* Bouton fermeture */}
+              <Pressable 
+                style={styles.closeButton} 
+                onPress={closeModalAndRedirect}
+              >
+                <Text style={styles.closeButtonText}>×</Text>
+              </Pressable>
+
+              <Text style={styles.modalTitle}>Demande envoyée</Text>
+              <Text style={styles.modalText}>
+                Un email de réinitialisation a été envoyé à {email} si cette adresse est reconnue.
+              </Text>
+              
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={closeModalAndRedirect}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -89,7 +131,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: '100%',
-    maxWidth: 400, // Pour éviter que le formulaire ne s'étende trop sur tablette
+    maxWidth: 400,
   },
   inputContainer: {
     width: '100%',
@@ -122,6 +164,63 @@ const styles = StyleSheet.create({
   },
   resetButtonText: {
     color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  // Styles pour la modal
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 24,
+    color: '#555',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#333',
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#D37230',
+    borderRadius: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    elevation: 2,
+  },
+  modalButtonText: {
+    color: 'white',
     fontSize: 16,
     fontWeight: '600',
   },
