@@ -15,6 +15,7 @@ export default function Index() {
         style={{ width: 200, height: 200, resizeMode: 'contain', marginBottom: 20 }}
       />
       <Text>Bienvenue sur Kids Spot </Text>
+      <Button title="Accueil" onPress={() => router.push('/accueil')} /> 
       <Button title="Voir la carte" onPress={() => router.push('/main')} />
       <Button title="Evenement" onPress={() => router.push('/evenement')} />
       <Button title="Voir le detail des lieux" onPress={() => router.push('/details_lieu')} />
@@ -23,6 +24,7 @@ export default function Index() {
       <Button title="A propos" onPress={() => router.push('/about')} />
       <Button title="Menu burger" onPress={() => router.push('/components/menuburger')} />
       <Button title="Contact" onPress={() => router.push('/contact')} />
+       
     </View>
   );
 }

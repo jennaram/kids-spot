@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   voirAvisButton: {
-    backgroundColor: "#D37230",
+    backgroundColor: "#D37230", //orange
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   ageBadge: {
-    backgroundColor: "#28603E",
+    backgroundColor: "#28603E", //vert
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
