@@ -1,13 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useLocalSearchParams } from 'expo-router';
+import { toast } from 'react-toastify'; // Assurez-vous d'avoir installé react-toastify pour la gestion des notifications (si nécessaire)
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Index() {
-  const { nomLieu } = useLocalSearchParams(); // ✅ récupère le nom passé depuis details_lieu.tsx
+  const { nomLieu } = useLocalSearchParams(); // Récupère le nom du lieu passé depuis details_lieu.tsx
+
+  const [rating, setRating] = useState<number | null>(null); // État pour la note
+  const [comment, setComment] = useState(''); // État pour le commentaire
 
   // Données fictives pour l'exemple
   const nomUtilisateur = "Jean Dupont";
   const emailUtilisateur = "jean.dupont@example.com";
+
+  const handleStarClick = (starNumber: number) => {
+    setRating(starNumber);
+  };
+
+  const handleCommentChange = (event: React.ChangeEvent<any>) => {
+    setComment(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    if (!rating) {
+      toast.error('Veuillez sélectionner une note.');
+      return;
+    }
+
+    // Ici, vous ajouteriez votre appel API pour enregistrer l'avis
+    try {
+      // Exemple d'appel API (à adapter selon votre backend)
+      const response = await fetch('/api/avis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lieuId: nomLieu, // Récupère l'ID du lieu
+          rating,
+          comment,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success('Votre avis a été enregistré avec succès !');
+      } else {
+        toast.error('Une erreur est survenue lors de l\'enregistrement de votre avis.');
+      }
+    } catch (error) {
+      toast.error('Une erreur s\'est produite lors de la communication avec le serveur.');
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -25,17 +69,17 @@ export default function Index() {
         <Text style={styles.staticText}>Nom : {nomUtilisateur}</Text>
         <Text style={styles.staticText}>Email : {emailUtilisateur}</Text>
 
-        {/* Espace réservé pour les étoiles */}
+        {/* Sélection des étoiles */}
         <View style={styles.starsContainer}>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Image
-              key={index}
-              source={require('../assets/images/Etoilegrises.png')}
-              style={styles.starImage}
+          {[1, 2, 3, 4, 5].map((star) => (
+            <TouchableOpacity key={star} onPress={() => handleStarClick(star)}>
+              <Image
+                source={star <= (rating || 0) ? require('../assets/images/Etoilejaune.png') : require('../assets/images/Etoilegrise.png')}
+                style={styles.starImage}
               />
-              ))}
+            </TouchableOpacity>
+          ))}
         </View>
-
 
         {/* Zone de texte pour l'avis */}
         <TextInput
@@ -44,12 +88,14 @@ export default function Index() {
           placeholderTextColor="#999"
           multiline
           numberOfLines={8}
+          value={comment}
+          onChange={handleCommentChange}
         />
       </View>
 
       {/* Bouton Valider */}
       <View style={{ alignItems: 'center', padding: 20 }}>
-        <TouchableOpacity style={styles.submitButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Valider votre avis !</Text>
         </TouchableOpacity>
       </View>
@@ -76,17 +122,6 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     backgroundColor: '#fff',
   },
-  card: {
-    backgroundColor: '#f4f4f4',
-    borderRadius: 16,
-    padding: 20,
-    width: '85%',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 3,
-  },
   formContainer: {
     backgroundColor: '#f0f0f0',
     marginHorizontal: 20,
@@ -107,16 +142,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: '#555',
   },
-  starsPlaceholder: {
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 10,
-    borderRadius: 8,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    backgroundColor: '#fff',
-  },
   textArea: {
     backgroundColor: '#fff',
     borderRadius: 8,
@@ -125,7 +150,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlignVertical: 'top',
     marginTop: 10,
-    minHeight: 120, // ✅ Agrandissement de la zone de texte
+    minHeight: 120,
   },
   submitButton: {
     height: 40,
