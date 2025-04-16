@@ -145,8 +145,9 @@ const CustomCard = () => {
                 style={styles.image}
                 resizeMode="contain"  // Ajuste l'image sans la déformer
               />
-              <Text style={styles.title}>{lieu.nom}</Text>
-              <Text style={styles.date}>{lieu.nom}</Text>  // Note: Répétition du nom, c'est peut-être une erreur
+              <Animated.View>
+                <Text style={styles.title}>{lieu.nom || 'Nom non disponible'}</Text>
+              </Animated.View>
               <TouchableOpacity style={styles.infoButton} onPress={flipCard}>
                 <Text style={styles.infoText}>Voir les détails</Text>
               </TouchableOpacity>
