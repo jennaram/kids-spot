@@ -21,7 +21,7 @@ const appLogo = require('../assets/images/Logo.png');
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen({ navigation }: { navigation: any }) {
+export default function LoginScreen() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -52,7 +52,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
       
       const userData = await response.json();
       if (userData) {
-        navigation?.navigate('points') || router.replace('/points');
+        router.replace('/points');
       }
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion avec Google');
@@ -70,7 +70,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     // Ici vous ajouteriez votre logique de connexion
     setTimeout(() => {
       setLoading(false);
-      // navigation.navigate('Home');
+      router.replace('/main');
     }, 1500);
   };
 
@@ -129,7 +129,10 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
             </TouchableOpacity>
 
             {/* Lien mot de passe oublié */}
-            <TouchableOpacity style={styles.forgotPasswordButton}>
+            <TouchableOpacity 
+              style={styles.forgotPasswordButton}
+              onPress={() => router.push('/forgotpassword')}
+            >
               <Text style={styles.forgotPasswordText}>Mot de passe oublié ?</Text>
             </TouchableOpacity>
 
