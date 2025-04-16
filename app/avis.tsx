@@ -1,7 +1,6 @@
 import React from "react";
-import { Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useLocalSearchParams } from 'expo-router';
-
 
 export default function Index() {
   const { nomLieu } = useLocalSearchParams(); // ✅ récupère le nom passé depuis details_lieu.tsx
@@ -12,26 +11,31 @@ export default function Index() {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Partie haute avec logo et texte */}
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 80 }}>
+      {/* Partie haute avec titre et nom du lieu */}
+      <View style={styles.container}>
         <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 24 }}>
           VOTRE AVIS
         </Text>
+        <Text style={styles.lieuTitre}>{nomLieu || "Nom du lieu"}</Text>
       </View>
 
       {/* Encadré gris avec les infos de l'avis */}
       <View style={styles.formContainer}>
-        {/* Titre du lieu venant de la route */}
-        <Text style={styles.lieuTitre}>{nomLieu || "Nom du lieu"}</Text>
-
         {/* Infos utilisateur affichées */}
         <Text style={styles.staticText}>Nom : {nomUtilisateur}</Text>
         <Text style={styles.staticText}>Email : {emailUtilisateur}</Text>
 
         {/* Espace réservé pour les étoiles */}
-        <View style={styles.starsPlaceholder}>
-          <Text style={{ color: '#999' }}>(Ici les 5 étoiles)</Text>
+        <View style={styles.starsContainer}>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Image
+              key={index}
+              source={require('../assets/images/Etoilegrises.png')}
+              style={styles.starImage}
+              />
+              ))}
         </View>
+
 
         {/* Zone de texte pour l'avis */}
         <TextInput
@@ -39,7 +43,7 @@ export default function Index() {
           placeholder="Écris ton avis ici..."
           placeholderTextColor="#999"
           multiline
-          numberOfLines={5}
+          numberOfLines={8}
         />
       </View>
 
@@ -54,18 +58,49 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  starsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 40,
+  },
+  starImage: {
+    width: 24,
+    height: 24,
+    marginHorizontal: 4,
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 60,
+    backgroundColor: '#fff',
+  },
+  card: {
+    backgroundColor: '#f4f4f4',
+    borderRadius: 16,
+    padding: 20,
+    width: '85%',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
   formContainer: {
     backgroundColor: '#f0f0f0',
     marginHorizontal: 20,
+    marginTop: 20,
     borderRadius: 10,
     padding: 15,
   },
   lieuTitre: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginTop: 50,
     color: '#28603E',
     textAlign: 'center',
+    marginBottom: 15,
   },
   staticText: {
     fontSize: 16,
@@ -90,15 +125,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlignVertical: 'top',
     marginTop: 10,
+    minHeight: 120, // ✅ Agrandissement de la zone de texte
   },
   submitButton: {
     height: 40,
-    width: '50%',
+    width: '80%',
     backgroundColor: '#D37230',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 210,
   },
   submitButtonText: {
     color: '#fff',
