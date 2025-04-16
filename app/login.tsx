@@ -21,7 +21,7 @@ const appLogo = require('../assets/images/Logo.png');
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen({ navigation }: { navigation: any }) {
+export default function LoginScreen() {  // J'ai retiré { navigation } ici
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -52,7 +52,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
       
       const userData = await response.json();
       if (userData) {
-        navigation?.navigate('points') || router.replace('/points');
+        router.replace('/points');  // Changé pour utiliser router au lieu de navigation
       }
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion avec Google');
@@ -70,10 +70,11 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     // Ici vous ajouteriez votre logique de connexion
     setTimeout(() => {
       setLoading(false);
-      // navigation.navigate('Home');
+      router.replace('/main');  // Changé pour utiliser router au lieu de navigation
     }, 1500);
   };
 
+  // Tout le reste du code JSX reste strictement identique
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -171,6 +172,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
   );
 }
 
+// Le styleSheet reste absolument identique
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
