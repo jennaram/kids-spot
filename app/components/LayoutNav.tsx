@@ -1,25 +1,17 @@
 // Importation des modules nécessaires
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 import NavBar from './NavBar';
 
 interface LayoutProps {
   children: React.ReactNode;
   activeTab?: 'map' | 'calendar' | 'add' | 'favorite';
-  onMapPress: () => void;
-  onCalendarPress: () => void;
-  onAddPress: () => void;
-  onFavoritePress: () => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({
-  children,
-  activeTab,
-  onMapPress,
-  onCalendarPress,
-  onAddPress,
-  onFavoritePress,
-}) => {
+const Layout: React.FC<LayoutProps> = ({ children, activeTab }) => {
+  const router = useRouter(); // Utilisation de useRouter pour la navigation
+
   return (
     <View style={styles.container}>
       {/* Contenu principal */}
@@ -28,10 +20,10 @@ const Layout: React.FC<LayoutProps> = ({
       {/* Barre de navigation */}
       <NavBar
         activeTab={activeTab}
-        onMapPress={onMapPress}
-        onCalendarPress={onCalendarPress}
-        onAddPress={onAddPress}
-        onFavoritePress={onFavoritePress}
+        onMapPress={() => router.push('main')} // Navigue vers main.tsx
+        onCalendarPress={() => router.push('/calendar')} // Navigue vers calendar.tsx
+        onAddPress={() => router.push('add-place')} // Navigue vers add.tsx
+        onFavoritePress={() => router.push('/favorites')} // Navigue vers favorites.tsx
       />
     </View>
   );
