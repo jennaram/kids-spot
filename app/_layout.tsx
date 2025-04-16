@@ -1,9 +1,10 @@
-import { Stack } from 'expo-router';
+import { Slot } from 'expo-router';
+import CustomDrawerLayout from './components/_layout_drawer';
 
-// Votre composant de mise en page
-function Layout() {
-  return <Stack />;
+
+export default function RootLayout() {
+ return <CustomDrawerLayout />;
 }
 
-// Ajoutez cet export par défaut
-export default Layout;
+
+
