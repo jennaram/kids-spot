@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet,
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import MenuBurger from './MenuBurger'; // Ensure the file name matches the actual file
+import MenuBurger from './menuburger'; // Ensure the file name matches the actual file
 
 const AddPlaceScreen = () => {
   const router = useRouter();
