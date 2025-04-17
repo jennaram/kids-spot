@@ -19,8 +19,11 @@ const DetailsLieu = () => {
 
   useEffect(() => {
     const backAction = () => {
-      router.back();
-      return true;
+      if (router.canGoBack()) {
+        router.back();
+        return true;
+      }
+      return false;
     };
 
     if (Platform.OS === 'android') {

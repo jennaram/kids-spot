@@ -111,7 +111,11 @@ export default function ListeLieux() {
             : null;
 
           return (
-            <TouchableOpacity key={point.id} style={styles.item}>
+            <TouchableOpacity 
+              key={point.id} 
+              style={styles.item}
+              onPress={() => router.push({ pathname: '/details_lieu', params: { id: point.id, nom: point.nom } })}
+            >
               <View style={styles.itemContent}>
                 {point.image && <Image source={point.image} style={styles.image} />}
                 <View style={styles.textContainer}>
