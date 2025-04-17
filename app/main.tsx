@@ -14,6 +14,14 @@ import * as Location from 'expo-location';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 
+// useEffect permet d'exécuter des effets secondaires (comme des appels API) dans les composants
+
+import Layout from './components/LayoutNav';
+// Importe le composant personnalisé qui structure la page avec une navigation
+
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types/navigation';
+
 // Icônes personnalisées
 const iconByType = {
   user: require('../assets/images/user-location.png'),
