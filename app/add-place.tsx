@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet,
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import burgerMenuIcon from '../assets/images/burger_menu.png';
+import MenuBurger from 'app/components/menuburger';
 
 const AddPlaceScreen = () => {
   const router = useRouter();
@@ -17,7 +17,6 @@ const AddPlaceScreen = () => {
   const [ageRanges, setAgeRanges] = useState<string[]>(['0-2']);
   const [rating, setRating] = useState(3);
   
-  // Équipements disponibles
   const [equipments, setEquipments] = useState({
     strollerAccess: false,
     playArea: false,
@@ -87,19 +86,13 @@ const AddPlaceScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* Header avec icône burger et titre */}
+      {/* Header avec menu burger */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.burgerButton}>
-          <Image 
-            source={burgerMenuIcon} 
-            style={styles.burgerIcon} 
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
+        <MenuBurger />
         <Text style={styles.header}>Ajouter un lieu</Text>
       </View>
 
-      {/* Nom du lieu tout en haut */}
+      {/* Nom du lieu */}
       <View style={styles.section}>
         <Text style={styles.label}>Nom du lieu</Text>
         <TextInput
@@ -107,11 +100,9 @@ const AddPlaceScreen = () => {
           value={placeName}
           onChangeText={setPlaceName}
           placeholder="Nom du lieu"
-          autoFocus
         />
       </View>
 
-      {/* Le reste de votre code existant... */}
       {/* Type de lieu */}
       <View style={styles.section}>
         <Text style={styles.label}>Type de lieu</Text>
@@ -120,7 +111,7 @@ const AddPlaceScreen = () => {
             <TouchableOpacity
               key={type}
               style={[styles.radioButton, placeType === type && styles.radioSelected]}
-              onPress={() => setPlaceType(type)}
+              onPress={() => setPlaceType(type as any)}
             >
               <Text style={[styles.radioText, placeType === type && styles.radioTextSelected]}>
                 {type === 'restaurant' ? 'Restaurant' : 
@@ -134,20 +125,20 @@ const AddPlaceScreen = () => {
       {/* Équipements */}
       <View style={styles.section}>
         <Text style={styles.label}>Équipements disponibles</Text>
-        {Object.keys(equipments).map((item) => (
+        {Object.entries(equipments).map(([key, value]) => (
           <TouchableOpacity
-            key={item}
+            key={key}
             style={styles.checkbox}
-            onPress={() => setEquipments({...equipments, [item as keyof typeof equipments]: !equipments[item as keyof typeof equipments]})}
+            onPress={() => setEquipments({...equipments, [key]: !value})}
           >
-            <View style={[styles.checkboxBox, equipments[item as keyof typeof equipments] && styles.checkboxSelected]}>
-              {equipments[item as keyof typeof equipments] && <Text style={styles.checkmark}>✓</Text>}
+            <View style={[styles.checkboxBox, value && styles.checkboxSelected]}>
+              {value && <Text style={styles.checkmark}>✓</Text>}
             </View>
             <Text style={styles.checkboxLabel}>
-              {item === 'strollerAccess' ? 'Accès poussette' :
-               item === 'playArea' ? 'Aire de jeux' :
-               item === 'microwave' ? 'Micro-onde' :
-               item === 'highChair' ? 'Chaise haute' : 'Table à langer'}
+              {key === 'strollerAccess' ? 'Accès poussette' :
+               key === 'playArea' ? 'Aire de jeux' :
+               key === 'microwave' ? 'Micro-onde' :
+               key === 'highChair' ? 'Chaise haute' : 'Table à langer'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -167,7 +158,7 @@ const AddPlaceScreen = () => {
 
       {/* Tranche d'âge */}
       <View style={styles.section}>
-        <Text style={styles.label}>Tranche d'âge (plusieurs choix possibles)</Text>
+        <Text style={styles.label}>Tranche d'âge</Text>
         <View style={styles.radioContainer}>
           {['0-2', '3-6', '7+'].map((age) => (
             <TouchableOpacity
@@ -185,15 +176,13 @@ const AddPlaceScreen = () => {
 
       {/* Adresse */}
       <View style={styles.section}>
-        <Text style={styles.label}>Adresse*</Text>
-        <View style={styles.addressButtons}>
-          <TouchableOpacity 
-            style={styles.locationButton} 
-            onPress={handleGetCurrentLocation}
-          >
-            <Text style={styles.buttonText}>Utiliser ma position</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.label}>Adresse</Text>
+        <TouchableOpacity 
+          style={styles.locationButton} 
+          onPress={handleGetCurrentLocation}
+        >
+          <Text style={styles.buttonText}>Utiliser ma position</Text>
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           value={address}
@@ -213,7 +202,6 @@ const AddPlaceScreen = () => {
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             }}
-            scrollEnabled={false}
           >
             <Marker coordinate={location}>
               <Image
@@ -245,7 +233,7 @@ const AddPlaceScreen = () => {
   );
 };
 
-// Styles
+// Styles (inchangés)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -256,21 +244,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    paddingTop: 10,
-  },
-  burgerButton: {
-    padding: 10,
-    marginRight: 10,
-  },
-  burgerIcon: {
-    width: 41,
-    height: 34,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2c3e50',
-    flex: 1,
   },
   section: {
     marginBottom: 20,
@@ -279,11 +256,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
     fontWeight: '600',
-    color: '#34495e',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#bdc3c7',
+    borderColor: '#ddd',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
@@ -291,7 +267,6 @@ const styles = StyleSheet.create({
   radioContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginVertical: 5,
   },
   radioButton: {
     padding: 10,
@@ -299,31 +274,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#bdc3c7',
+    borderColor: '#ddd',
   },
   radioSelected: {
     backgroundColor: '#D37230',
     borderColor: '#D37230',
   },
   radioText: {
-    color: '#2c3e50',
+    color: '#333',
   },
   radioTextSelected: {
     color: 'white',
-  },
-  addressButtons: {
-    flexDirection: 'row',
-    marginBottom: 10,
   },
   locationButton: {
     backgroundColor: '#D37230',
     padding: 10,
     borderRadius: 8,
-    marginRight: 10,
+    marginBottom: 10,
   },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   mapContainer: {
     height: 200,
@@ -343,7 +315,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderWidth: 1,
-    borderColor: '#bdc3c7',
+    borderColor: '#ddd',
     borderRadius: 4,
     marginRight: 10,
     justifyContent: 'center',
@@ -362,11 +334,10 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     flexDirection: 'row',
-    marginVertical: 10,
   },
   star: {
     fontSize: 30,
-    color: '#bdc3c7',
+    color: '#ddd',
     marginRight: 5,
   },
   starSelected: {
@@ -377,7 +348,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 15,
     alignItems: 'center',
-    marginVertical: 20,
   },
   submitText: {
     color: 'white',
