@@ -1,5 +1,5 @@
-import React from "react";
-import { useRouter } from 'expo-router';
+import React, { useEffect } from "react";
+import { useRouter, useNavigation } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -8,12 +8,19 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert
+  Alert,
+  Platform,
+  BackHandler
 } from "react-native";
 import MenuBurger from "app/components/menuburger";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types/navigation';
+import Layout from './components/LayoutNav'; // Adapter le chemin si besoin
 
-const DetailsLieu = ({ route, navigation }) => {
+const DetailsLieu = () => {
   const router = useRouter();
+  const navigation = useNavigation();
+
   const lieu = {
     nom: "Parc Montsouris - Paris 14",
     description:
@@ -33,15 +40,18 @@ const DetailsLieu = ({ route, navigation }) => {
     console.log("Partager cliqué");
   }
 
-  function handleMenuPress() {
-    Alert.alert("Menu", "Menu burger cliqué !");
-  }
-
   return (
+    <Layout
+    activeTab="undefined"
+    onMapPress={() => navigation.navigate('Map')}
+    onCalendarPress={() => navigation.navigate('Calendar')}
+    onAddPress={() => navigation.navigate('Add')}
+    onFavoritePress={() => navigation.navigate('Favorites')}
+  >
     <View style={styles.mainContainer}>
       {/* Header avec MenuBurger fixe en haut */}
       <View style={styles.header}>
-        <MenuBurger onPress={handleMenuPress} />
+        <MenuBurger />
         <View style={{ flex: 1 }} />
       </View>
 
@@ -126,6 +136,17 @@ const DetailsLieu = ({ route, navigation }) => {
                     params: { nomLieu: nomLieu },
                   });
                 }}>
+            <TouchableOpacity
+              style={[styles.smallButton, styles.avisButton]}
+              onPress={() => {const nomLieu = lieu.nom; 
+                router.push({
+                  pathname: '/avis',
+                  params: { nomLieu: nomLieu },
+                });
+              }}>
+              <Text style={styles.smallButtonText}>Donner mon avis</Text>
+            </TouchableOpacity>
+              <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
                 <Text style={styles.smallButtonText}>Voir les avis</Text>
               </TouchableOpacity>
             </View>
@@ -148,6 +169,7 @@ const DetailsLieu = ({ route, navigation }) => {
         </View>
       </ScrollView>
     </View>
+    </Layout>
   );
 };
 
@@ -172,11 +194,11 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: "white",
-    paddingTop: 80, // Espace pour le header
+    paddingTop: 80,
   },
   imageContainer: {
     width: "100%",
-    marginTop: 10, // Espace supplémentaire sous le header
+    marginTop: 10,
     padding: 15,
     borderRadius: 15,
     overflow: "hidden",
@@ -244,7 +266,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   voirAvisButton: {
-    backgroundColor: "#D37230", //orange
+    backgroundColor: "#D37230",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -274,7 +296,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   ageBadge: {
-    backgroundColor: "#28603E", //vert
+    backgroundColor: "#28603E",
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,

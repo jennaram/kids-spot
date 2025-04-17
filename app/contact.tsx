@@ -1,6 +1,17 @@
 import React from "react";
-import { View, Text, Linking, TouchableOpacity, StyleSheet } from "react-native";
-import { FontAwesome } from "@expo/vector-icons"; // Si tu utilises Expo
+import {
+  View,
+  Text,
+  Linking,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "./types/navigation"; // Vérifie que ce fichier existe
+import Layout from "./components/LayoutNav"; // Adapte si besoin
 
 const teamMembers = [
   {
@@ -31,31 +42,50 @@ const teamMembers = [
 ];
 
 export default function ContactScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Contact</Text>
-      <Text style={styles.subtitle}>Projet réalisé par :</Text>
-      {teamMembers.map((member) => (
-        <View key={member.name} style={styles.member}>
-          <Text style={styles.name}>{member.name}</Text>
-          <TouchableOpacity onPress={() => Linking.openURL(member.github)}>
-            <FontAwesome name="github" size={24} color="black" style={styles.icon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => Linking.openURL(member.linkedin)}>
-            <FontAwesome name="linkedin" size={24} color="#0077B5" style={styles.icon} />
-          </TouchableOpacity>
-        </View>
-      ))}
-    </View>
+    <Layout
+      activeTab="undefined" // Ou une valeur valide selon ton layout (ex: "contact", "profile", etc.)
+      onMapPress={() => navigation.navigate("Map")}
+      onCalendarPress={() => navigation.navigate("Calendar")}
+      onAddPress={() => navigation.navigate("Add")}
+      onFavoritePress={() => navigation.navigate("Favorites")}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Contact</Text>
+        <Text style={styles.subtitle}>Projet réalisé par :</Text>
+        {teamMembers.map((member) => (
+          <View key={member.name} style={styles.member}>
+            <Text style={styles.name}>{member.name}</Text>
+            <TouchableOpacity onPress={() => Linking.openURL(member.github)}>
+              <FontAwesome
+                name="github"
+                size={24}
+                color="black"
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => Linking.openURL(member.linkedin)}>
+              <FontAwesome
+                name="linkedin"
+                size={24}
+                color="#0077B5"
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
+    </Layout>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    marginTop: 50,
+    paddingTop: 50,
     backgroundColor: "#fff",
-    flex: 1,
   },
   title: {
     fontSize: 32,
@@ -72,7 +102,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 15,
-    gap: 10,
   },
   name: {
     fontSize: 18,

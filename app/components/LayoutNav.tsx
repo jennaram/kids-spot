@@ -44,9 +44,9 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab }) => {
         // Pour chaque onglet, définit une fonction qui navigue vers une page spécifique
         // router.push() change la page actuelle pour celle spécifiée
         onMapPress={() => router.push('main')}         // Navigue vers main.tsx
-        onCalendarPress={() => router.push('/calendar')} // Navigue vers evenement.tsx
+        onCalendarPress={() => router.push('evenement')} // Navigue vers evenement.tsx
         onAddPress={() => router.push('add-place')}    // Navigue vers add-place.tsx
-        onFavoritePress={() => router.push('/favorites')} // Navigue vers favorites.tsx
+        onFavoritePress={() => router.push('favoris')} // Navigue vers favorites.tsx
       />
     </View>
   );

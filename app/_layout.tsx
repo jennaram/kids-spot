@@ -2,15 +2,14 @@ import { Stack } from 'expo-router';
 import CustomDrawerLayout from './components/_layout_drawer';
 
 export default function RootLayout() {
-  // Le CustomDrawerLayout va gérer le burger menu
-  // tandis que Stack gère la navigation entre écrans
+  // Let Expo Router manage screens based on file structure within the Drawer/Stack
   return (
     <CustomDrawerLayout>
-      <Stack>
-        <Stack.Screen name="(main)" options={{ headerShown: false }} />
-        <Stack.Screen name="calendar" options={{ headerShown: false }} />
-        <Stack.Screen name="(add-place)" options={{ headerShown: false }} />
-        <Stack.Screen name="favorites" options={{ headerShown: false }} />
+      {/* Stack will automatically handle routes based on files in the app directory */}
+      {/* Remove explicit Stack.Screen definitions unless truly necessary for specific configs */}
+      <Stack screenOptions={{ headerShown: false }}>
+         {/* Example: If you need specific options for a layout route */}
+         {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
       </Stack>
     </CustomDrawerLayout>
   );

@@ -14,6 +14,14 @@ import * as Location from 'expo-location';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 
+// useEffect permet d'exécuter des effets secondaires (comme des appels API) dans les composants
+
+import Layout from './components/LayoutNav';
+// Importe le composant personnalisé qui structure la page avec une navigation
+
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types/navigation';
+
 // Icônes personnalisées
 const iconByType = {
   user: require('../assets/images/user-location.png'),
@@ -150,6 +158,13 @@ export default function MapScreen() {
   }
 
   return (
+    <Layout
+    activeTab="map"
+    onMapPress={() => navigation.navigate('Map')}
+    onCalendarPress={() => navigation.navigate('Calendar')}
+    onAddPress={() => navigation.navigate('Add')}
+    onFavoritePress={() => navigation.navigate('Favorites')}
+  >
     <View style={{ flex: 1 }}>
       <MapView
         style={{ flex: 1 }}
@@ -183,8 +198,8 @@ export default function MapScreen() {
         onPress={() => router.push('/listelieux')}
         style={{
           position: 'absolute',
-          bottom: 20,
-          right: 20,
+          bottom: 100,
+          right: 10,
           borderRadius: 50,
           padding: 10,
         }}
@@ -194,6 +209,7 @@ export default function MapScreen() {
           style={{ width: 40, height: 40 }}
         />
       </TouchableOpacity>
-    </View>
+      </View>
+    </Layout>
   );
 }

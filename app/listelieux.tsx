@@ -6,6 +6,10 @@ import {
 import { mockPoints } from './points';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types/navigation';
+import Layout from './components/LayoutNav'; // Adapter le chemin si besoin
 
 const iconByType = {
   listIcon: require('../assets/images/switchlieux.png'),
@@ -65,6 +69,13 @@ export default function ListeLieux() {
   });
 
   return (
+    <Layout
+    activeTab="map"
+    onMapPress={() => navigation.navigate('Map')}
+    onCalendarPress={() => navigation.navigate('Calendar')}
+    onAddPress={() => navigation.navigate('Add')}
+    onFavoritePress={() => navigation.navigate('Favorites')}
+  >
     <View style={styles.container}>
       {/* Recherche & Bouton Équipement */}
       <View style={styles.searchRow}>
@@ -111,7 +122,11 @@ export default function ListeLieux() {
             : null;
 
           return (
-            <TouchableOpacity key={point.id} style={styles.item}>
+            <TouchableOpacity 
+              key={point.id} 
+              style={styles.item}
+              onPress={() => router.push({ pathname: '/details_lieu', params: { id: point.id, nom: point.nom } })}
+            >
               <View style={styles.itemContent}>
                 {point.image && <Image source={point.image} style={styles.image} />}
                 <View style={styles.textContainer}>
@@ -175,6 +190,7 @@ export default function ListeLieux() {
 </Modal>
 
     </View>
+    </Layout>
   );
 }
 
@@ -264,8 +280,8 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 100,
+    right: 10,
     borderRadius: 50,
     padding: 10,
   },
