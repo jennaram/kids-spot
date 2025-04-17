@@ -1,8 +1,9 @@
 import { Drawer } from "expo-router/drawer";
 import { Image, View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigationContainerRef } from "expo-router";
+import { Platform, BackHandler } from "react-native";
 
 interface CustomDrawerLayoutProps {
   children: ReactNode;

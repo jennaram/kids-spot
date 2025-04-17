@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -16,27 +16,7 @@ import MenuBurger from "app/components/menuburger";
 
 const DetailsLieu = () => {
   const router = useRouter();
-
-  useEffect(() => {
-    const backAction = () => {
-      if (router.canGoBack()) {
-        router.back();
-        return true;
-      }
-      return false;
-    };
-
-    if (Platform.OS === 'android') {
-      const subscription = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction
-      );
-      return () => {
-        subscription.remove();
-      };
-    }
-    return () => {};
-  }, [router]);
+  const navigation = useNavigation();
 
   const lieu = {
     nom: "Parc Montsouris - Paris 14",
