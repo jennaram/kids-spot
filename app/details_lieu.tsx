@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useRouter, useNavigation } from 'expo-router';
+import React from "react";
+import { useRouter } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -7,19 +7,11 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
-  Alert,
-  Platform,
-  BackHandler
+  ScrollView
 } from "react-native";
-import MenuBurger from "app/components/menuburger";
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from './types/navigation';
-import Layout from './components/LayoutNav'; // Adapter le chemin si besoin
 
 const DetailsLieu = () => {
   const router = useRouter();
-  const navigation = useNavigation();
 
   const lieu = {
     nom: "Parc Montsouris - Paris 14",
@@ -41,20 +33,7 @@ const DetailsLieu = () => {
   }
 
   return (
-    <Layout
-    activeTab="undefined"
-    onMapPress={() => navigation.navigate('Map')}
-    onCalendarPress={() => navigation.navigate('Calendar')}
-    onAddPress={() => navigation.navigate('Add')}
-    onFavoritePress={() => navigation.navigate('Favorites')}
-  >
     <View style={styles.mainContainer}>
-      {/* Header avec MenuBurger fixe en haut */}
-      <View style={styles.header}>
-        <MenuBurger />
-        <View style={{ flex: 1 }} />
-      </View>
-
       {/* Contenu scrollable */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Image principale */}
@@ -122,7 +101,7 @@ const DetailsLieu = () => {
                   const nomLieu = lieu.nom; 
                   router.push({
                     pathname: '/avis',
-                    params: { nomLieu: nomLieu }, // ajoute d'autres infos si besoin
+                    params: { nomLieu: nomLieu },
                   });
                 }}>
                 <Text style={styles.smallButtonText}>Donner mon avis</Text>
@@ -136,18 +115,6 @@ const DetailsLieu = () => {
                     params: { nomLieu: nomLieu },
                   });
                 }}>
-              </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.smallButton, styles.avisButton]}
-              onPress={() => {const nomLieu = lieu.nom; 
-                router.push({
-                  pathname: '/avis',
-                  params: { nomLieu: nomLieu },
-                });
-              }}>
-              <Text style={styles.smallButtonText}>Donner mon avis</Text>
-            </TouchableOpacity>
-              <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
                 <Text style={styles.smallButtonText}>Voir les avis</Text>
               </TouchableOpacity>
             </View>
@@ -170,32 +137,17 @@ const DetailsLieu = () => {
         </View>
       </ScrollView>
     </View>
-    </Layout>
   );
 };
 
 const styles = StyleSheet.create({
-  // Styles inchangés
   mainContainer: {
     flex: 1,
     backgroundColor: "white",
   },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    paddingTop: 50,
-    backgroundColor: 'transparent',
-  },
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: "white",
-    paddingTop: 80,
   },
   imageContainer: {
     width: "100%",
