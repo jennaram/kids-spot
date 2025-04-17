@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
@@ -8,12 +8,33 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert
+  Alert,
+  Platform,
+  BackHandler
 } from "react-native";
 import MenuBurger from "app/components/menuburger";
 
-const DetailsLieu = ({ route, navigation }) => {
+const DetailsLieu = () => {
   const router = useRouter();
+
+  useEffect(() => {
+    const backAction = () => {
+      router.back();
+      return true;
+    };
+
+    if (Platform.OS === 'android') {
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction
+      );
+      return () => {
+        subscription.remove();
+      };
+    }
+    return () => {};
+  }, [router]);
+
   const lieu = {
     nom: "Parc Montsouris - Paris 14",
     description:
@@ -33,15 +54,11 @@ const DetailsLieu = ({ route, navigation }) => {
     console.log("Partager cliqué");
   }
 
-  function handleMenuPress() {
-    Alert.alert("Menu", "Menu burger cliqué !");
-  }
-
   return (
     <View style={styles.mainContainer}>
       {/* Header avec MenuBurger fixe en haut */}
       <View style={styles.header}>
-        <MenuBurger onPress={handleMenuPress} />
+        <MenuBurger />
         <View style={{ flex: 1 }} />
       </View>
 
@@ -111,7 +128,7 @@ const DetailsLieu = ({ route, navigation }) => {
               onPress={() => {const nomLieu = lieu.nom; 
                 router.push({
                   pathname: '/avis',
-                  params: { nomLieu: nomLieu }, // ajoute d'autres infos si besoin
+                  params: { nomLieu: nomLieu },
                 });
               }}>
               <Text style={styles.smallButtonText}>Donner mon avis</Text>
@@ -162,11 +179,11 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: "white",
-    paddingTop: 80, // Espace pour le header
+    paddingTop: 80,
   },
   imageContainer: {
     width: "100%",
-    marginTop: 10, // Espace supplémentaire sous le header
+    marginTop: 10,
     padding: 15,
     borderRadius: 15,
     overflow: "hidden",
@@ -234,7 +251,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   voirAvisButton: {
-    backgroundColor: "#D37230", //orange
+    backgroundColor: "#D37230",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -264,7 +281,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   ageBadge: {
-    backgroundColor: "#28603E", //vert
+    backgroundColor: "#28603E",
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
