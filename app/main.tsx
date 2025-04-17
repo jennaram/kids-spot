@@ -198,8 +198,8 @@ export default function MapScreen() {
         onPress={() => router.push('/listelieux')}
         style={{
           position: 'absolute',
-          bottom: 20,
-          right: 20,
+          bottom: 100,
+          right: 10,
           borderRadius: 50,
           padding: 10,
         }}
