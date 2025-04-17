@@ -106,17 +106,26 @@ const DetailsLieu = ({ route, navigation }) => {
           
           <View style={styles.actionsContainer}>
             <View style={styles.rowButtons}>
-            <TouchableOpacity
-              style={[styles.smallButton, styles.avisButton]}
-              onPress={() => {const nomLieu = lieu.nom; 
-                router.push({
-                  pathname: '/avis',
-                  params: { nomLieu: nomLieu }, // ajoute d'autres infos si besoin
-                });
-              }}>
-              <Text style={styles.smallButtonText}>Donner mon avis</Text>
-            </TouchableOpacity>
-              <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
+              <TouchableOpacity
+                style={[styles.smallButton, styles.avisButton]}
+                onPress={() => {
+                  const nomLieu = lieu.nom; 
+                  router.push({
+                    pathname: '/avis',
+                    params: { nomLieu: nomLieu }, // ajoute d'autres infos si besoin
+                  });
+                }}>
+                <Text style={styles.smallButtonText}>Donner mon avis</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.smallButton, styles.voirAvisButton]}
+                onPress={() => {
+                  const nomLieu = lieu.nom;
+                  router.push({
+                    pathname: '/voir-avis',
+                    params: { nomLieu: nomLieu },
+                  });
+                }}>
                 <Text style={styles.smallButtonText}>Voir les avis</Text>
               </TouchableOpacity>
             </View>
@@ -143,6 +152,7 @@ const DetailsLieu = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  // Styles inchangés
   mainContainer: {
     flex: 1,
     backgroundColor: "white",
