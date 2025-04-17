@@ -158,6 +158,13 @@ export default function MapScreen() {
   }
 
   return (
+    <Layout
+    activeTab="map"
+    onMapPress={() => navigation.navigate('Map')}
+    onCalendarPress={() => navigation.navigate('Calendar')}
+    onAddPress={() => navigation.navigate('Add')}
+    onFavoritePress={() => navigation.navigate('Favorites')}
+  >
     <View style={{ flex: 1 }}>
       <MapView
         style={{ flex: 1 }}
@@ -202,6 +209,7 @@ export default function MapScreen() {
           style={{ width: 40, height: 40 }}
         />
       </TouchableOpacity>
-    </View>
+      </View>
+    </Layout>
   );
 }
