@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
-import { toast } from 'react-toastify'; // Assurez-vous d'avoir installé react-toastify pour la gestion des notifications (si nécessaire)
+import { ToastContainer, toast } from 'react-toastify'; // Assurez-vous d'avoir installé react-toastify pour la gestion des notifications (si nécessaire)
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Index() {

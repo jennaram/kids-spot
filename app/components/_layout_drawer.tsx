@@ -1,5 +1,5 @@
 import { Drawer } from "expo-router/drawer";
-import { Image, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Image, View, Text, TouchableOpacity, StyleSheet, ToastAndroid, Platform, Alert } from "react-native";
 import { ReactNode } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -63,8 +63,17 @@ function CustomDrawerContent(props: any) {
 
   const handleNavigation = (name: string) => {
     if (name === "logout") {
-      // Logique de déconnexion
+      // Afficher un toast pour la déconnexion
+      if (Platform.OS === "android") {
+        ToastAndroid.show("Vous êtes déconnectés", ToastAndroid.SHORT);
+      } else {
+        Alert.alert("Déconnexion", "Vous êtes déconnectés");
+      }
       router.replace("/login");
+    } else if (name === "profil") {
+      router.push("/profil");
+    } else if (name === "contact") {
+      router.push("/contact");
     } else {
       props.navigation.navigate(name);
     }
@@ -120,69 +129,61 @@ function CustomDrawerContent(props: any) {
   );
 }
 
-
 const styles = StyleSheet.create({
- container: {
-   flex: 1,
-   backgroundColor: "#fff",
-   justifyContent: "space-between",
-   paddingBottom: 20,
- },
- menuSection: {
-   flex: 1,
- },
- header: {
-   flexDirection: "row",
-   alignItems: "center",
-   padding: 20,
-   borderBottomWidth: 1,
-   borderBottomColor: "#f0f0f0",
- },
- headerText: {
-   fontSize: 18,
-   fontWeight: "600",
-   marginLeft: 10,
- },
- menuItem: {
-   flexDirection: "row",
-   alignItems: "center",
-   paddingVertical: 15,
-   paddingHorizontal: 20,
- },
- activeItem: {
-   backgroundColor: "#f0f7ff",
-   borderRightWidth: 3,
-   borderRightColor: "#2563eb",
- },
- menuText: {
-   fontSize: 16,
-   marginLeft: 15,
-   color: "#333",
- },
- logoutItem: {
-   flexDirection: "row",
-   alignItems: "center",
-   padding: 20,
-   borderTopWidth: 1,
-   borderTopColor: "#f0f0f0",
-   marginHorizontal: 10,
- },
- logoutText: {
-   fontSize: 16,
-   marginLeft: 15,
-   color: "#d9534f",
-   fontWeight: "500",
- },
-
-
-   logoImage: {
-       width: 50,
-       height: 50,
-       borderRadius: 25,
-   },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "space-between",
+    paddingBottom: 20,
+  },
+  menuSection: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginLeft: 10,
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  activeItem: {
+    backgroundColor: "#f0f7ff",
+    borderRightWidth: 3,
+    borderRightColor: "#2563eb",
+  },
+  menuText: {
+    fontSize: 16,
+    marginLeft: 15,
+    color: "#333",
+  },
+  logoutItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+    marginHorizontal: 10,
+  },
+  logoutText: {
+    fontSize: 16,
+    marginLeft: 15,
+    color: "#d9534f",
+    fontWeight: "500",
+  },
+  logoImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
 });
-
-
-
-
-
