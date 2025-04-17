@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import Slider from '@react-native-community/slider';
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({
@@ -80,17 +79,6 @@ export default function ProfileScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Âge des enfants</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={18}
-                step={1}
-                value={userData.childrenAges}
-                minimumTrackTintColor="#D37230"
-                maximumTrackTintColor="#ddd"
-                thumbTintColor="#D37230"
-                disabled
-              />
               <Text style={styles.sliderValue}>
                 {userData.childrenAges} ans
               </Text>
@@ -167,10 +155,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
     fontSize: 16,
-  },
-  slider: {
-    width: '100%',
-    height: 40,
   },
   sliderValue: {
     textAlign: 'center',
