@@ -17,6 +17,7 @@ import {
 import { router } from 'expo-router';
 
 const appLogo = require('../assets/images/Logo.png');
+const backArrow = require('../assets/images/fleche_retour.png');
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -36,8 +37,20 @@ export default function ForgotPasswordScreen() {
     router.replace('/login');
   };
 
+  const handleGoBack = () => {
+    router.replace('/login');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Bouton de retour */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleGoBack}
+      >
+        <Image source={backArrow} style={styles.backButtonImage} />
+      </TouchableOpacity>
+      
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -223,5 +236,28 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  // Styles pour le bouton retour
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 30,
+    left: 20,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  backButtonImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
 });
