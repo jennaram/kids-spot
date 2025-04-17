@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "./types/navigation"; // Assure-toi que ce fichier existe et est correct
-import Layout from "./components/LayoutNav"; // Vérifie également ce chemin
+import { RootStackParamList } from "./types/navigation";
+import Layout from "./components/LayoutNav";
 
 const DetailsLieu = () => {
   const router = useRouter();
@@ -40,13 +40,15 @@ const DetailsLieu = () => {
   return (
     <Layout
       activeTab="undefined"
-      onMapPress={() => navigation.navigate("Map")}
-      onCalendarPress={() => navigation.navigate("Calendar")}
-      onAddPress={() => navigation.navigate("Add")}
-      onFavoritePress={() => navigation.navigate("Favorites")}
+      onMapPress={() => navigation.navigate('Map')}
+      onCalendarPress={() => navigation.navigate('Calendar')}
+      onAddPress={() => navigation.navigate('Add')}
+      onFavoritePress={() => navigation.navigate('Favorites')}
     >
       <View style={styles.mainContainer}>
+        {/* Contenu scrollable */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
+          {/* Image principale */}
           <View style={styles.imageContainer}>
             <Image
               source={lieu.imageUrl}
@@ -60,6 +62,7 @@ const DetailsLieu = () => {
             </View>
           </View>
 
+          {/* Contenu principal */}
           <View style={styles.centeredContent}>
             <View style={styles.ratingShareContainer}>
               <View style={styles.ratingWrapper}>
@@ -78,14 +81,14 @@ const DetailsLieu = () => {
                 <MaterialIcons name="share" size={24} color="#333" />
               </TouchableOpacity>
             </View>
-
+            
             <Text style={styles.nom}>{lieu.nom}</Text>
             <Text style={styles.description}>{lieu.description}</Text>
-
+            
             <View style={styles.horairesContainer}>
               <Text style={styles.horaires}>{lieu.horaires}</Text>
             </View>
-
+            
             <View style={styles.ageContainer}>
               {lieu.tranchesAge.map((age, index) => (
                 <View key={index} style={styles.ageBadge}>
@@ -93,7 +96,7 @@ const DetailsLieu = () => {
                 </View>
               ))}
             </View>
-
+            
             <View style={styles.iconsContainer}>
               <MaterialIcons name="sports-soccer" size={30} color="#333" />
               <MaterialIcons name="stroller" size={30} color="#333" />
@@ -101,33 +104,33 @@ const DetailsLieu = () => {
               <MaterialIcons name="baby-changing-station" size={30} color="#333" />
               <MaterialIcons name="restaurant" size={30} color="#333" />
             </View>
-
+            
             <View style={styles.actionsContainer}>
               <View style={styles.rowButtons}>
                 <TouchableOpacity
                   style={[styles.smallButton, styles.avisButton]}
-                  onPress={() =>
+                  onPress={() => {
+                    const nomLieu = lieu.nom; 
                     router.push({
-                      pathname: "/avis",
-                      params: { nomLieu: lieu.nom },
-                    })
-                  }
-                >
+                      pathname: '/avis',
+                      params: { nomLieu: nomLieu },
+                    });
+                  }}>
                   <Text style={styles.smallButtonText}>Donner mon avis</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.smallButton, styles.voirAvisButton]}
-                  onPress={() =>
+                  onPress={() => {
+                    const nomLieu = lieu.nom;
                     router.push({
-                      pathname: "/voir-avis",
-                      params: { nomLieu: lieu.nom },
-                    })
-                  }
-                >
+                      pathname: '/voir-avis',
+                      params: { nomLieu: nomLieu },
+                    });
+                  }}>
                   <Text style={styles.smallButtonText}>Voir les avis</Text>
                 </TouchableOpacity>
               </View>
-
+              
               <View style={styles.newButtonsContainer}>
                 <TouchableOpacity style={styles.iconButton}>
                   <MaterialIcons name="phone" size={24} color="#333" />
@@ -150,146 +153,189 @@ const DetailsLieu = () => {
   );
 };
 
-export default DetailsLieu;
-
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "white",
   },
   scrollContainer: {
-    paddingBottom: 24,
+    flexGrow: 1,
+    backgroundColor: "white",
   },
   imageContainer: {
+    width: "100%",
+    marginTop: 10,
+    padding: 15,
+    borderRadius: 15,
+    overflow: "hidden",
+    backgroundColor: "white",
     position: "relative",
   },
   headerImage: {
     width: "100%",
-    height: 200,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
-  favoriteIconContainer: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    borderRadius: 20,
-    padding: 8,
+    height: 250,
+    borderRadius: 15,
   },
   centeredContent: {
-    padding: 16,
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   ratingShareContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
-  },
-  ratingWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 10,
+    marginTop: 15,
+    marginBottom: 10,
   },
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+  },
+  nom: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 15,
+    textAlign: "center",
   },
   note: {
     fontSize: 18,
+    color: "#D37230",
     fontWeight: "bold",
-    color: "#000",
-  },
-  avis: {
-    marginLeft: 4,
-    fontSize: 14,
-    color: "#666",
+    marginRight: 5,
   },
   starIcon: {
-    marginLeft: 4,
+    marginRight: 5,
+  },
+  avis: {
+    fontSize: 16,
+    color: "#333",
   },
   shareButton: {
+    backgroundColor: "white",
+    borderRadius: 20,
     padding: 8,
-    backgroundColor: "#eee",
-    borderRadius: 8,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
   },
-  nom: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 8,
+  avisButton: {
+    backgroundColor: "#D37230",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+    marginHorizontal: 5,
+  },
+  voirAvisButton: {
+    backgroundColor: "#D37230",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+    marginHorizontal: 5,
   },
   description: {
     fontSize: 16,
+    lineHeight: 24,
     color: "#333",
-    marginBottom: 12,
+    textAlign: "center",
+    marginBottom: 20,
   },
   horairesContainer: {
-    marginBottom: 12,
+    marginBottom: 20,
   },
   horaires: {
     fontSize: 16,
     fontWeight: "500",
+    color: "#333",
+    textAlign: "center",
   },
   ageContainer: {
     flexDirection: "row",
+    justifyContent: "center",
     flexWrap: "wrap",
-    marginVertical: 12,
-    gap: 8,
+    marginBottom: 25,
   },
   ageBadge: {
-    backgroundColor: "#E1F5FE",
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    backgroundColor: "#28603E",
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    marginBottom: 10,
   },
   ageBadgeText: {
-    color: "#0288D1",
-    fontWeight: "600",
+    color: "white",
     fontSize: 14,
-  },
-  iconsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 16,
-    gap: 8,
+    fontWeight: "bold",
   },
   actionsContainer: {
-    marginTop: 16,
+    width: "100%",
+    maxWidth: 400,
+    marginTop: 20,
   },
   rowButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 10,
+    marginBottom: 15,
   },
   smallButton: {
     flex: 1,
-    padding: 12,
-    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
     alignItems: "center",
-  },
-  avisButton: {
-    backgroundColor: "#A7F3D0",
-  },
-  voirAvisButton: {
-    backgroundColor: "#BFDBFE",
+    marginHorizontal: 5,
   },
   smallButtonText: {
-    color: "#000",
-    fontWeight: "600",
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   newButtonsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-    gap: 10,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
   },
   iconButton: {
     alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    flex: 1,
+    marginHorizontal: 10,
   },
   iconButtonText: {
-    marginTop: 4,
-    fontSize: 14,
+    fontSize: 12,
     color: "#333",
+    marginTop: 5,
+    textAlign: "center",
+  },
+  iconsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 20,
+    width: "100%",
+    maxWidth: 400,
+  },
+  favoriteIconContainer: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 20,
+    padding: 5,
+    zIndex: 10,
+  },
+  ratingWrapper: {
+    flex: 1,
+    alignItems: "center",
   },
 });
 
+export default DetailsLieu;
