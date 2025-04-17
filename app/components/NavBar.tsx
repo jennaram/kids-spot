@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   navContainer: {
     flexDirection: 'row',      // Aligne les éléments horizontalement (de gauche à droite)
     backgroundColor: '#2D5E3D', 
-    height: 80,                // Hauteur fixe de la barre de navigation
+    height: 100,                // Hauteur fixe de la barre de navigation
     justifyContent: 'space-around', // Distribue l'espace également entre les éléments
     alignItems: 'center',      
     paddingHorizontal: 10,     

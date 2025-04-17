@@ -147,6 +147,8 @@ const CustomCard = () => {
               />
               <Animated.View>
                 <Text style={styles.title}>{lieu.nom || 'Nom non disponible'}</Text>
+                <Text style={styles.date}>
+                  {lieu.date_evenement.debut} - {lieu.date_evenement.fin}</Text>
               </Animated.View>
               <TouchableOpacity style={styles.infoButton} onPress={flipCard}>
                 <Text style={styles.infoText}>Voir les détails</Text>
