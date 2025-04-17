@@ -13,6 +13,9 @@ import {
   BackHandler
 } from "react-native";
 import MenuBurger from "app/components/menuburger";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types/navigation';
+import Layout from './components/LayoutNav'; // Adapter le chemin si besoin
 
 const DetailsLieu = () => {
   const router = useRouter();
@@ -38,6 +41,13 @@ const DetailsLieu = () => {
   }
 
   return (
+    <Layout
+    activeTab="undefined"
+    onMapPress={() => navigation.navigate('Map')}
+    onCalendarPress={() => navigation.navigate('Calendar')}
+    onAddPress={() => navigation.navigate('Add')}
+    onFavoritePress={() => navigation.navigate('Favorites')}
+  >
     <View style={styles.mainContainer}>
       {/* Header avec MenuBurger fixe en haut */}
       <View style={styles.header}>
@@ -139,6 +149,7 @@ const DetailsLieu = () => {
         </View>
       </ScrollView>
     </View>
+    </Layout>
   );
 };
 
