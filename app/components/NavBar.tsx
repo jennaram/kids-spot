@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     height: 60,                // Hauteur fixe de la barre de navigation
     justifyContent: 'space-around', // Distribue l'espace également entre les éléments
     alignItems: 'center',      
-    paddingHorizontal: 10,     
+    paddingHorizontal: 15,     
     width: '100%',             
     position: 'absolute',      
     bottom: 0,                 
