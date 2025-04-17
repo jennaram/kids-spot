@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet,
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import burgerMenuIcon from '../assets/images/burger_menu.png';
+import MenuBurger from './MenuBurger'; // Ensure the file name matches the actual file
 
 const AddPlaceScreen = () => {
   const router = useRouter();
@@ -87,15 +87,9 @@ const AddPlaceScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* Header avec icône burger et titre */}
+      {/* Header avec icône burger et titre - SEULE MODIFICATION EFFECTUEE */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.burgerButton}>
-          <Image 
-            source={burgerMenuIcon} 
-            style={styles.burgerIcon} 
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
+        <MenuBurger />
         <Text style={styles.header}>Ajouter un lieu</Text>
       </View>
 
@@ -111,7 +105,6 @@ const AddPlaceScreen = () => {
         />
       </View>
 
-      {/* Le reste de votre code existant... */}
       {/* Type de lieu */}
       <View style={styles.section}>
         <Text style={styles.label}>Type de lieu</Text>
@@ -257,14 +250,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     paddingTop: 10,
-  },
-  burgerButton: {
-    padding: 10,
-    marginRight: 10,
-  },
-  burgerIcon: {
-    width: 41,
-    height: 34,
   },
   header: {
     fontSize: 24,
