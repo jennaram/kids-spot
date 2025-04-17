@@ -136,6 +136,7 @@ const DetailsLieu = () => {
                     params: { nomLieu: nomLieu },
                   });
                 }}>
+              </TouchableOpacity>
             <TouchableOpacity
               style={[styles.smallButton, styles.avisButton]}
               onPress={() => {const nomLieu = lieu.nom; 
