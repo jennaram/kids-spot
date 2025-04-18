@@ -18,6 +18,7 @@ import { router } from 'expo-router';
 
 // Import du logo Google - Assurez-vous que le chemin est correct
 const googleLogo = require('../assets/images/google-logo.png');
+const backArrow = require('../assets/images/fleche_retour.png');
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -80,8 +81,20 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     }, 1500);
   };
 
+  const handleGoBack = () => {
+    router.replace('/login');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Bouton de retour ajouté ici */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleGoBack}
+      >
+        <Image source={backArrow} style={styles.backButtonImage} />
+      </TouchableOpacity>
+      
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -294,5 +307,28 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.7,
+  },
+  // Styles pour le bouton retour
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 30,
+    left: 20,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  backButtonImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
 });
