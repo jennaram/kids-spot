@@ -1,5 +1,5 @@
 // Importation des composants et hooks nécessaires
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, SafeAreaView, ScrollView, StatusBar, Dimensions } from 'react-native';
 // React Native fournit ces composants de base pour construire l'interface utilisateur mobile
 
 import React, { useState, useRef } from 'react';
@@ -46,6 +46,9 @@ interface Lieu {
   ages: string[];  // Tranches d'âge concernées
 }
 
+// Obtenir la largeur de l'écran pour calculer les dimensions
+const { width } = Dimensions.get('window');
+const cardWidth = width * 0.92; // La carte prend 92% de la largeur de l'écran
 
 // Définition du composant principal "CustomCard"
 const CustomCard = () => {
@@ -58,8 +61,6 @@ const CustomCard = () => {
   const flipAnimations = useRef<{[key: number]: Animated.Value}>({}).current;
   
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,6 +117,11 @@ const CustomCard = () => {
       onAddPress={() => navigation.navigate('Add')}
       onFavoritePress={() => navigation.navigate('Favorites')}
     >
+      {/* Barre de titre verte au niveau de l'encoche */}
+      <SafeAreaView style={styles.headerBar}>
+        <Text style={styles.headerTitle}>Événements</Text>
+      </SafeAreaView>
+      
       <ScrollView contentContainerStyle={styles.container}>
         {lieux.map((lieu) => {
           const frontInterpolate = flipAnimations[lieu.id]?.interpolate({
@@ -142,22 +148,25 @@ const CustomCard = () => {
               >
                 <View style={styles.cardContent}>
                   <Image
-                    source={require('../assets/images/Logo.png')}
+                    source={require('../assets/images/parc_montsouris.jpg')}
                     style={styles.image}
-                    resizeMode="contain"
+                    resizeMode="cover"
                   />
-                  <Animated.View>
-                    <Text style={styles.title}>{lieu.nom || 'Nom non disponible'}</Text>
-                    <Text style={styles.date}>
-                      {lieu.date_evenement.debut} - {lieu.date_evenement.fin}
-                    </Text>
-                  </Animated.View>
-                  <TouchableOpacity 
-                    style={styles.infoButton} 
-                    onPress={() => flipCard(lieu.id)}
-                  >
-                    <Text style={styles.infoText}>Voir les détails</Text>
-                  </TouchableOpacity>
+                  <View style={styles.infoContainer}>
+                    <View style={styles.textContainer}>
+                      <Text style={styles.location}>{lieu.adresse?.ville || 'Ville non disponible'}, France</Text>
+                      <Text style={styles.title}>{lieu.nom || 'Nom non disponible'}</Text>
+                      <Text style={styles.date}>
+                        {lieu.date_evenement.debut} - {lieu.date_evenement.fin}
+                      </Text>
+                    </View>
+                    <TouchableOpacity 
+                      style={styles.infoButton} 
+                      onPress={() => flipCard(lieu.id)}
+                    >
+                      <Text style={styles.infoText}>Infos</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </Animated.View>
 
@@ -194,94 +203,130 @@ const CustomCard = () => {
     </Layout>
   );
 };
+
 // Styles pour les différents éléments de l'interface
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1,  // Prend tout l'espace disponible
+    flex: 1,
     backgroundColor: '#fff',
   },
-
+  headerBar: {
+    backgroundColor: '#2D523F', // Même couleur verte que le navigateur en bas
+    paddingTop: StatusBar.currentHeight || 35, // Pour gérer l'encoche
+    paddingBottom: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+    height: 95,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   centered: {
     flex: 1,
-    justifyContent: 'center',  // Centre verticalement
-    alignItems: 'center',      // Centre horizontalement
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   container: {
-    paddingBottom: 90,  // Espace en bas pour éviter que la NavBar ne recouvre le contenu
-  },
-  image: {
-    width: 100,
-    height: 100,
-    alignSelf: 'center',  // Centre l'image
-    marginBottom: 16,     // Espace en dessous de l'image
+    paddingVertical: 20,
+    paddingBottom: 90, // Espace pour la barre de navigation
   },
   cardContainer: {
     width: '100%',
-    alignItems: 'center',  // Centre la carte horizontalement
-    marginVertical: 20,    // Marges en haut et en bas
+    alignItems: 'center',
+    marginBottom: 24,
   },
   card: {
-    width: '90%',           // Largeur de la carte
-    height: 250,            // Hauteur fixe
-    borderRadius: 16,       // Coins arrondis
+    width: cardWidth,
+    height: cardWidth * 0.8, // Aspect ratio plus proche du style Airbnb
+    borderRadius: 16,
     backgroundColor: '#fff',
-    shadowColor: '#000',    // Couleur de l'ombre
-    shadowOpacity: 0.2,     // Opacité de l'ombre
-    shadowOffset: { width: 0, height: 3 },  // Décalage de l'ombre
-    shadowRadius: 6,        // Rayon de l'ombre
-    elevation: 6,           // Élévation (pour Android)
-    justifyContent: 'center',
-    backfaceVisibility: 'hidden',  // Cache la face non visible pendant l'animation
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
+    overflow: 'hidden',
+    backfaceVisibility: 'hidden',
   },
   cardBack: {
-    backgroundColor: '#f8f9fa',  // Couleur de fond légèrement différente pour la face arrière
+    backgroundColor: '#f8f9fa',
   },
   cardContent: {
-    padding: 20,  // Espace intérieur
-    justifyContent: 'center',
+    flex: 1,
+    flexDirection: 'column',
+  },
+  image: {
+    width: '100%',
+    height: '65%', // L'image prend 65% de la hauteur de la carte
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  infoContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end', // Aligne les éléments en bas
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  textContainer: {
+    flex: 1,
+  },
+  location: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 4,
   },
   title: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    color: '#222',
+    marginBottom: 3,
   },
   date: {
     fontSize: 14,
-    color: '#555',
-    marginBottom: 16,
+    color: '#717171',
   },
   infoButton: {
-    backgroundColor: '#007bff',  // Bleu
-    padding: 10,
-    borderRadius: 8,  // Coins arrondis
-    alignSelf: 'flex-start',  // Aligne à gauche
+    backgroundColor: "#D37230",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignSelf: 'flex-end',
   },
   infoText: {
-    color: '#fff',  // Texte blanc
-    fontWeight: 'bold',
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
     color: '#222',
-    marginTop: 10,
-    marginBottom: 10,
+    margin: 20,
   },
   modalText: {
     fontSize: 16,
     color: '#555',
+    marginHorizontal: 20,
     marginBottom: 10,
+    lineHeight: 22,
   },
   closeButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: "#D37230",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    marginTop: 40,
-    alignSelf: 'flex-end',  // Aligne à droite
+    margin: 20,
+    alignSelf: 'flex-end',
   },
 });
 
-// Exporte le composant pour l'utiliser ailleurs
 export default CustomCard;
