@@ -13,10 +13,32 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
 import Layout from "./components/LayoutNav";
+import { Share } from 'react-native';
+
 
 const DetailsLieu = () => {
   const router = useRouter();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  // Fonction asynchrone qui sera appelée quand l'utilisateur appuie sur le bouton de partage
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        message: "Viens découvrir cet événement génial sur KidsPot ! 🎉 https://kidspot.app/event/123",
+        title: "KidsPot - Sorties pour les enfants",
+      });
+  
+      if (result.action === Share.sharedAction) {
+        // Le contenu a été partagé 
+      } else if (result.action === Share.dismissedAction) {
+        // Le partage a été annulé (pas d'action ici non plus)
+      }
+    } catch (error: any) {
+      // Alert.alert("Erreur", "Impossible de partager le contenu.");
+    }
+  };
+  
+
+  
 
   const lieu = {
     nom: "Parc Montsouris - Paris 14",
@@ -33,9 +55,7 @@ const DetailsLieu = () => {
     console.log("Favori cliqué");
   }
 
-  function handleShare() {
-    console.log("Partager cliqué");
-  }
+  // Removed duplicate handleShare function
 
   return (
     <Layout
@@ -56,9 +76,10 @@ const DetailsLieu = () => {
               resizeMode="cover"
             />
             <View style={styles.favoriteIconContainer}>
-              <TouchableOpacity onPress={handleFavoriteToggle}>
-                <MaterialIcons name="favorite-border" size={24} color="white" />
-              </TouchableOpacity>
+            <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+              <MaterialIcons name="share" size={24} color="#333" />
+            </TouchableOpacity>
+
             </View>
           </View>
 
