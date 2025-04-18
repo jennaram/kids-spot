@@ -123,10 +123,9 @@ const DetailsLieu = () => {
               resizeMode="cover"
             />
             <View style={styles.favoriteIconContainer}>
-            <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-              <MaterialIcons name="share" size={24} color="#333" />
-            </TouchableOpacity>
-
+              <TouchableOpacity onPress={handleFavoriteToggle}>
+                <MaterialIcons name="favorite-border" size={24} color="white" />
+              </TouchableOpacity>
             </View>
           </View>
 
