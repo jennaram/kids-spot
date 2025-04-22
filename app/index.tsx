@@ -3,6 +3,7 @@ import { Image, Text, View, Button, ActivityIndicator } from "react-native";
 import { useRouter } from 'expo-router';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Font from 'expo-font';
+import { fontTitle } from "./style/styles";
 
 const Stack = createNativeStackNavigator();
 
@@ -10,6 +11,7 @@ const Stack = createNativeStackNavigator();
 const loadFonts = async () => {
   await Font.loadAsync({
     'BebasNeue-Regular': require('../assets/fonts/BebasNeue-Regular.ttf'),
+    'Inter-Regular': require('../assets/fonts/Inter-Regular.ttf')
   });
 };
 
@@ -49,11 +51,9 @@ export default function Index() {
         source={require('../assets/images/Logo.png')}
         style={{ width: 200, height: 200, resizeMode: 'contain', marginBottom: 20 }}
       />
-      <Text style={{ 
-        fontFamily: 'BebasNeue-Regular',
-        fontSize: 28,
+      <Text style={[fontTitle, {
         marginBottom: 20
-      }}>
+      }]}>
         Bienvenue sur Kids Spot
       </Text>
       <Button title="Accueil" onPress={() => router.push('/accueil')} /> 
