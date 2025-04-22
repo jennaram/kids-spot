@@ -14,6 +14,7 @@ import * as Location from 'expo-location';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 
+
 // useEffect permet d'exécuter des effets secondaires (comme des appels API) dans les composants
 
 import Layout from './components/LayoutNav';
