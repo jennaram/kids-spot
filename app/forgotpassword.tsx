@@ -15,6 +15,9 @@ import {
   Alert
 } from 'react-native';
 import { router } from 'expo-router';
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
+
 
 const appLogo = require('../assets/images/Logo.png');
 const backArrow = require('../assets/images/fleche_retour.png');
@@ -169,8 +172,8 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     height: 50,
-    backgroundColor: '#D37230',
-    borderRadius: 25,
+    backgroundColor: colorButtonFirst,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
@@ -226,8 +229,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalButton: {
-    backgroundColor: '#D37230',
-    borderRadius: 25,
+    backgroundColor: colorButtonFirst,
+    borderRadius: 5,
     paddingVertical: 12,
     paddingHorizontal: 30,
     elevation: 2,

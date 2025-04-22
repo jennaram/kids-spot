@@ -15,6 +15,8 @@ import {
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
 
 // Import du logo Google - Assurez-vous que le chemin est correct
 const googleLogo = require('../assets/images/google-logo.png');
@@ -105,7 +107,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.content}>
-            <Text style={styles.title}>Inscription</Text>
+            <Text style={[fontTitle]}>Inscription</Text>
 
             {/* Bouton Google avec logo local */}
             <View style={styles.googleButtonWrapper}>
@@ -204,7 +206,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colorButtonThird,
   },
   container: {
     flex: 1,
@@ -218,13 +220,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingTop: 30,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#333',
-  },
   googleButtonWrapper: {
     width: '100%',
     alignItems: 'center',
@@ -234,10 +229,10 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 300,
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: colorButtonThird,
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 8,
+    borderRadius: 15,
     justifyContent: 'center',
     elevation: 2,
   },
@@ -265,7 +260,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: '100%',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: colorFourth,
     borderRadius: 12,
     padding: 20,
     shadowColor: '#000',
@@ -285,7 +280,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: colorButtonThird,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
@@ -294,8 +289,8 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     height: 50,
-    backgroundColor: '#D37230',
-    borderRadius: 8,
+    backgroundColor: colorButtonFirst,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
@@ -318,7 +313,7 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: colorButtonThird,
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

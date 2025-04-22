@@ -15,6 +15,8 @@ import {
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
 
 const googleLogo = require('../assets/images/google-logo.png');
 const appLogo = require('../assets/images/Logo.png');
@@ -222,8 +224,8 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     height: 50,
-    backgroundColor: '#D37230',
-    borderRadius: 25,
+    backgroundColor: colorButtonFirst,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
@@ -293,7 +295,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signupLink: {
-    color: '#D37230',
+    color: colorButtonFirst,
     fontSize: 14,
     fontWeight: '500',
   },
