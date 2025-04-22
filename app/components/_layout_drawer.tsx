@@ -1,14 +1,5 @@
 import { Drawer } from "expo-router/drawer";
-import {
-  Image,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ToastAndroid,
-  Platform,
-  Alert,
-} from "react-native";
+import { Image, View, Text, TouchableOpacity, StyleSheet, ToastAndroid, Platform, Alert, } from "react-native";
 import { ReactNode, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useNavigationContainerRef } from "expo-router";
