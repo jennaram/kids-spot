@@ -16,7 +16,11 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
 // importations concernent la navigation dans l'application
-
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth } from './style/styles';
+import { fontTitle } from './style/styles';
+import { loadFonts } from './style/styles';
+import { fontSubtitle } from './style/styles';
+import { ButtonStyle } from './style/styles';
 // Interface TypeScript définissant la structure d'un objet "Lieu"
 // Cela aide à assurer la cohérence des données manipulées
 interface Lieu {
@@ -27,7 +31,9 @@ interface Lieu {
     adresse: string;
     code_postal: string;
     ville: string;
+  
   };
+  description: string;
   type: {
     id: number;
     nom: string;
@@ -119,7 +125,7 @@ const CustomCard = () => {
     >
       {/* Barre de titre verte au niveau de l'encoche */}
       <SafeAreaView style={styles.headerBar}>
-        <Text style={styles.headerTitle}>Événements</Text>
+        <Text style={[fontTitle]}>Événements</Text>
       </SafeAreaView>
       
       <ScrollView contentContainerStyle={styles.container}>
@@ -154,14 +160,14 @@ const CustomCard = () => {
                   />
                   <View style={styles.infoContainer}>
                     <View style={styles.textContainer}>
-                      <Text style={styles.location}>{lieu.adresse?.ville || 'Ville non disponible'}, France</Text>
-                      <Text style={styles.title}>{lieu.nom || 'Nom non disponible'}</Text>
+                      <Text style={[fontSubtitle]}>{lieu.adresse?.ville || 'Ville non disponible'}, France</Text>
+                      <Text style={styles.subtitle2}>{lieu.nom || 'Nom non disponible'}</Text>
                       <Text style={styles.date}>
                         {lieu.date_evenement.debut} - {lieu.date_evenement.fin}
                       </Text>
                     </View>
                     <TouchableOpacity 
-                      style={styles.infoButton} 
+                      style={[styles.infoButton, ButtonStyle]} 
                       onPress={() => flipCard(lieu.id)}
                     >
                       <Text style={styles.infoText}>Infos</Text>
@@ -180,7 +186,7 @@ const CustomCard = () => {
                 ]}
               >
                 <View style={styles.cardContent}>
-                  <Text style={styles.modalTitle}>{lieu.nom}</Text>
+                  <Text style={[fontSubtitle, styles.modalTitle]}>{lieu.nom}</Text>
                   <Text style={styles.modalText}>
                     {lieu.adresse?.adresse}, {lieu.adresse?.code_postal} {lieu.adresse?.ville}
                   </Text>
@@ -188,11 +194,12 @@ const CustomCard = () => {
                   <Text style={styles.modalText}>
                     Équipements : {lieu.equipements?.join(', ') || 'Non spécifiés'}
                   </Text>
+                  <Text style={styles.modalText}>{lieu.description}</Text>
                   <TouchableOpacity 
-                    style={styles.closeButton} 
+                    style={[styles.boutonRetour, ButtonStyle]} 
                     onPress={() => flipCard(lieu.id)}
                   >
-                    <Text style={{ color: '#fff', fontWeight: 'bold' }}>Retour</Text>
+                    <Text style={[{ color: '#FFFFFF' }]}>Retour</Text>
                   </TouchableOpacity>
                 </View>
               </Animated.View>
@@ -211,16 +218,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   headerBar: {
-    backgroundColor: '#2D523F', // Même couleur verte que le navigateur en bas
-    paddingTop: StatusBar.currentHeight || 35, // Pour gérer l'encoche
-    paddingBottom: 15,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
-    height: 95,
   },
   headerTitle: {
     color: '#fff',
@@ -284,48 +282,40 @@ const styles = StyleSheet.create({
     color: '#222',
     marginBottom: 4,
   },
-  title: {
+  subtitle2: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#222',
     marginBottom: 3,
+    marginTop: 3,
   },
   date: {
     fontSize: 14,
     color: '#717171',
   },
   infoButton: {
-    backgroundColor: "#D37230",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    backgroundColor: colorButtonFirst,
     alignSelf: 'flex-end',
   },
   infoText: {
     color: '#fff',
-    fontWeight: '600',
     fontSize: 14,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '600',
-    color: '#222',
+    fontWeight: '100',
     margin: 20,
   },
   modalText: {
     fontSize: 16,
-    color: '#555',
     marginHorizontal: 20,
     marginBottom: 10,
     lineHeight: 22,
   },
-  closeButton: {
-    backgroundColor: "#D37230",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    margin: 20,
+  boutonRetour: {
     alignSelf: 'flex-end',
+    backgroundColor: colorButtonFirst,
+    marginTop: 55,
+    marginEnd: 20,
   },
 });
 

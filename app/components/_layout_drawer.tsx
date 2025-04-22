@@ -3,6 +3,7 @@ import { Image, View, Text, TouchableOpacity, StyleSheet, ToastAndroid, Platform
 import { ReactNode, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useNavigationContainerRef } from "expo-router";
+import { fontTitle, loadFonts } from '../style/styles';
 
 interface CustomDrawerLayoutProps {
   children: ReactNode;
@@ -89,7 +90,7 @@ function CustomDrawerContent(props: any) {
             source={require("../../assets/images/Logo.png")}
             style={styles.logoImage}
           />
-          <Text style={styles.headerText}>Kids Spot</Text>
+          <Text style={[fontTitle]}>Kids Spot</Text>
         </View>
         
         {/* Items principaux */}
@@ -145,11 +146,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 10,
   },
   menuItem: {
     flexDirection: "row",

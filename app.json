@@ -17,7 +17,8 @@
           "locationWhenInUsePermission": "Cette application a besoin d'accéder à votre position."
         }
       ],
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "expo-font"
     ],
     "ios": {
       "infoPlist": {

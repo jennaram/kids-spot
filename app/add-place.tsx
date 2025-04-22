@@ -4,6 +4,10 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import MenuBurger from 'app/components/menuburger';
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird } from './style/styles';
+import { fontTitle } from './style/styles';
+import { loadFonts } from './style/styles';
+
 
 const AddPlaceScreen = () => {
   const router = useRouter();
@@ -89,7 +93,7 @@ const AddPlaceScreen = () => {
       {/* Header avec menu burger */}
       <View style={styles.headerContainer}>
         <MenuBurger />
-        <Text style={styles.header}>Ajouter un lieu</Text>
+        <Text style={[fontTitle]}>Ajouter un lieu</Text>
       </View>
 
       {/* Nom du lieu */}
@@ -246,8 +250,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    
   },
   section: {
     marginBottom: 20,
@@ -287,7 +290,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   locationButton: {
-    backgroundColor: '#D37230',
+    backgroundColor: colorButtonFirst,
     padding: 10,
     borderRadius: 8,
     marginBottom: 10,

@@ -14,6 +14,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
 import Layout from "./components/LayoutNav";
 import { Share } from 'react-native';
+import { Alert, Platform, Linking } from 'react-native';
+
 
 
 const DetailsLieu = () => {
@@ -47,6 +49,10 @@ const DetailsLieu = () => {
     horaires: "Tous les jours de 7h à 20h",
     note: "4.8",
     avis: "180 avis membres",
+    position: {
+      latitude: 48.8216,
+      longitude: 2.3387,
+    },
     tranchesAge: ["0-2 ans", "3-6 ans", "7 ans +"],
     imageUrl: require("../assets/images/parc_montsouris.jpg"),
   };
@@ -56,6 +62,47 @@ const DetailsLieu = () => {
   }
 
   // Removed duplicate handleShare function
+
+  //Fonction GPS
+  const handleGpsPress = () => {
+    const { latitude, longitude } = lieu.position;
+  
+    Alert.alert(
+      "Choisissez une application",
+      "Quelle application voulez-vous utiliser pour l’itinéraire ?",
+      [
+        {
+          text: "Google Maps",
+          onPress: () => {
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Waze",
+          onPress: () => {
+            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Apple Plans",
+          onPress: () => {
+            const url = `http://maps.apple.com/?daddr=${latitude},${longitude}`;
+            Linking.openURL(url);
+          },
+          // Visible que sur iOS
+          style: Platform.OS === 'ios' ? "default" : "cancel",
+        },
+        {
+          text: "Annuler",
+          style: "cancel"
+        }
+      ]
+    );
+  };
+  
+
 
   return (
     <Layout
@@ -76,10 +123,9 @@ const DetailsLieu = () => {
               resizeMode="cover"
             />
             <View style={styles.favoriteIconContainer}>
-            <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-              <MaterialIcons name="share" size={24} color="#333" />
-            </TouchableOpacity>
-
+              <TouchableOpacity onPress={handleFavoriteToggle}>
+                <MaterialIcons name="favorite-border" size={24} color="white" />
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -161,7 +207,7 @@ const DetailsLieu = () => {
                   <MaterialIcons name="language" size={24} color="#333" />
                   <Text style={styles.iconButtonText}>Site web</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={handleGpsPress}>
                   <MaterialIcons name="place" size={24} color="#333" />
                   <Text style={styles.iconButtonText}>Y aller</Text>
                 </TouchableOpacity>

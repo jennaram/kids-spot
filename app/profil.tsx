@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({
@@ -28,7 +30,7 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Text style={styles.title}>Mon Profil</Text>
+          <Text style={[fontTitle]}>Mon Profil</Text>
 
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
@@ -109,7 +111,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colorButtonThird,
   },
   scrollContent: {
     flexGrow: 1,
@@ -129,7 +131,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: '100%',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: colorFourth,
     borderRadius: 12,
     padding: 20,
     shadowColor: '#000',
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: colorButtonThird,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
@@ -164,14 +166,14 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     height: 50,
-    backgroundColor: '#D37230',
+    backgroundColor: colorButtonFirst,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
   },
   submitButtonText: {
-    color: '#fff',
+    color: colorButtonThird,
     fontSize: 16,
     fontWeight: '600',
   },
