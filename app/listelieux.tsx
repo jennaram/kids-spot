@@ -177,7 +177,7 @@ export default function ListeLieux() {
             }}
           >
             {selectedEquipements.includes(equip) && (
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>✓</Text>
+              <Text style={{ color: colorButtonThird, fontWeight: 'bold' }}>✓</Text>
             )}
           </View>
           <Text>{equip}</Text>
@@ -197,7 +197,7 @@ export default function ListeLieux() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: colorButtonThird },
   searchRow: {
     flexDirection: 'row',
     padding: 12,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   equipButton: {
     paddingHorizontal: 12,
     justifyContent: 'center',
-    backgroundColor: '#28603E', // vert
+    backgroundColor: colorButtonSecondary,
     borderRadius: 8,
   },
   filterRow: {
@@ -224,19 +224,19 @@ const styles = StyleSheet.create({
   filterButton: {
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#fff',
+    backgroundColor: colorButtonThird,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#D37230', // orange
+    borderColor: colorButtonFirst,
   },
   filterButtonActive: {
-    backgroundColor: '#D37230', //orange
+    backgroundColor: colorButtonFirst
   },
   filterText: {
     color: '#000',
   },
   filterTextActive: {
-    color: '#fff',
+    color: colorButtonThird,
   },
   listContainer: {
     padding: 16,
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   distance: {
     marginLeft: 8,
     fontWeight: '600',
-    color: '#D37230', //orange
+    color: colorButtonFirst
   },
   floatingButton: {
     position: 'absolute',
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   modalValidate: {
     marginTop: 16,
     padding: 10,
-    backgroundColor: '#28603E', //vert
+    backgroundColor: colorButtonSecondary,
     borderRadius: 8,
     alignItems: 'center',
   },
