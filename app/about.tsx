@@ -6,6 +6,8 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation"; // Assure-toi que ce fichier existe et contient la bonne définition
 import Layout from "./components/LayoutNav"; // Remplace par le bon chemin si besoin
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
 
 const About = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -25,7 +27,7 @@ const About = () => {
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <MenuBurger onPress={handleMenuPress} />
-          <Text style={styles.title}>À propos</Text>
+          <Text style={[fontTitle]}>À propos</Text>
           <View style={{ width: 30 }} />
         </View>
 
@@ -87,7 +89,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: colorButtonThird,
   },
   header: {
     flexDirection: "row",
@@ -95,15 +97,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-    flex: 1,
-  },
   textContainer: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: colorFourth,
     borderRadius: 10,
     padding: 15,
     marginTop: 10,
@@ -122,7 +117,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#D37230",
+    color: colorButtonFirst,
     textAlign: "center",
   },
   bulletPoint: {
@@ -141,13 +136,13 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
-    backgroundColor: "#D37230",
+    backgroundColor: colorButtonFirst,
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 15,
     alignItems: "center",
   },
   buttonText: {
-    color: "#fff",
+    color: colorButtonThird,
     fontSize: 16,
     fontWeight: "bold",
   },
