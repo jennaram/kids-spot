@@ -10,8 +10,7 @@ const Stack = createNativeStackNavigator();
 // Fonction de chargement des polices
 const loadFonts = async () => {
   await Font.loadAsync({
-    'BebasNeue-Regular': require('../assets/fonts/BebasNeue-Regular.ttf'),
-    'Inter-Regular': require('../assets/fonts/Inter-Regular.ttf')
+    'BebasNeue-Regular': require('../assets/fonts/BebasNeue-Regular.ttf')
   });
 };
 

@@ -4,8 +4,7 @@ import * as Font from 'expo-font';
 // Charger la police BebasNeue-Regular
 export const loadFonts = async () => {
   await Font.loadAsync({
-    'BebasNeue-Regular': require('../../assets/fonts/BebasNeue-Regular.ttf'), // Assurez-vous que le chemin est correct
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
+    'BebasNeue-Regular': require('../../assets/fonts/BebasNeue-Regular.ttf'), 
   });
 };
 
@@ -13,6 +12,7 @@ export const loadFonts = async () => {
 export const colorButtonFirst = '#D37230';
 export const colorButtonSecondary = '#28603E';
 export const colorButtonThird = '#FFFFFF';
+export const colorFourth = '#E9ECEF'
 
 // Style pour les titres
 export const fontTitle: TextStyle = {
@@ -21,6 +21,7 @@ export const fontTitle: TextStyle = {
   fontSize: 30,
 };
 
+//Style pour les sous-titres
 export const fontSubtitle: TextStyle = {
     fontFamily: 'BebasNeue-Regular',
     fontWeight: 'bold',
@@ -28,13 +29,9 @@ export const fontSubtitle: TextStyle = {
     fontSize: 18,
     };
 
+//Style pour les bouttons
 export const ButtonStyle = {
     borderRadius: 15,
     paddingVertical: 10,
     paddingHorizontal: 20,
 };
-
-export const fontApp: TextStyle = {
-  fontFamily: 'Inter-Regular',
-  fontStyle: 'normal'
-}
