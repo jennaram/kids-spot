@@ -26,7 +26,7 @@ export const fontSubtitle: TextStyle = {
     fontFamily: 'BebasNeue-Regular',
     fontWeight: 'bold',
     fontStyle: 'normal',
-    fontSize: 18,
+    fontSize: 15,
     };
 
 //Style pour les bouttons

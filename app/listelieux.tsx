@@ -10,6 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
 import Layout from './components/LayoutNav'; // Adapter le chemin si besoin
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
 
 const iconByType = {
   listIcon: require('../assets/images/switchlieux.png'),
@@ -130,7 +132,7 @@ export default function ListeLieux() {
               <View style={styles.itemContent}>
                 {point.image && <Image source={point.image} style={styles.image} />}
                 <View style={styles.textContainer}>
-                  <Text style={styles.title}>{point.nom}</Text>
+                  <Text style={[fontSubtitle]}>{point.nom}</Text>
                   <Text style={styles.description}>{point.description}</Text>
                   {point.horaires && <Text style={styles.info}>Horaires : {point.horaires}</Text>}
                 </View>
@@ -258,11 +260,6 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 4,
   },
   description: {
     fontSize: 14,
