@@ -1,16 +1,27 @@
 import { Drawer } from "expo-router/drawer";
-import { Image, View, Text, TouchableOpacity, StyleSheet, ToastAndroid, Platform, Alert } from "react-native";
+import {
+  Image,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ToastAndroid,
+  Platform,
+  Alert,
+} from "react-native";
 import { ReactNode, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useNavigationContainerRef } from "expo-router";
-import { fontTitle, loadFonts } from '../style/styles';
+import { fontTitle, loadFonts } from "../style/styles";
 import { drawerStyles as styles } from "./drawerStyles";
 
 interface CustomDrawerLayoutProps {
   children: ReactNode;
 }
 
-export default function CustomDrawerLayout({ children }: CustomDrawerLayoutProps) {
+export default function CustomDrawerLayout({
+  children,
+}: CustomDrawerLayoutProps) {
   return (
     <Drawer
       screenOptions={{
@@ -46,7 +57,7 @@ export default function CustomDrawerLayout({ children }: CustomDrawerLayoutProps
         name="logout"
         options={{ drawerItemStyle: { display: "none" } }}
       />
-      
+
       {children}
     </Drawer>
   );
@@ -54,11 +65,15 @@ export default function CustomDrawerLayout({ children }: CustomDrawerLayoutProps
 
 function CustomDrawerContent(props: any) {
   const router = useRouter();
-  
+
   // Configuration des items du menu avec typage correct pour les icônes
   const mainMenuItems = [
     { name: "profil", icon: "person" as const, label: "Mon profil" },
-    { name: "add-place", icon: "add-circle" as const, label: "Ajouter un lieu" },
+    {
+      name: "add-place",
+      icon: "add-circle" as const,
+      label: "Ajouter un lieu",
+    },
     { name: "about", icon: "information-circle" as const, label: "À propos" },
     { name: "contact", icon: "mail" as const, label: "Contact" },
   ];
@@ -86,14 +101,23 @@ function CustomDrawerContent(props: any) {
     <View style={styles.container}>
       <View style={styles.menuSection}>
         {/* En-tête du menu */}
-        <View style={styles.header}>
+        <View
+          style={[
+            styles.header,
+            {
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-start", // Aligne les éléments sur la gauche
+            },
+          ]}
+        >
           <Image
             source={require("../../assets/images/Logo.png")}
             style={styles.logoImage}
           />
-          <Text style={[fontTitle]}>Kids Spot</Text>
+          <Text style={[fontTitle, { marginLeft: 10 }]}>Kids Spot</Text>
         </View>
-        
+
         {/* Items principaux */}
         {mainMenuItems.map((item) => (
           <TouchableOpacity
@@ -118,7 +142,7 @@ function CustomDrawerContent(props: any) {
           </TouchableOpacity>
         ))}
       </View>
-      
+
       {/* Section déconnexion (toujours en bas) */}
       <TouchableOpacity
         style={styles.logoutItem}
@@ -130,4 +154,3 @@ function CustomDrawerContent(props: any) {
     </View>
   );
 }
-
