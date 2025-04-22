@@ -10,8 +10,10 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "./types/navigation"; // Vérifie que ce fichier existe
-import Layout from "./components/LayoutNav"; // Adapte si besoin
+import { RootStackParamList } from "./types/navigation"; 
+import Layout from "./components/LayoutNav"; 
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
 
 const teamMembers = [
   {
@@ -53,7 +55,7 @@ export default function ContactScreen() {
       onFavoritePress={() => navigation.navigate("Favorites")}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Contact</Text>
+        <Text style={[fontTitle]}>Contact</Text>
         <Text style={styles.subtitle}>Projet réalisé par :</Text>
         {teamMembers.map((member) => (
           <View key={member.name} style={styles.member}>
@@ -85,13 +87,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     paddingTop: 50,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
+    backgroundColor: colorButtonThird,
   },
   subtitle: {
     fontSize: 18,

@@ -15,7 +15,8 @@ import { RootStackParamList } from "./types/navigation";
 import Layout from "./components/LayoutNav";
 import { Share } from 'react-native';
 import { Alert, Platform, Linking } from 'react-native';
-
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
 
 
 const DetailsLieu = () => {
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
   },
   note: {
     fontSize: 18,
-    color: "#D37230",
+    color: colorButtonFirst,
     fontWeight: "bold",
     marginRight: 5,
   },
@@ -291,18 +292,18 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
   },
   avisButton: {
-    backgroundColor: "#D37230",
+    backgroundColor: colorButtonFirst,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
+    borderRadius: 15,
     alignItems: "center",
     marginHorizontal: 5,
   },
   voirAvisButton: {
-    backgroundColor: "#D37230",
+    backgroundColor: colorButtonFirst,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
+    borderRadius: 15,
     alignItems: "center",
     marginHorizontal: 5,
   },
@@ -329,7 +330,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   ageBadge: {
-    backgroundColor: "#28603E",
+    backgroundColor: colorButtonSecondary,
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,

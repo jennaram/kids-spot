@@ -10,7 +10,9 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
-import Layout from './components/LayoutNav'; // Adapter le chemin si besoin
+import Layout from './components/LayoutNav';
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
 
 interface Favori {
   id: string;
@@ -88,7 +90,7 @@ const Favoris = () => {
       onFavoritePress={() => navigation.navigate('Favorites')}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>FAVORIS</Text>
+        <Text style={[fontTitle]}>FAVORIS</Text>
         {favoris.length > 0 ? (
           <FlatList
             data={favoris}
@@ -109,12 +111,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 10,
     backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
   },
   favoriCard: {
     flexDirection: 'row',
@@ -147,7 +143,7 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     marginTop: 10,
-    backgroundColor: '#d37230',
+    backgroundColor: colorButtonFirst,
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

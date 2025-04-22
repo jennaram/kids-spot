@@ -3,6 +3,9 @@ import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "reac
 import { router, useLocalSearchParams } from 'expo-router';
 import { ToastContainer, toast } from 'react-toastify'; // Assurez-vous d'avoir installé react-toastify pour la gestion des notifications (si nécessaire)
 import 'react-toastify/dist/ReactToastify.css';
+import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { fontTitle, loadFonts } from './style/styles';
+
 
 export default function Index() {
   const { nomLieu } = useLocalSearchParams(); // Récupère le nom du lieu passé depuis details_lieu.tsx
@@ -57,7 +60,7 @@ export default function Index() {
     <View style={{ flex: 1 }}>
       {/* Partie haute avec titre et nom du lieu */}
       <View style={styles.container}>
-        <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 24 }}>
+        <Text style={[fontTitle]}>
           VOTRE AVIS
         </Text>
         <Text style={styles.lieuTitre}>{nomLieu || "Nom du lieu"}</Text>
@@ -120,7 +123,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 60,
-    backgroundColor: '#fff',
+    backgroundColor: colorButtonThird,
   },
   formContainer: {
     backgroundColor: '#f0f0f0',
@@ -133,7 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginTop: 50,
-    color: '#28603E',
+    color: colorButtonSecondary,
     textAlign: 'center',
     marginBottom: 15,
   },
@@ -143,7 +146,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   textArea: {
-    backgroundColor: '#fff',
+    backgroundColor: colorButtonThird,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 10,
@@ -155,14 +158,14 @@ const styles = StyleSheet.create({
   submitButton: {
     height: 40,
     width: '80%',
-    backgroundColor: '#D37230',
-    borderRadius: 8,
+    backgroundColor: colorButtonFirst,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 210,
   },
   submitButtonText: {
-    color: '#fff',
+    color: colorButtonThird,
     fontWeight: 'bold',
     fontSize: 16,
   },

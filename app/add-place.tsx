@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colorButtonThird,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -280,8 +280,8 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   radioSelected: {
-    backgroundColor: '#D37230',
-    borderColor: '#D37230',
+    backgroundColor: colorButtonFirst,
+    borderColor: colorButtonFirst,
   },
   radioText: {
     color: '#333',
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: 'white',
+    color: colorButtonThird,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     borderColor: '#3498db',
   },
   checkmark: {
-    color: 'white',
+    color: colorButtonThird,
     fontSize: 12,
   },
   checkboxLabel: {
@@ -347,8 +347,8 @@ const styles = StyleSheet.create({
     color: '#f1c40f',
   },
   submitButton: {
-    backgroundColor: '#D37230',
-    borderRadius: 8,
+    backgroundColor: colorButtonFirst,
+    borderRadius: 15,
     padding: 15,
     alignItems: 'center',
   },
