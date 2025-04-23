@@ -8,8 +8,9 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth } from './style/styles';
-import { fontTitle, loadFonts } from './style/styles';
+import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
+import { fontTitle } from './style/styles';
+import MenuBurger from './components/menuburger';
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({
@@ -28,9 +29,15 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Menu burger */}
+      <View style={styles.header}>
+        <MenuBurger />
+      </View>
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Text style={[fontTitle]}>Mon Profil</Text>
+          {/* Titre centré */}
+          <Text style={[fontTitle, styles.title]}>Mon Profil</Text>
 
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
@@ -111,6 +118,11 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: colorButtonThird,
+  },
+  header: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     backgroundColor: colorButtonThird,
   },
   scrollContent: {
