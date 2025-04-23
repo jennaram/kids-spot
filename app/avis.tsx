@@ -6,7 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
 import MenuBurger from './components/menuburger';
-import { Navigation } from "./components/Navigation";
+import { Navigation } from "@/components/Navigation";
+import { Title } from "@/components/Title";
 
 export default function Index() {
   const { nomLieu } = useLocalSearchParams();
@@ -56,13 +57,9 @@ export default function Index() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Menu burger */}
-      <SafeAreaView style={styles.header}>
-        <MenuBurger />
-      </SafeAreaView>
-
-      {/* Titre "Votre avis" */}
-      <Text style={[fontTitle, styles.title]}>Votre avis</Text>
+      <MenuBurger />
+      <Title text={"Avis"}/>
+     
 
       {/* Contenu principal */}
       <View style={styles.cardContainer}>
@@ -124,7 +121,6 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginTop: 80, // Ajoute un espace sous le menu burger
     color: '#000', // Titre "Votre avis" en noir
   },
   cardContainer: {

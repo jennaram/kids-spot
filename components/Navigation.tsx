@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import { Button } from "./NavBar/Btn";
+import { Button } from "@/components/NavBar/Button";
 import { useRoute } from "@react-navigation/native";
 import { useEffect } from "react";
 
