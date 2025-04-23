@@ -9,14 +9,16 @@ import { router } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
-import Layout from './components/LayoutNav'; // Adapter le chemin si besoin
+import Layout from './components/LayoutNav';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
+import LieuCard from './components/LieuxCard';
 
 const iconByType = {
   listIcon: require('../assets/images/switchlieux.png'),
 };
 
+//Fonction qui calcul la distance en KM
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -113,34 +115,20 @@ export default function ListeLieux() {
 
       {/* Liste des lieux */}
       <ScrollView contentContainerStyle={styles.listContainer}>
-        {filteredPoints.map((point) => {
-          const distance = userLocation
-            ? getDistanceFromLatLonInKm(
-                userLocation.latitude,
-                userLocation.longitude,
-                point.position.latitude,
-                point.position.longitude
-              ).toFixed(2)
-            : null;
+      {filteredPoints.map((point) => {
+  const distance = userLocation
+    ? getDistanceFromLatLonInKm(
+        userLocation.latitude,
+        userLocation.longitude,
+        point.position.latitude,
+        point.position.longitude
+      ).toFixed(2)
+    : null;
 
-          return (
-            <TouchableOpacity 
-              key={point.id} 
-              style={styles.item}
-              onPress={() => router.push({ pathname: '/details_lieu', params: { id: point.id, nom: point.nom } })}
-            >
-              <View style={styles.itemContent}>
-                {point.image && <Image source={point.image} style={styles.image} />}
-                <View style={styles.textContainer}>
-                  <Text style={[fontSubtitle]}>{point.nom}</Text>
-                  <Text style={styles.description}>{point.description}</Text>
-                  {point.horaires && <Text style={styles.info}>Horaires : {point.horaires}</Text>}
-                </View>
-                {distance && <Text style={styles.distance}>{distance} km</Text>}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+  return (
+    <LieuCard key={point.id} point={point} distance={distance} />
+  );
+})}
       </ScrollView>
 
       {/* Bouton en bas à droite */}
