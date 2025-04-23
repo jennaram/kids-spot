@@ -57,9 +57,9 @@ export default function Index() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Menu burger */}
-      <View style={styles.header}>
+      <SafeAreaView style={styles.header}>
         <MenuBurger />
-      </View>
+      </SafeAreaView>
 
       {/* Titre "Votre avis" */}
       <Text style={[fontTitle, styles.title]}>Votre avis</Text>
