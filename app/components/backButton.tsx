@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 
 interface BackButtonProps {
   /**
-   * Destination de navigation (optionnelle)
+   * Destination de navigation (optionnelle )
    * Par défaut: retour à l'écran précédent
    */
   navigateTo?: string;
