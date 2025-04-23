@@ -11,125 +11,163 @@ import {
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
-import { colorButtonFirst } from './style/styles';
+
+// Types pour les props des composants
+interface BackButtonProps {
+  style?: object; // Définir le style directement au lieu de containerStyle
+}
+
+interface InputFieldProps {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  keyboardType?: string;
+  autoCapitalize?: string;
+  secureTextEntry?: boolean;
+}
+
+interface MainButtonProps {
+  title: string;
+  onPress: () => void;
+  loading?: boolean; // Renommé de isLoading à loading
+}
+
+interface InLineLinkProps {
+  text: string;
+  linkText?: string;
+  onPress: () => void;
+  style?: object;
+}
+
+interface GoogleLoginButtonProps {
+  onPress: () => void;
+  loading?: boolean; // Renommé de isLoading à loading
+  disabled?: boolean; // Renommé de isDisabled à disabled
+}
 
 // Composants
-import AuthHeader from './components/LogoHeader';
-import FormInput from './components/Form/InputField';
-import AuthButton from './components/Form/MainButton';
-import AuthFooterLink from './components/InlineLin';
-import AuthSeparator from './components/Form/SeparatorWithText ';
-import GoogleAuthButton from './components/Form/GoogleLoginButton';
+import BackButton from './components/BackButton';
+import LogoHeader from './components/LogoHeader';
+import InputField from './components/Form/InputField';
+import MainButton from './components/Form/MainButton';
+import InLineLink from './components/InlineLink';
+import FormSeparator from './components/Form/FormSeparator';
+import GoogleLoginButton from './components/Form/GoogleLoginButton';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-  const [formData, setFormData] = useState({
+  const [credentials, setCredentials] = useState({
     email: '',
     password: '',
   });
-  const [loading, setLoading] = useState(false);
-  
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
     androidClientId: "VOTRE_CLIENT_ID_ANDROID",
     iosClientId: "VOTRE_CLIENT_ID_IOS",
     webClientId: "VOTRE_CLIENT_ID_WEB",
   });
 
   useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response;
-      if (authentication?.accessToken) {
-        getUserInfo(authentication.accessToken);
-      }
+    if (googleResponse?.type === 'success') {
+      handleGoogleSignIn(googleResponse.authentication?.accessToken);
     }
-  }, [response]);
+  }, [googleResponse]);
 
-  const getUserInfo = async (token: string) => {
+  const handleGoogleSignIn = async (token?: string) => {
+    if (!token) return;
+    
     try {
-      setLoading(true);
+      setIsLoading(true);
       const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
       const userData = await response.json();
-      if (userData) {
-        router.replace('/points');
-      }
+      if (userData) router.replace('/points');
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion avec Google');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleInputChange = (field: string, value: string) => {
+    setCredentials(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleLogin = () => {
-    setLoading(true);
-    // Ici vous ajouteriez votre logique de connexion
+  const handleEmailLogin = () => {
+    setIsLoading(true);
+    // Simulation de connexion
     setTimeout(() => {
-      setLoading(false);
+      setIsLoading(false);
       router.replace('/main');
     }, 1500);
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <BackButton style={styles.backButtonContainer} />
+      
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
         <ScrollView 
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
           <View style={styles.content}>
-            <AuthHeader />
+            <LogoHeader />
 
-            <FormInput
+            <InputField
               label="Adresse mail"
-              value={formData.email}
-              onChangeText={(t) => handleChange('email', t)}
+              value={credentials.email}
+              onChangeText={(text) => handleInputChange('email', text)}
               placeholder="email@exemple.com"
               keyboardType="email-address"
+              autoCapitalize="none"
             />
 
-            <FormInput
+            <InputField
               label="Mot de passe"
-              value={formData.password}
-              onChangeText={(t) => handleChange('password', t)}
+              value={credentials.password}
+              onChangeText={(text) => handleInputChange('password', text)}
               placeholder="••••••••"
               secureTextEntry
             />
 
-            <AuthButton
+            <MainButton
               title="Connexion"
-              onPress={handleLogin}
-              loading={loading}
+              onPress={handleEmailLogin}
+              loading={isLoading} // Renommé de isLoading à loading
             />
 
-            <AuthFooterLink
+            <InLineLink
               text="Mot de passe oublié ?"
               onPress={() => router.push('/forgotpassword')}
+              style={styles.forgotPasswordLink}
             />
 
-            <AuthSeparator />
+            <FormSeparator />
 
-            <GoogleAuthButton
-              onPress={() => promptAsync()}
-              loading={loading}
-              disabled={!request || loading}
+            <GoogleLoginButton
+              onPress={() => googlePromptAsync()}
+              loading={isLoading} // Renommé de isLoading à loading
+              disabled={!googleRequest || isLoading} // Renommé de isDisabled à disabled
             />
 
-            <AuthFooterLink
-              text="Vous n'avez pas de compte ?"
-              linkText="Inscrivez-vous"
-              onPress={() => router.push('/registration')}
-            />
+            <View style={styles.signUpContainer}>
+              <InLineLink
+                text="Vous n'avez pas de compte ?"
+                linkText="Inscrivez-vous"
+                onPress={() => router.push('/registration')}
+              />
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -145,7 +183,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollContent: {
+  backButtonContainer: {
+    position: 'absolute',
+    top: Platform.select({ ios: 50, android: 30 }),
+    left: 20,
+    zIndex: 10,
+  },
+  scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     paddingBottom: 40,
@@ -154,5 +198,14 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 25,
     justifyContent: 'center',
+  },
+  forgotPasswordLink: {
+    alignSelf: 'center',
+    marginVertical: 15,
+  },
+  signUpContainer: {
+    marginTop: 20,
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
 });
