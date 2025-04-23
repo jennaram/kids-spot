@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image, SafeAreaView } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
 import MenuBurger from './components/menuburger';
-import { Navigation } from "./components/Navigation";
+import { Navigation } from "@/components/Navigation";
+import { Title } from "@/components/Title";
 
 export default function Index() {
   const { nomLieu } = useLocalSearchParams();
@@ -55,14 +56,10 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Menu burger */}
-      <View style={styles.header}>
-        <MenuBurger />
-      </View>
-
-      {/* Titre "Votre avis" */}
-      <Text style={[fontTitle, styles.title]}>Votre avis</Text>
+    <SafeAreaView style={styles.container}>
+      <MenuBurger />
+      <Title text={"Avis"}/>
+     
 
       {/* Contenu principal */}
       <View style={styles.cardContainer}>
@@ -99,7 +96,7 @@ export default function Index() {
         </TouchableOpacity>
       </View>
       <Navigation></Navigation>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -124,7 +121,6 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginTop: 80, // Ajoute un espace sous le menu burger
     color: '#000', // Titre "Votre avis" en noir
   },
   cardContainer: {
