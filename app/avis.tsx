@@ -54,14 +54,18 @@ export default function Index() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <MenuBurger />
-      <View style={styles.container}>
-        <Text style={[fontTitle]}>VOTRE AVIS</Text>
-        <Text style={styles.lieuTitre}>{nomLieu || "Nom du lieu"}</Text>
+    <View style={styles.container}>
+      {/* Menu burger */}
+      <View style={styles.header}>
+        <MenuBurger />
       </View>
 
+      {/* Titre "Votre avis" */}
+      <Text style={[fontTitle, styles.title]}>Votre avis</Text>
+
+      {/* Contenu principal */}
       <View style={styles.cardContainer}>
+        <Text style={[fontTitle, styles.lieuTitre]}>{nomLieu || "Nom du lieu"}</Text>
         <Text style={styles.staticText}>Nom : {nomUtilisateur}</Text>
         <Text style={styles.staticText}>Email : {emailUtilisateur}</Text>
 
@@ -87,6 +91,7 @@ export default function Index() {
         />
       </View>
 
+      {/* Bouton de validation */}
       <View style={{ alignItems: 'center', padding: 20 }}>
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Valider votre avis !</Text>
@@ -99,22 +104,31 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    paddingTop: 60,
-    backgroundColor: '#ff',
+    backgroundColor: '#fff',
   },
-  lieuTitre: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 50,
-    color: colorButtonSecondary,
+  header: {
+    position: 'absolute', // Fixe le menu en haut
+    top: 0, // Positionne le menu tout en haut
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#fff', // Assure un fond blanc
+    borderBottomWidth: 0, // Supprime la ligne de démarcation
+    zIndex: 10, // Assure que le menu est au-dessus des autres éléments
+  },
+  title: {
     textAlign: 'center',
-    marginBottom: 15,
+    marginTop: 80, // Ajoute un espace sous le menu burger
+    color: '#000', // Titre "Votre avis" en noir
   },
   cardContainer: {
     backgroundColor: '#f0f0f0',
     marginHorizontal: 20,
-    marginTop: 20,
+    marginTop: 60,
     borderRadius: 10,
     padding: 15,
     shadowColor: '#000',
@@ -122,6 +136,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
+  },
+  lieuTitre: {
+    marginBottom: 15,
+    textAlign: 'center',
+    color: colorButtonSecondary,
   },
   staticText: {
     fontSize: 16,
