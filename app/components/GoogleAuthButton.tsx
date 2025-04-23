@@ -17,7 +17,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ onPress, loading, d
     >
       <View style={styles.googleButtonContent}>
         <Image
-          source={require('../assets/images/google-logo.png')}
+          source={require('../../assets/images/google-logo.png')}
           style={styles.googleLogo}
         />
         <Text style={styles.googleButtonText}>
