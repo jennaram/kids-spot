@@ -34,8 +34,7 @@ export const ButtonStyle = {
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderWidth: 1,           // Épaisseur de la bordure
-    borderColor: '#000000',   // Couleur de la bordure (noire)
+       // Couleur de la bordure (noire)
 };
 
 // Fusion de la branche 'develop' dans 'stylisation-card-evenement'

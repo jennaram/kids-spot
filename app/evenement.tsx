@@ -1,64 +1,22 @@
-// Importation des composants et hooks nécessaires
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, SafeAreaView, ScrollView, StatusBar, Dimensions, Modal } from 'react-native';
-// React Native fournit ces composants de base pour construire l'interface utilisateur mobile
-
-import React, { useState, useRef } from 'react';
-// useState permet de gérer l'état local dans un composant fonctionnel
-// useRef permet de créer une référence persistante entre les rendus
-
-import { useEffect } from 'react';
-// useEffect permet d'exécuter des effets secondaires (comme des appels API) dans les composants
-
-import Layout from './components/LayoutNav';
-// Importe le composant personnalisé qui structure la page avec une navigation
-
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, SafeAreaView, ScrollView, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
-// importations concernent la navigation dans l'application
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth } from './style/styles';
+
+// Import du composant de layout et styles
+import Layout from './components/LayoutNav';
+import { eventCardStyles as styles } from './style/EventCardStyles';
 import { fontTitle } from './style/styles';
-import { loadFonts } from './style/styles';
-import { fontSubtitle } from './style/styles';
 import { ButtonStyle } from './style/styles';
-// Interface TypeScript définissant la structure d'un objet "Lieu"
-// Cela aide à assurer la cohérence des données manipulées
-interface Lieu {
-  id: number;
-  nom: string;
-  horaires: string;
-  adresse: {
-    adresse: string;
-    code_postal: string;
-    ville: string;
-  
-  };
-  description: string;
-  type: {
-    id: number;
-    nom: string;
-  }[];  // Un tableau de types (chaque type a un id et un nom)
-  est_evenement: boolean;  // Indique si le lieu est un événement
-  date_evenement: {
-    debut: string | null;
-    fin: string | null;
-  };
-  position: {
-    latitude: number;
-    longitude: number;
-    distance_km: number;
-  };
-  equipements: string[];  // Liste des équipements disponibles
-  ages: string[];  // Tranches d'âge concernées
-}
+import { colorButtonThird } from './style/styles';
+import { Lieu } from './types/lieu';
+// Import du composant Card
+import EventCard from './components/EventCard';
 
-// Obtenir la largeur de l'écran pour calculer les dimensions
-const { width } = Dimensions.get('window');
-const cardWidth = width * 0.92; // La carte prend 92% de la largeur de l'écran
 
-// Définition du composant principal "CustomCard"
-const CustomCard = () => {
-  // État pour stocker la liste des lieux (pas juste un seul lieu)
+const Evenement = () => {
+  // État pour stocker la liste des lieux
   const [lieux, setLieux] = useState<Lieu[]>([]);
   // État pour gérer quel lieu est actuellement "flippé"
   const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
@@ -142,103 +100,16 @@ const CustomCard = () => {
       </SafeAreaView>
       
       <ScrollView contentContainerStyle={styles.container}>
-        {lieux.map((lieu) => {
-          const frontInterpolate = flipAnimations[lieu.id]?.interpolate({
-            inputRange: [0, 180],
-            outputRange: ['0deg', '180deg'],
-          }) || new Animated.Value(0);
-
-          const backInterpolate = flipAnimations[lieu.id]?.interpolate({
-            inputRange: [0, 180],
-            outputRange: ['180deg', '360deg'],
-          }) || new Animated.Value(0);
-
-          const isFlipped = flippedCardId === lieu.id;
-
-          return (
-            <View key={lieu.id} style={styles.cardContainer}>
-              {/* Face avant */}
-              <Animated.View
-                style={[
-                  styles.card,
-                  { transform: [{ rotateY: frontInterpolate }] },
-                  { zIndex: isFlipped ? 0 : 1 },
-                ]}
-              >
-                <View style={styles.cardContent}>
-                  <Image
-                    source={require('../assets/images/parc_montsouris.jpg')}
-                    style={styles.image}
-                    resizeMode="cover"
-                  />
-                  <View style={styles.infoContainer}>
-                    <View style={styles.textContainer}>
-                      <Text style={[fontSubtitle]}>{lieu.adresse?.ville || 'Ville non disponible'}, France</Text>
-                      <Text style={styles.subtitle2}>{lieu.nom || 'Nom non disponible'}</Text>
-                      <Text style={styles.date}>
-                        {lieu.date_evenement.debut} - {lieu.date_evenement.fin}
-                      </Text>
-                    </View>
-                    <TouchableOpacity 
-                      style={[styles.infoButton, ButtonStyle]} 
-                      onPress={() => flipCard(lieu.id)}
-                    >
-                      <Text style={styles.infoText}>Infos</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </Animated.View>
-
-              {/* Face arrière */}
-              <Animated.View
-                style={[
-                  styles.card,
-                  styles.cardBack,
-                  { transform: [{ rotateY: backInterpolate }] },
-                  { position: 'absolute', top: 0 },
-                ]}
-              >
-                <View style={styles.cardContent}>
-                  <Text style={[fontSubtitle, styles.modalTitle]}>{lieu.nom}</Text>
-                  <Text style={styles.modalText}>
-                    {lieu.adresse?.adresse}, {lieu.adresse?.code_postal} {lieu.adresse?.ville}
-                  </Text>
-                  <Text style={styles.modalText}>Type : {lieu.type.map(t => t.nom).join(', ')}</Text>
-                  <Text style={styles.modalText}>
-                    Équipements : {lieu.equipements?.join(', ') || 'Non spécifiés'}
-                  </Text>
-                  
-                  {/* Description avec "Lire plus..." */}
-                  <View style={styles.descriptionContainer}>
-                    <Text 
-                      numberOfLines={2}
-                      ellipsizeMode="tail"
-                      style={styles.modalText}
-                    >
-                      {lieu.description}
-                    </Text>
-                    
-                    {lieu.description && lieu.description.length > 100 && (
-                      <TouchableOpacity 
-                        onPress={() => openFullDescription(lieu.description, lieu.nom)}
-                        style={styles.readMoreButton}
-                      >
-                        <Text style={styles.readMoreText}>Lire plus...</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                  
-                  <TouchableOpacity 
-                    style={[styles.boutonRetour, ButtonStyle]} 
-                    onPress={() => flipCard(lieu.id)}
-                  >
-                    <Text style={[{ color: '#FFFFFF' }]}>Retour</Text>
-                  </TouchableOpacity>
-                </View>
-              </Animated.View>
-            </View>
-          );
-        })}
+        {lieux.map((lieu) => (
+          <EventCard
+            key={lieu.id}
+            lieu={lieu}
+            onOpenFullDescription={openFullDescription}
+            flipAnimations={flipAnimations}
+            flippedCardId={flippedCardId}
+            onFlipCard={flipCard}
+          />
+        ))}
       </ScrollView>
       
       {/* Modal pour la description complète */}
@@ -267,157 +138,4 @@ const CustomCard = () => {
   );
 };
 
-
-// Styles pour les différents éléments de l'interface
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  headerBar: {
-    alignItems: 'center',
-  },
-  headerTitle: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    paddingVertical: 20,
-    paddingBottom: 90, // Espace pour la barre de navigation
-  },
-  cardContainer: {
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  card: {
-    width: cardWidth,
-    height: cardWidth * 0.8, // Aspect ratio plus proche du style Airbnb
-    borderRadius: 16,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 4,
-    overflow: 'hidden',
-    backfaceVisibility: 'hidden',
-  },
-  cardBack: {
-    backgroundColor: '#f8f9fa',
-  },
-  cardContent: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  image: {
-    width: '100%',
-    height: '65%', // L'image prend 65% de la hauteur de la carte
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-  },
-  infoContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end', // Aligne les éléments en bas
-    padding: 16,
-    backgroundColor: '#fff',
-  },
-  textContainer: {
-    flex: 1,
-  },
-  location: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#222',
-    marginBottom: 4,
-  },
-  subtitle2: {
-    fontSize: 16,
-    color: '#222',
-    marginBottom: 3,
-    marginTop: 3,
-  },
-  date: {
-    fontSize: 14,
-    color: '#717171',
-  },
-  infoButton: {
-    backgroundColor: colorButtonFirst,
-    alignSelf: 'flex-end',
-  },
-  infoText: {
-    color: '#fff',
-    fontSize: 14,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '100',
-    margin: 20,
-  },
-  modalText: {
-    fontSize: 16,
-    marginHorizontal: 20,
-    marginBottom: 10,
-    lineHeight: 22,
-  },
-  boutonRetour: {
-    alignSelf: 'flex-end',
-    backgroundColor: colorButtonFirst,
-    marginTop: 20,
-    marginEnd: 20,
-  },
-  readMoreButton: {
-    alignSelf: 'flex-start',
-    marginTop: 0,
-    marginBottom: 0,
-  },
-  readMoreText: {
-    color: colorButtonSecondary,
-    fontWeight: '500',
-  },
-  
-  // Styles pour la modal de description complète
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  modalHeader: {
-    backgroundColor: '#ffffff',
-    padding: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  modalHeaderTitle: {
-    color: 'black',
-    flex: 1,
-  },
-  closeButton: {
-    borderWidth: 1,
-    borderColor: colorButtonFirst,
-    borderRadius: 8,
-    padding: 8,
-    backgroundColor: colorButtonFirst,
-  },
-  modalBody: {
-    flex: 1,
-    padding: 20,
-  },
-  fullDescriptionText: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  descriptionContainer: {
-    marginVertical: 5,
-  },
-});
-
-export default CustomCard;
+export default Evenement;
