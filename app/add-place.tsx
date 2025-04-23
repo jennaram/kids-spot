@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
     fontWeight: '600',
-    textAlign: 'center', // Centre le texte du label
+    textAlign: 'left', 
   },
   input: {
     borderWidth: 1,
