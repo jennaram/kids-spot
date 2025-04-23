@@ -12,10 +12,10 @@ export function Navigation() {
     
 
     const links = [
-        { imageName: "map-outline", link: "Map" },
-        { imageName: "calendar-outline", link: "Favoris" },
-        { imageName: "add-circle-outline", link: "Parametres" },
-        { imageName: "heart-outline", link: "Parametres" },
+        { imageName: "map-outline", link: "Main" },
+        { imageName: "calendar-outline", link: "Evenement" },
+        { imageName: "add-circle-outline", link: "add-place" },
+        { imageName: "heart-outline", link: "favoris" },
     ];
 
     return (
