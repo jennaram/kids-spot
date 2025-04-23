@@ -11,6 +11,7 @@ import {
 import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
 import { fontTitle } from './style/styles';
 import MenuBurger from './components/menuburger';
+import { Navigation } from "./components/Navigation";
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({
@@ -111,6 +112,7 @@ export default function ProfileScreen() {
           </View>
         </View>
       </ScrollView>
+      <Navigation></Navigation>
     </SafeAreaView>
   );
 }
