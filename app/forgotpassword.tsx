@@ -11,14 +11,13 @@ import {
   Platform,
   ScrollView,
   Modal,
-  Pressable,
   Alert
 } from 'react-native';
 import { router } from 'expo-router';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
 import BackButton from "./components/backButton";
-
+import ExitButton from "./components/ExitButton";
 
 
 const appLogo = require('../assets/images/Logo.png');
@@ -92,12 +91,7 @@ export default function ForgotPasswordScreen() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               {/* Bouton fermeture */}
-              <Pressable 
-                style={styles.closeButton} 
-                onPress={closeModalAndRedirect}
-              >
-                <Text style={styles.closeButtonText}>×</Text>
-              </Pressable>
+              <ExitButton onPress={closeModalAndRedirect} />
 
               <Text style={styles.modalTitle}>Demande envoyée</Text>
               <Text style={styles.modalText}>
@@ -183,10 +177,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContainer: {
-    width: '80%',
+    width: '90%',
+    maxWidth: 450,
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 25,
+    padding: 40,
+    paddingTop: 70,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -196,41 +192,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  closeButton: {
-    position: 'absolute',
-    right: 15,
-    top: 15,
-    padding: 5,
-  },
-  closeButtonText: {
-    fontSize: 24,
-    color: '#555',
+    minHeight: 300,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 25,
     color: '#333',
     textAlign: 'center',
   },
   modalText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#555',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 35,
+    lineHeight: 26,
   },
   modalButton: {
     backgroundColor: colorButtonFirst,
-    borderRadius: 5,
-    paddingVertical: 12,
-    paddingHorizontal: 30,
+    borderRadius: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
     elevation: 2,
+    marginTop: 10,
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
-  // Les styles pour le bouton retour ont été supprimés car ils sont maintenant dans le composant BackButton
 });
