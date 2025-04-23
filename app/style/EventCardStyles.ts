@@ -119,6 +119,7 @@ export const eventCardStyles = StyleSheet.create({
   readMoreText: {
     color: colorButtonSecondary,
     fontWeight: '500',
+    marginStart: 15,
   },
   
   // Styles pour la modal de description complète

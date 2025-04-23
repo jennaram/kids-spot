@@ -44,7 +44,11 @@ const Evenement = () => {
         // Filtrer pour ne garder que les événements et initialiser les animations
         const events = data.data.filter((l: Lieu) => l.est_evenement);
         events.forEach((event: Lieu) => {
-          flipAnimations[event.id] = new Animated.Value(0);
+          if (!flipAnimations[event.id]) {
+            flipAnimations[event.id] = new Animated.Value(0);
+          } else {
+            flipAnimations[event.id].setValue(0); // Réinitialise la valeur d'animation
+          }
         });
         setLieux(events);
       } catch (error) {
@@ -56,15 +60,44 @@ const Evenement = () => {
   }, []);
 
   const flipCard = (id: number) => {
-    const currentValue = flippedCardId === id ? 0 : 180;
-    
-    Animated.spring(flipAnimations[id], {
-      toValue: currentValue,
-      useNativeDriver: true,
-    }).start(() => {
-      setFlippedCardId(currentValue === 180 ? id : null);
-    });
+    if (flippedCardId !== null && flippedCardId !== id) {
+      // Retourne la carte actuellement affichée en arrière
+      Animated.timing(flipAnimations[flippedCardId], {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        // Ensuite, retourne la nouvelle carte sélectionnée
+        Animated.timing(flipAnimations[id], {
+          toValue: 180,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+        setFlippedCardId(id);
+      });
+    } else if (flippedCardId === id) {
+      // Retourne la carte si elle est déjà visible (toggle off)
+      Animated.timing(flipAnimations[id], {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setFlippedCardId(null);
+      });
+    } else {
+      // Première ouverture d'une carte
+      Animated.timing(flipAnimations[id], {
+        toValue: 180,
+        duration:200,
+        useNativeDriver: true,
+      }).start(() => {
+        setFlippedCardId(id);
+      });
+    }
   };
+  
+  
+  
 
   // Fonction pour ouvrir la modal avec la description complète
   const openFullDescription = (description: string, nom: string) => {
