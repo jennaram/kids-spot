@@ -55,11 +55,11 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Menu burger */}
-      <SafeAreaView style={styles.header}>
+      <View style={styles.header}>
         <MenuBurger />
-      </SafeAreaView>
+      </View>
 
       {/* Titre "Votre avis" */}
       <Text style={[fontTitle, styles.title]}>Votre avis</Text>
@@ -99,7 +99,7 @@ export default function Index() {
         </TouchableOpacity>
       </View>
       <Navigation></Navigation>
-    </View>
+    </SafeAreaView>
   );
 }
 
