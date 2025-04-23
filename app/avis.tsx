@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 60,
-    backgroundColor: colorButtonThird,
+    backgroundColor: '#ff',
   },
   lieuTitre: {
     fontSize: 20,
