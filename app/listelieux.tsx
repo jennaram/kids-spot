@@ -3,7 +3,6 @@ import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, Image,
   TextInput, Modal, Pressable
 } from 'react-native';
-import { mockPoints } from './points';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +13,7 @@ import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, 
 import { fontTitle, loadFonts } from './style/styles';
 import LieuCard from './components/LieuxCard';
 
+const [points, setPoints] = useState<any[]>([]);
 const iconByType = {
   listIcon: require('../assets/images/switchlieux.png'),
 };
@@ -46,13 +46,22 @@ export default function ListeLieux() {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') return;
+  
       const location = await Location.getCurrentPositionAsync({});
-      setUserLocation({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
+      const { latitude, longitude } = location.coords;
+  
+      setUserLocation({ latitude, longitude });
+  
+      try {
+        const response = await fetch(`https://seb-prod.alwaysdata.net/kidsspot/lieux/autour/${latitude}/${longitude}`);
+        const data = await response.json();
+        setPoints(data);
+      } catch (error) {
+        console.error("Erreur lors du fetch des lieux :", error);
+      }
     })();
   }, []);
+  
 
   const toggleEquipement = (equip: string) => {
     setSelectedEquipements((prev) =>
@@ -62,15 +71,16 @@ export default function ListeLieux() {
     );
   };
 
-  const filteredPoints = mockPoints.filter((point) => {
+  const filteredPoints = points.filter((point) => {
     const matchesSearch = point.nom.toLowerCase().includes(search.toLowerCase());
     const matchesType = selectedType ? point.type === selectedType.toLowerCase() : true;
     const matchesEquip = selectedEquipements.length > 0
       ? selectedEquipements.every((eq) => point.equipements.includes(eq))
       : true;
-
+  
     return matchesSearch && matchesType && matchesEquip;
   });
+  
 
   return (
     <Layout
