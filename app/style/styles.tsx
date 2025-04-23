@@ -12,7 +12,7 @@ export const loadFonts = async () => {
 export const colorButtonFirst = '#D37230';
 export const colorButtonSecondary = '#28603E';
 export const colorButtonThird = '#FFFFFF';
-export const colorFourth = '#E9ECEF'
+export const colorFourth = '#E9ECEF';
 
 // Style pour les titres
 export const fontTitle: TextStyle = {
@@ -27,11 +27,17 @@ export const fontSubtitle: TextStyle = {
     fontWeight: 'bold',
     fontStyle: 'normal',
     fontSize: 15,
-    };
+};
 
 //Style pour les bouttons
 export const ButtonStyle = {
-    borderRadius: 15,
+    borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
+       // Couleur de la bordure (noire)
 };
+
+// Fusion de la branche 'develop' dans 'stylisation-card-evenement'
+// - Mise à jour des styles globaux, y compris la gestion des polices et des couleurs.
+// - Intégration des dernières modifications de la branche principale pour synchroniser les fonctionnalités.
+// - Préparation pour la stylisation des cartes d'événements.
