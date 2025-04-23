@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
-import { ToastContainer, toast } from 'react-toastify'; // Assurez-vous d'avoir installé react-toastify pour la gestion des notifications (si nécessaire)
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
-
+import MenuBurger from './components/menuburger';
 
 export default function Index() {
-  const { nomLieu } = useLocalSearchParams(); // Récupère le nom du lieu passé depuis details_lieu.tsx
+  const { nomLieu } = useLocalSearchParams();
 
-  const [rating, setRating] = useState<number | null>(null); // État pour la note
-  const [comment, setComment] = useState(''); // État pour le commentaire
+  const [rating, setRating] = useState<number | null>(null);
+  const [comment, setComment] = useState('');
 
-  // Données fictives pour l'exemple
   const nomUtilisateur = "Jean Dupont";
   const emailUtilisateur = "jean.dupont@example.com";
 
@@ -31,16 +30,14 @@ export default function Index() {
       return;
     }
 
-    // Ici, vous ajouteriez votre appel API pour enregistrer l'avis
     try {
-      // Exemple d'appel API (à adapter selon votre backend)
       const response = await fetch('/api/avis', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          lieuId: nomLieu, // Récupère l'ID du lieu
+          lieuId: nomLieu,
           rating,
           comment,
         }),
@@ -57,22 +54,21 @@ export default function Index() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* Partie haute avec titre et nom du lieu */}
-      <View style={styles.container}>
-        <Text style={[fontTitle]}>
-          VOTRE AVIS
-        </Text>
-        <Text style={styles.lieuTitre}>{nomLieu || "Nom du lieu"}</Text>
+    <View style={styles.container}>
+      {/* Menu burger */}
+      <View style={styles.header}>
+        <MenuBurger />
       </View>
 
-      {/* Encadré gris avec les infos de l'avis */}
-      <View style={styles.formContainer}>
-        {/* Infos utilisateur affichées */}
+      {/* Titre "Votre avis" */}
+      <Text style={[fontTitle, styles.title]}>Votre avis</Text>
+
+      {/* Contenu principal */}
+      <View style={styles.cardContainer}>
+        <Text style={[fontTitle, styles.lieuTitre]}>{nomLieu || "Nom du lieu"}</Text>
         <Text style={styles.staticText}>Nom : {nomUtilisateur}</Text>
         <Text style={styles.staticText}>Email : {emailUtilisateur}</Text>
 
-        {/* Sélection des étoiles */}
         <View style={styles.starsContainer}>
           {[1, 2, 3, 4, 5].map((star) => (
             <TouchableOpacity key={star} onPress={() => handleStarClick(star)}>
@@ -84,7 +80,6 @@ export default function Index() {
           ))}
         </View>
 
-        {/* Zone de texte pour l'avis */}
         <TextInput
           style={styles.textArea}
           placeholder="Écris ton avis ici..."
@@ -96,9 +91,9 @@ export default function Index() {
         />
       </View>
 
-      {/* Bouton Valider */}
+      {/* Bouton de validation */}
       <View style={{ alignItems: 'center', padding: 20 }}>
-        <TouchableOpacity style={styles.submitButton} onPress={() => router.push('/details_lieu')}>
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Valider votre avis !</Text>
         </TouchableOpacity>
       </View>
@@ -107,46 +102,64 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    position: 'absolute', // Fixe le menu en haut
+    top: 0, // Positionne le menu tout en haut
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#fff', // Assure un fond blanc
+    borderBottomWidth: 0, // Supprime la ligne de démarcation
+    zIndex: 10, // Assure que le menu est au-dessus des autres éléments
+  },
+  title: {
+    textAlign: 'center',
+    marginTop: 80, // Ajoute un espace sous le menu burger
+    color: '#000', // Titre "Votre avis" en noir
+  },
+  cardContainer: {
+    backgroundColor: '#f0f0f0',
+    marginHorizontal: 20,
+    marginTop: 60,
+    borderRadius: 10,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  lieuTitre: {
+    marginBottom: 15,
+    textAlign: 'center',
+    color: colorButtonSecondary,
+  },
+  staticText: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#555',
+  },
   starsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 40,
+    marginVertical: 20,
   },
   starImage: {
     width: 24,
     height: 24,
     marginHorizontal: 4,
   },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 60,
-    backgroundColor: colorButtonThird,
-  },
-  formContainer: {
-    backgroundColor: '#f0f0f0',
-    marginHorizontal: 20,
-    marginTop: 20,
-    borderRadius: 10,
-    padding: 15,
-  },
-  lieuTitre: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 50,
-    color: colorButtonSecondary,
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  staticText: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: '#555',
-  },
   textArea: {
-    backgroundColor: colorButtonThird,
+    backgroundColor: '#fff',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 10,
@@ -162,7 +175,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 210,
+    marginTop: 20,
   },
   submitButtonText: {
     color: colorButtonThird,
