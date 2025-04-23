@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Image,
   SafeAreaView,
   ScrollView
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
-import { fontTitle, loadFonts } from './style/styles';
+import { colorButtonFirst } from './style/styles';
 
-const googleLogo = require('../assets/images/google-logo.png');
-const appLogo = require('../assets/images/Logo.png');
+// Composants
+import AuthHeader from './components/LogoHeader';
+import FormInput from './components/Form/InputField';
+import AuthButton from './components/Form/MainButton';
+import AuthFooterLink from './components/InlineLin';
+import AuthSeparator from './components/Form/SeparatorWithText ';
+import GoogleAuthButton from './components/Form/GoogleLoginButton';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -88,87 +88,48 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.content}>
-            {/* Logo Kids Spot */}
-            <View style={styles.logoContainer}>
-              <Image
-                source={appLogo}
-                style={styles.logo}
-              />
-            </View>
+            <AuthHeader />
 
-            {/* Champs de connexion */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Adresse mail</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.email}
-                onChangeText={(t) => handleChange('email', t)}
-                keyboardType="email-address"
-                placeholder="email@exemple.com"
-              />
-            </View>
+            <FormInput
+              label="Adresse mail"
+              value={formData.email}
+              onChangeText={(t) => handleChange('email', t)}
+              placeholder="email@exemple.com"
+              keyboardType="email-address"
+            />
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Mot de passe</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.password}
-                onChangeText={(t) => handleChange('password', t)}
-                secureTextEntry
-                placeholder="••••••••"
-              />
-            </View>
+            <FormInput
+              label="Mot de passe"
+              value={formData.password}
+              onChangeText={(t) => handleChange('password', t)}
+              placeholder="••••••••"
+              secureTextEntry
+            />
 
-            {/* Bouton de connexion */}
-            <TouchableOpacity
-              style={[styles.loginButton, loading && styles.disabledButton]}
+            <AuthButton
+              title="Connexion"
               onPress={handleLogin}
-              disabled={loading}
-            >
-              <Text style={styles.loginButtonText}>
-                {loading ? 'Connexion...' : 'Connexion'}
-              </Text>
-            </TouchableOpacity>
+              loading={loading}
+            />
 
-            {/* Lien mot de passe oublié */}
-            <TouchableOpacity 
-              style={styles.forgotPasswordButton}
+            <AuthFooterLink
+              text="Mot de passe oublié ?"
               onPress={() => router.push('/forgotpassword')}
-            >
-              <Text style={styles.forgotPasswordText}>Mot de passe oublié ?</Text>
-            </TouchableOpacity>
+            />
 
-            {/* Séparateur */}
-            <View style={styles.separatorContainer}>
-              <View style={styles.separatorLine} />
-              <Text style={styles.separatorText}>ou</Text>
-              <View style={styles.separatorLine} />
-            </View>
+            <AuthSeparator />
 
-            {/* Bouton Google */}
-            <TouchableOpacity
-              style={styles.googleButton}
+            <GoogleAuthButton
               onPress={() => promptAsync()}
+              loading={loading}
               disabled={!request || loading}
-            >
-              <View style={styles.googleButtonContent}>
-                <Image
-                  source={googleLogo}
-                  style={styles.googleLogo}
-                />
-                <Text style={styles.googleButtonText}>
-                  {loading ? 'Connexion...' : 'Continuer avec Google'}
-                </Text>
-              </View>
-            </TouchableOpacity>
+            />
 
-            {/* Lien inscription */}
-            <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Vous n'avez pas de compte ? </Text>
-              <TouchableOpacity onPress={() => router.push('/registration')}>
-                <Text style={styles.signupLink}>Inscrivez-vous</Text>
-              </TouchableOpacity>
-            </View>
+            <AuthFooterLink
+              text="Vous n'avez pas de compte ?"
+              linkText="Inscrivez-vous"
+              onPress={() => router.push('/registration')}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -193,113 +154,5 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 25,
     justifyContent: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  logo: {
-    width: 200,
-    height: 200,
-    resizeMode: 'contain',
-  },
-  inputGroup: {
-    marginBottom: 20,
-    width: '100%',
-  },
-  label: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  input: {
-    height: 50,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    fontSize: 16,
-  },
-  loginButton: {
-    height: 50,
-    backgroundColor: colorButtonFirst,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 15,
-  },
-  loginButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  forgotPasswordButton: {
-    alignSelf: 'center',
-    marginBottom: 30,
-  },
-  forgotPasswordText: {
-    color: '#555',
-    fontSize: 14,
-  },
-  separatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  separatorLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#ddd',
-  },
-  separatorText: {
-    width: 50,
-    textAlign: 'center',
-    color: '#999',
-    fontSize: 14,
-  },
-  googleButton: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  googleButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  googleLogo: {
-    width: 20,
-    height: 20,
-    marginRight: 12,
-  },
-  googleButtonText: {
-    fontSize: 16,
-    color: '#444',
-    fontWeight: '500',
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  signupText: {
-    color: '#555',
-    fontSize: 14,
-  },
-  signupLink: {
-    color: colorButtonFirst,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  disabledButton: {
-    opacity: 0.7,
   },
 });

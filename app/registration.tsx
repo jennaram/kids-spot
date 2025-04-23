@@ -14,11 +14,11 @@ import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
 import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
 import { fontTitle } from './style/styles';
-import BackButton from "./components/backButton";
-import GoogleAuthButton from "./components/GoogleAuthButton";
-import FormInput from "./components/FormInput";
-import SubmitButton from "./components/SubmitButton";
-import FormSeparator from "./components/FormSeparator";
+import BackButton from "./components/BackButton";
+import GoogleAuthButton from "./components/Form/GoogleLoginButton";
+import FormInput from "./components/Form/InputField";
+import SubmitButton from "./components/Form/SubmitButton";
+import FormSeparator from "./components/Form/FormSeparator";
 
 // Initialisation des services
 WebBrowser.maybeCompleteAuthSession();

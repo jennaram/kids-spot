@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { colorButtonFirst } from './style/styles';
-import BackButton from "./components/backButton";
-import FormInput from "./components/FormInput";
-import SubmitButton from "./components/SubmitButton";
-import ConfirmationModal from "./components/ConfirmationModal";
+import BackButton from "./components/BackButton";
+import FormInput from "./components/Form/InputField";
+import SubmitButton from "./components/Form/SubmitButton";
+import ConfirmationModal from "./components/Form/AlertPopUp";
 const appLogo = require('../assets/images/Logo.png');
 
 export default function ForgotPasswordScreen() {
