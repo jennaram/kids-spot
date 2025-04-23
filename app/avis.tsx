@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image, SafeAreaView } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -57,9 +57,9 @@ export default function Index() {
   return (
     <View style={styles.container}>
       {/* Menu burger */}
-      <View style={styles.header}>
+      <SafeAreaView style={styles.header}>
         <MenuBurger />
-      </View>
+      </SafeAreaView>
 
       {/* Titre "Votre avis" */}
       <Text style={[fontTitle, styles.title]}>Votre avis</Text>
