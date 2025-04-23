@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { colorButtonThird } from '../style/styles';
+import { colorButtonThird } from '../../style/styles';
 
 interface FormInputProps {
   label: string;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { colorButtonFirst } from '../style/styles';
+import { colorButtonFirst } from '../../style/styles';
 
 interface SubmitButtonProps {
   title: string;

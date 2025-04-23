@@ -1,6 +1,23 @@
+/**
+ * Bouton de connexion Google standard
+ * 
+ * Responsabilités :
+ * - Intègre le logo Google officiel
+ * - Gère les états désactivé/chargement
+ * - Style cohérent avec les guidelines Google
+ * 
+ * Props :
+ * @param onPress: () => void
+ * @param loading?: boolean
+ * @param disabled?: boolean
+ * 
+ * Usage :
+ * <GoogleAuthButton onPress={...} />
+ */
+
 import React from 'react';
 import { View, TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
-import { colorButtonThird } from '../style/styles';
+import { colorButtonThird } from '../../style/styles';
 
 interface GoogleAuthButtonProps {
   onPress: () => void;
@@ -17,7 +34,7 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ onPress, loading, d
     >
       <View style={styles.googleButtonContent}>
         <Image
-          source={require('../../assets/images/google-logo.png')}
+          source={require('../../../assets/images/google-logo.png')}   
           style={styles.googleLogo}
         />
         <Text style={styles.googleButtonText}>

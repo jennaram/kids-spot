@@ -1,8 +1,3 @@
-import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
-import { colorButtonFirst } from '../style/styles';
-import ExitButton from './ExitButton';
-
 /**
  * Composant Modal de confirmation réutilisable
  * 
@@ -26,6 +21,13 @@ import ExitButton from './ExitButton';
  * @param {string} [title="Demande envoyée"] - Titre optionnel
  * @param {ReactNode} [customContent] - Contenu personnalisable optionnel
  */
+
+import React from 'react';
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { colorButtonFirst } from '../../style/styles';
+import ExitButton from '../ExitButton';
+
+
 const ConfirmationModal: React.FC<{
   visible: boolean;
   email: string;
