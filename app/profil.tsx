@@ -11,7 +11,8 @@ import {
 import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
 import { fontTitle } from './style/styles';
 import MenuBurger from './components/menuburger';
-import { Navigation } from "./components/Navigation";
+import { Navigation } from "@/components/Navigation";
+import { Title } from '@/components/Title';
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({
@@ -31,14 +32,14 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Menu burger */}
-      <View style={styles.header}>
-        <MenuBurger />
-      </View>
+      
+      <MenuBurger />
+      <Title text={'Mon Profil'}/>
+
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          {/* Titre centré */}
-          <Text style={[fontTitle, styles.title]}>Mon Profil</Text>
+          
 
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
