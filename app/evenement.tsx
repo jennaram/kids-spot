@@ -13,6 +13,9 @@ import { colorButtonThird } from './style/styles';
 import { Lieu } from './types/lieu';
 // Import du composant Card
 import EventCard from './components/EventCard';
+import MenuBurger from './components/menuburger';
+import { Title } from '@/components/Title';
+import { Navigation } from '@/components/Navigation';
 
 
 const Evenement = () => {
@@ -72,34 +75,19 @@ const Evenement = () => {
 
   if (lieux.length === 0) {
     return (
-      <Layout 
-        activeTab="calendar"
-        onMapPress={() => navigation.navigate('Map')}
-        onCalendarPress={() => navigation.navigate('Calendar')}
-        onAddPress={() => navigation.navigate('Add')}
-        onFavoritePress={() => navigation.navigate('Favorites')}
-      >
         <View style={styles.centered}>
           <Text>Chargement...</Text>
         </View>
-      </Layout>
+      
     );
   }
 
   return (
-    <Layout
-      activeTab="calendar" 
-      onMapPress={() => navigation.navigate('Map')}
-      onCalendarPress={() => navigation.navigate('Calendar')}
-      onAddPress={() => navigation.navigate('Add')}
-      onFavoritePress={() => navigation.navigate('Favorites')}
-    >
-      {/* Barre de titre verte au niveau de l'encoche */}
-      <SafeAreaView style={styles.headerBar}>
-        <Text style={[fontTitle]}>Événements</Text>
-      </SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      <MenuBurger/>
+      <Title text={'Événements'}/>
       
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView >
         {lieux.map((lieu) => (
           <EventCard
             key={lieu.id}
@@ -111,7 +99,7 @@ const Evenement = () => {
           />
         ))}
       </ScrollView>
-      
+      <Navigation></Navigation>
       {/* Modal pour la description complète */}
       <Modal
         animationType="slide"
@@ -134,7 +122,8 @@ const Evenement = () => {
           </ScrollView>
         </SafeAreaView>
       </Modal>
-    </Layout>
+     
+    </SafeAreaView>
   );
 };
 

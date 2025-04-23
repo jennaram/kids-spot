@@ -14,6 +14,7 @@ export function Title({ text }: Props) {
 
 const styles = StyleSheet.create({
   title: {
+    marginBottom: 20,
     textAlign: 'center',
     color: '#000', // Titre "Votre avis" en noir
   },

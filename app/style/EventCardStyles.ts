@@ -24,6 +24,7 @@ export const eventCardStyles = StyleSheet.create({
     alignItems: 'center',
   },
   container: {
+    flex:1,
     paddingVertical: 20,
     paddingBottom: 90, // Espace pour la barre de navigation
   },
