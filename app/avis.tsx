@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
 import MenuBurger from './components/menuburger';
+import { Navigation } from "./components/Navigation";
 
 export default function Index() {
   const { nomLieu } = useLocalSearchParams();
@@ -97,6 +98,7 @@ export default function Index() {
           <Text style={styles.submitButtonText}>Valider votre avis !</Text>
         </TouchableOpacity>
       </View>
+      <Navigation></Navigation>
     </View>
   );
 }
