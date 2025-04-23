@@ -1,5 +1,5 @@
 // Importation des composants et hooks nécessaires
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, SafeAreaView, ScrollView, StatusBar, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, SafeAreaView, ScrollView, StatusBar, Dimensions, Modal } from 'react-native';
 // React Native fournit ces composants de base pour construire l'interface utilisateur mobile
 
 import React, { useState, useRef } from 'react';
@@ -62,6 +62,12 @@ const CustomCard = () => {
   const [lieux, setLieux] = useState<Lieu[]>([]);
   // État pour gérer quel lieu est actuellement "flippé"
   const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
+  // État pour gérer la modal de description complète
+  const [modalVisible, setModalVisible] = useState(false);
+  // État pour stocker la description à afficher dans la modal
+  const [currentDescription, setCurrentDescription] = useState('');
+  // État pour stocker le nom du lieu de la description
+  const [currentNom, setCurrentNom] = useState('');
   
   // Référence pour les animations
   const flipAnimations = useRef<{[key: number]: Animated.Value}>({}).current;
@@ -97,6 +103,13 @@ const CustomCard = () => {
     }).start(() => {
       setFlippedCardId(currentValue === 180 ? id : null);
     });
+  };
+
+  // Fonction pour ouvrir la modal avec la description complète
+  const openFullDescription = (description: string, nom: string) => {
+    setCurrentDescription(description);
+    setCurrentNom(nom);
+    setModalVisible(true);
   };
 
   if (lieux.length === 0) {
@@ -194,7 +207,27 @@ const CustomCard = () => {
                   <Text style={styles.modalText}>
                     Équipements : {lieu.equipements?.join(', ') || 'Non spécifiés'}
                   </Text>
-                  <Text style={styles.modalText}>{lieu.description}</Text>
+                  
+                  {/* Description avec "Lire plus..." */}
+                  <View style={styles.descriptionContainer}>
+                    <Text 
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                      style={styles.modalText}
+                    >
+                      {lieu.description}
+                    </Text>
+                    
+                    {lieu.description && lieu.description.length > 100 && (
+                      <TouchableOpacity 
+                        onPress={() => openFullDescription(lieu.description, lieu.nom)}
+                        style={styles.readMoreButton}
+                      >
+                        <Text style={styles.readMoreText}>Lire plus...</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  
                   <TouchableOpacity 
                     style={[styles.boutonRetour, ButtonStyle]} 
                     onPress={() => flipCard(lieu.id)}
@@ -207,9 +240,33 @@ const CustomCard = () => {
           );
         })}
       </ScrollView>
+      
+      {/* Modal pour la description complète */}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={[fontTitle, styles.modalHeaderTitle]}>{currentNom}</Text>
+            <TouchableOpacity 
+              style={[styles.closeButton, ButtonStyle]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={{ color: colorButtonThird }}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalBody}>
+            <Text style={styles.fullDescriptionText}>{currentDescription}</Text>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
     </Layout>
   );
 };
+
 
 // Styles pour les différents éléments de l'interface
 const styles = StyleSheet.create({
@@ -314,8 +371,52 @@ const styles = StyleSheet.create({
   boutonRetour: {
     alignSelf: 'flex-end',
     backgroundColor: colorButtonFirst,
-    marginTop: 55,
+    marginTop: 20,
     marginEnd: 20,
+  },
+  readMoreButton: {
+    alignSelf: 'flex-start',
+    marginTop: 0,
+    marginBottom: 0,
+  },
+  readMoreText: {
+    color: colorButtonSecondary,
+    fontWeight: '500',
+  },
+  
+  // Styles pour la modal de description complète
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  modalHeader: {
+    backgroundColor: '#ffffff',
+    padding: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalHeaderTitle: {
+    color: 'black',
+    flex: 1,
+  },
+  closeButton: {
+    borderWidth: 1,
+    borderColor: colorButtonFirst,
+    borderRadius: 8,
+    padding: 8,
+    backgroundColor: colorButtonFirst,
+  },
+  modalBody: {
+    flex: 1,
+    padding: 20,
+  },
+  fullDescriptionText: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  descriptionContainer: {
+    marginVertical: 5,
   },
 });
 
