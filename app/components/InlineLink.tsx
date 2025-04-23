@@ -1,16 +1,38 @@
+/**
+ * Lien secondaire en bas d'écran
+ * 
+ * Responsabilités :
+ * - Navigation vers d'autres écrans auth
+ * - Deux variantes : lien seul ou texte + lien
+ * - Style cohérent pour les actions secondaires
+ * 
+ * Props :
+ * @param text?: string - Partie non cliquable
+ * @param linkText: string - Partie cliquable
+ * @param onPress: () => void
+ * 
+ * Usage :
+ * <AuthFooterLink linkText="Mot de passe oublié?" [...] />
+ * <AuthFooterLink text="Pas de compte?" linkText="S'inscrire" [...] />
+ */
+
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { colorButtonFirst } from "@/app/style/styles";
+import { colorButtonFirst } from '../style/styles';
 
-type Props = {
+interface AuthFooterLinkProps {
   text?: string;
   linkText?: string;
   onPress: () => void;
   centered?: boolean;
 }
 
-export function AuthFooterLink({ text, linkText, onPress, centered = true }: Props) {
-  
+const AuthFooterLink: React.FC<AuthFooterLinkProps> = ({
+  text,
+  linkText,
+  onPress,
+  centered = true
+}) => {
   // Si c'est juste un texte cliquable (comme "Mot de passe oublié ?")
   if (!linkText) {
     return (
@@ -32,7 +54,7 @@ export function AuthFooterLink({ text, linkText, onPress, centered = true }: Pro
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -56,3 +78,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+export default AuthFooterLink;
