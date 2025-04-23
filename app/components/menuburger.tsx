@@ -1,13 +1,22 @@
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from 'expo-router';
+import { useDrawerStatus } from '@react-navigation/drawer';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { DrawerActions } from '@react-navigation/native';
 
 export default function MenuBurger() {
   const navigation = useNavigation();
-  
+  const drawerStatus = useDrawerStatus();
+
   return (
     <TouchableOpacity 
-      onPress={() => navigation.toggleDrawer()}
+      onPress={() => {
+        if (drawerStatus === 'closed') {
+          navigation.dispatch(DrawerActions.openDrawer());
+        } else {
+          navigation.dispatch(DrawerActions.closeDrawer());
+        }
+      }}
       style={styles.touchable}
     >
       <MaterialIcons 
