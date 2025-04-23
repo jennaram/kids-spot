@@ -1,17 +1,16 @@
-// components/BackButton.tsx
 import React from 'react';
 import { TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
 import { router } from 'expo-router';
 
 interface BackButtonProps {
   /**
-   * Destination de navigation (optionnelle)
-   * Par défaut: retour à l'écran précédent
+   * Destination de navigation alternative (optionnelle)
+   * Si non fourni: retour à l'écran précédent
    */
   navigateTo?: string;
   /**
    * Fonction personnalisée à exécuter (optionnelle)
-   * Si fournie, override la navigation par défaut
+   * Prioritaire sur la navigation si fournie
    */
   onPress?: () => void;
   /**
@@ -19,22 +18,25 @@ interface BackButtonProps {
    */
   style?: object;
   /**
-   * Style personnalisé pour l'image
+   * Style personnalisé pour l'icône
    */
-  imageStyle?: object;
+  iconStyle?: object;
 }
 
-const BackButton: React.FC<BackButtonProps> = ({ 
+export const BackButton = ({ 
   navigateTo, 
   onPress, 
   style, 
-  imageStyle 
-}) => {
+  iconStyle 
+}: BackButtonProps) => {
   const handlePress = () => {
     if (onPress) {
       onPress();
-    } else if (navigateTo) {
-      router.replace(navigateTo);
+      return;
+    }
+    
+    if (navigateTo) {
+      router.push(navigateTo);
     } else {
       router.back();
     }
@@ -42,22 +44,24 @@ const BackButton: React.FC<BackButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.backButton, style]}
+      style={[styles.button, style]}
       onPress={handlePress}
-      hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+      hitSlop={styles.hitSlop}
+      accessibilityRole="button"
+      accessibilityLabel="Retour"
     >
       <Image
         source={require('../../assets/images/fleche_retour.png')}
-        style={[styles.backButtonImage, imageStyle]}
+        style={[styles.icon, iconStyle]}
       />
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  backButton: {
+  button: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 30,
+    top: Platform.select({ ios: 50, android: 30 }),
     left: 20,
     zIndex: 10,
     width: 40,
@@ -72,10 +76,16 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
-  backButtonImage: {
+  icon: {
     width: 20,
     height: 20,
     resizeMode: 'contain',
+  },
+  hitSlop: {
+    top: 20,
+    bottom: 20,
+    left: 20,
+    right: 20,
   },
 });
 
