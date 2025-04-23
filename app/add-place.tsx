@@ -8,6 +8,7 @@ import { colorButtonFirst, colorButtonSecondary, colorButtonThird } from './styl
 import { fontTitle } from './style/styles';
 import { Navigation } from "@/components/Navigation";
 import { Title } from '@/components/Title';
+import { MaterialIcons } from '@expo/vector-icons'; // Ajout de l'import pour les icônes
 
 const AddPlaceScreen = () => {
   const router = useRouter();
@@ -132,18 +133,23 @@ const AddPlaceScreen = () => {
         {/* Adresse */}
         <View style={styles.section}>
           <Text style={styles.label}>Adresse *</Text>
-          <TouchableOpacity 
-            style={styles.locationButton} 
-            onPress={handleGetCurrentLocation}
-          >
-            <Text style={styles.buttonText}>Utiliser ma position actuelle</Text>
-          </TouchableOpacity>
-          <TextInput
-            style={styles.input}
-            placeholder="Entrez l'adresse complète"
-            value={address}
-            onChangeText={setAddress}
-          />
+        
+          
+          {/* Champ d'adresse avec icône de géolocalisation */}
+          <View style={styles.inputWithIcon}>
+            <TextInput
+              style={styles.inputWithIconField}
+              placeholder="Entrez l'adresse complète"
+              value={address}
+              onChangeText={setAddress}
+            />
+            <TouchableOpacity 
+              style={styles.iconContainer} 
+              onPress={handleGetCurrentLocation}
+            >
+              <MaterialIcons name="my-location" size={24} color={colorButtonFirst} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Description */}
@@ -278,6 +284,25 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+  },
+  // Nouveaux styles pour le champ avec icône
+  inputWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  inputWithIconField: {
+    flex: 1,
+    padding: 12,
+    fontSize: 16,
+  },
+  iconContainer: {
+    padding: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   centeredRow: {
     flexDirection: 'row',
