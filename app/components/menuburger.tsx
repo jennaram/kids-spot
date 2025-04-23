@@ -1,8 +1,9 @@
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { useDrawerStatus } from '@react-navigation/drawer';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { DrawerActions } from '@react-navigation/native';
+import { styles } from './menuBurgerStyles';
 
 export default function MenuBurger() {
   const navigation = useNavigation();
@@ -27,10 +28,3 @@ export default function MenuBurger() {
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  touchable: {
-    marginLeft: 15,
-    marginTop: 15, // Ajout d'une marge supérieure pour descendre l'icône
-  },
-});
