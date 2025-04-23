@@ -17,6 +17,8 @@ import {
 import { router } from 'expo-router';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
+import BackButton from "./components/backButton";
+
 
 
 const appLogo = require('../assets/images/Logo.png');
