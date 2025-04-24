@@ -1,59 +1,60 @@
 /**
  * Bouton d'action principal pour l'authentification
- * 
+ *
  * Responsabilités :
  * - Bouton principal stylisé avec état de chargement
  * - Feedback visuel au press
  * - Couleur personnalisable
- * 
+ *
  * Props :
- * @param title: string - Texte du bouton
- * @param onPress: () => void
- * @param loading?: boolean - Affiche un indicateur
- * @param backgroundColor?: string - Couleur optionnelle
- * 
+ * @param title - Texte du bouton
+ * @param onPress - Fonction appelée au clic
+ * @param loading - Affiche un indicateur de chargement (optionnel)
+ * @param backgroundColor - Couleur personnalisable (optionnelle)
+ * @param disabled - Désactive le bouton (optionnel)
+ *
  * Usage :
- * <AuthButton title="Connexion" [...] />
+ * <AuthButton title="Connexion" onPress={...} />
  */
-
 
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { colorButtonFirst } from '../../style/styles';
 
-interface AuthButtonProps {
+type AuthButtonProps = {
   title: string;
   onPress: () => void;
   loading?: boolean;
   backgroundColor?: string;
   disabled?: boolean;
-}
+};
 
-const AuthButton: React.FC<AuthButtonProps> = ({
+export function AuthButton({
   title,
   onPress,
   loading = false,
   backgroundColor = colorButtonFirst,
-  disabled = false
-}) => {
+  disabled = false,
+}: AuthButtonProps) {
   const buttonDisabled = loading || disabled;
-  
+
   return (
     <TouchableOpacity
       style={[
         styles.button,
         { backgroundColor },
-        buttonDisabled && styles.disabledButton
+        buttonDisabled && styles.disabledButton,
       ]}
       onPress={onPress}
       disabled={buttonDisabled}
+      activeOpacity={0.8}
     >
       <Text style={styles.buttonText}>
         {loading ? 'Chargement...' : title}
       </Text>
     </TouchableOpacity>
   );
-};
+}
 
 const styles = StyleSheet.create({
   button: {

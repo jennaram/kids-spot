@@ -1,24 +1,47 @@
+/**
+ * Bouton de soumission avec état de chargement
+ *
+ * Responsabilités :
+ * - Affiche un bouton principal stylisé
+ * - Affiche un texte de chargement si nécessaire
+ *
+ * Props :
+ * @param title - Texte du bouton
+ * @param onPress - Callback au clic
+ * @param loading - Affiche un état de chargement (optionnel)
+ *
+ * Usage :
+ * <SubmitButton title="Envoyer" onPress={...} loading={true} />
+ */
+
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { colorButtonFirst } from '../../style/styles';
 
-interface SubmitButtonProps {
+type SubmitButtonProps = {
   title: string;
   onPress: () => void;
   loading?: boolean;
-}
+};
 
-const SubmitButton: React.FC<SubmitButtonProps> = ({ title, onPress, loading = false }) => (
-  <TouchableOpacity
-    style={[styles.submitButton, loading && styles.disabledButton]}
-    onPress={onPress}
-    disabled={loading}
-  >
-    <Text style={styles.submitButtonText}>
-      {loading ? 'En cours...' : title}
-    </Text>
-  </TouchableOpacity>
-);
+export function SubmitButton({
+  title,
+  onPress,
+  loading = false,
+}: SubmitButtonProps) {
+  return (
+    <TouchableOpacity
+      style={[styles.submitButton, loading && styles.disabledButton]}
+      onPress={onPress}
+      disabled={loading}
+      activeOpacity={0.8}
+    >
+      <Text style={styles.submitButtonText}>
+        {loading ? 'En cours...' : title}
+      </Text>
+    </TouchableOpacity>
+  );
+}
 
 const styles = StyleSheet.create({
   submitButton: {
