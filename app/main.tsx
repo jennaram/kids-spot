@@ -149,17 +149,15 @@ export default function MapScreen() {
               title={item.nom}
               description={item.description}
             >
-              {/* Vous pouvez personnaliser l'icône ici si vous le souhaitez */}
               <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
                 <Text style={{ color: 'white' }}>{item.nom}</Text>
               </View>
             </Marker>
           ))
-        ) : (
-          <View>
-            <Text>Aucun lieu trouvé à proximité.</Text>
-          </View>
-        )}
+        ) : null}
+
+        
+        
 
 
 
