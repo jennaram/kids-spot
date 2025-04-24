@@ -68,7 +68,7 @@ export default function ContactScreen() {
           <Title text="Contactez-nous" />
           
           <View style={styles.content}>
-            <Text style={styles.subtitle}>Ce projet a été réalisé par :</Text>
+            
             
             {teamMembers.map((member) => (
               <View key={member.name} style={styles.member}>
