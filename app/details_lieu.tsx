@@ -1,5 +1,6 @@
-import React from "react";
-import { useRouter } from 'expo-router';
+
+import React, { useEffect, useState } from "react";
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -7,7 +8,8 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -17,60 +19,149 @@ import { Share } from 'react-native';
 import { Alert, Platform, Linking } from 'react-native';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
+import { IconesLieux } from '@/components/IconesLieux';
 
+// Interface pour les données récupérées de l'API
+interface Lieu {
+  id: number;
+  nom: string;
+  description: string;
+  horaires: string;
+  adresse: {
+    adresse: string;
+    ville: string;
+    code_postal: string;
+    telephone?: string;
+    site_web?: string;
+  };
+  type: {
+    id: number;
+    nom: string;
+  }[];
+  est_evenement: boolean;
+  date_evenement?: {
+    debut: string | null;
+    fin: string | null;
+  };
+  position: {
+    latitude: number;
+    longitude: number;
+  };
+  equipements: {
+    id: number;
+    nom: string;
+  }[];
+  ages: {
+    id: number;
+    nom: string;
+  }[];
+  commentaires?: {
+    pseudo: string;
+    commentaire: string;
+    note: number;
+    date_ajout: string;
+  }[];
+  note_moyenne: number;
+  nombre_commentaires: number;
+  image_url?: string;
+}
+
+// Interface pour la réponse de l'API
+interface ApiResponse {
+  status: string;
+  data: Lieu;
+}
 
 const DetailsLieu = () => {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const lieuId = params.id?.toString() || "2"; // Utiliser l'ID passé en paramètre ou "1" par défaut
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  // Fonction asynchrone qui sera appelée quand l'utilisateur appuie sur le bouton de partage
+  const [lieu, setLieu] = useState<Lieu | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const fetchLieuDetails = async () => {
+      try {
+        setLoading(true);
+        console.log(`Récupération des données pour l'ID: ${lieuId}`);
+        
+        const response = await fetch(`https://seb-prod.alwaysdata.net/kidsspot/lieux/${lieuId}`);
+        
+        if (!response.ok) {
+          throw new Error(`Erreur lors de la récupération des données: ${response.status}`);
+        }
+        
+        const result: ApiResponse = await response.json();
+        console.log('Données reçues:', JSON.stringify(result, null, 2));
+        
+        if (!result.data) {
+          throw new Error('Données non trouvées dans la réponse API');
+        }
+        
+        // Vérifier que les champs obligatoires sont présents
+        if (!result.data.nom || !result.data.description) {
+          throw new Error('Les données du lieu sont incomplètes');
+        }
+        
+        setLieu({
+          ...result.data,
+          // Fournir des valeurs par défaut pour les propriétés potentiellement manquantes
+          equipements: result.data.equipements || [],
+          ages: result.data.ages || [],
+          note_moyenne: result.data.note_moyenne || 0,
+          nombre_commentaires: result.data.nombre_commentaires || 0,
+          adresse: {
+            ...result.data.adresse,
+            telephone: result.data.adresse?.telephone || '',
+            site_web: result.data.adresse?.site_web || '',
+          }
+        });
+      } catch (err) {
+        console.error("Erreur lors de la récupération des détails du lieu:", err);
+        setError(`Impossible de charger les détails du lieu (ID: ${lieuId})`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLieuDetails();
+  }, [lieuId]);
+
+  // Fonction de partage
   const handleShare = async () => {
+    if (!lieu) return;
+    
     try {
       const result = await Share.share({
-        message: "Viens découvrir cet événement génial sur KidsPot ! 🎉 https://kidspot.app/event/123",
+        message: `Viens découvrir ${lieu.nom} sur KidsPot ! 🎉 https://kidspot.app/lieu/${lieu.id}`,
         title: "KidsPot - Sorties pour les enfants",
       });
   
       if (result.action === Share.sharedAction) {
         // Le contenu a été partagé 
       } else if (result.action === Share.dismissedAction) {
-        // Le partage a été annulé (pas d'action ici non plus)
+        // Le partage a été annulé
       }
     } catch (error: any) {
-      // Alert.alert("Erreur", "Impossible de partager le contenu.");
+      console.error("Erreur lors du partage:", error);
     }
-  };
-  
-
-  
-
-  const lieu = {
-    nom: "Parc Montsouris - Paris 14",
-    description:
-      "Grand parc avec aires de jeux pour enfants et espace pique-nique. Parfait pour les familles avec des enfants de tous âges.",
-    horaires: "Tous les jours de 7h à 20h",
-    note: "4.8",
-    avis: "180 avis membres",
-    position: {
-      latitude: 48.8216,
-      longitude: 2.3387,
-    },
-    tranchesAge: ["0-2 ans", "3-6 ans", "7 ans +"],
-    imageUrl: require("../assets/images/parc_montsouris.jpg"),
   };
 
   function handleFavoriteToggle() {
     console.log("Favori cliqué");
   }
 
-  // Removed duplicate handleShare function
-
-  //Fonction GPS
+  // Fonction pour gérer la navigation GPS
   const handleGpsPress = () => {
+    if (!lieu) return;
+    
     const { latitude, longitude } = lieu.position;
   
     Alert.alert(
       "Choisissez une application",
-      "Quelle application voulez-vous utiliser pour l’itinéraire ?",
+      "Quelle application voulez-vous utiliser pour l'itinéraire ?",
       [
         {
           text: "Google Maps",
@@ -92,7 +183,6 @@ const DetailsLieu = () => {
             const url = `http://maps.apple.com/?daddr=${latitude},${longitude}`;
             Linking.openURL(url);
           },
-          // Visible que sur iOS
           style: Platform.OS === 'ios' ? "default" : "cancel",
         },
         {
@@ -102,9 +192,70 @@ const DetailsLieu = () => {
       ]
     );
   };
+
+  // Fonction pour appeler le lieu
+  const handleCall = () => {
+    if (!lieu || !lieu.adresse.telephone) return;
+    
+    const phoneNumber = lieu.adresse.telephone.replace(/\s/g, '');
+    Linking.openURL(`tel:${phoneNumber}`);
+  };
+
+  // Fonction pour visiter le site web
+  const handleWebsite = () => {
+    if (!lieu || !lieu.adresse.site_web) return;
+    
+    Linking.openURL(lieu.adresse.site_web);
+  };
+
+  // Affiche un indicateur de chargement pendant le chargement des données
+  if (loading) {
+    return (
+      <Layout
+        activeTab="undefined"
+        onMapPress={() => navigation.navigate('Map')}
+        onCalendarPress={() => navigation.navigate('Calendar')}
+        onAddPress={() => navigation.navigate('Add')}
+        onFavoritePress={() => navigation.navigate('Favorites')}
+      >
+        <View style={[styles.mainContainer, styles.loadingContainer]}>
+          <ActivityIndicator size="large" color={colorButtonFirst} />
+          <Text style={styles.loadingText}>Chargement des informations...</Text>
+        </View>
+      </Layout>
+    );
+  }
+
+  // Affiche un message d'erreur si le chargement a échoué
+  if (error || !lieu) {
+    return (
+      <Layout
+        activeTab="undefined"
+        onMapPress={() => navigation.navigate('Map')}
+        onCalendarPress={() => navigation.navigate('Calendar')}
+        onAddPress={() => navigation.navigate('Add')}
+        onFavoritePress={() => navigation.navigate('Favorites')}
+      >
+        <View style={[styles.mainContainer, styles.errorContainer]}>
+          <MaterialIcons name="error-outline" size={48} color="red" />
+          <Text style={styles.errorText}>{error || "Lieu non trouvé"}</Text>
+          <TouchableOpacity 
+            style={styles.retryButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.retryButtonText}>Retour</Text>
+          </TouchableOpacity>
+        </View>
+      </Layout>
+    );
+  }
+
+  // Convertir les tranches d'âge en format d'affichage
+  const tranchesAge = lieu.ages.map(age => age.nom);
+
+  // Image par défaut si aucune n'est fournie
+  const imageUrl = lieu.image_url || require("../assets/images/parc_montsouris.jpg");
   
-
-
   return (
     <Layout
       activeTab="undefined"
@@ -119,7 +270,7 @@ const DetailsLieu = () => {
           {/* Image principale */}
           <View style={styles.imageContainer}>
             <Image
-              source={lieu.imageUrl}
+              source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl}
               style={styles.headerImage}
               resizeMode="cover"
             />
@@ -135,14 +286,14 @@ const DetailsLieu = () => {
             <View style={styles.ratingShareContainer}>
               <View style={styles.ratingWrapper}>
                 <View style={styles.ratingContainer}>
-                  <Text style={styles.note}>{lieu.note}</Text>
+                  <Text style={styles.note}>{lieu.note_moyenne.toFixed(1)}</Text>
                   <MaterialIcons
                     name="star"
                     size={18}
                     color="black"
                     style={styles.starIcon}
                   />
-                  <Text style={styles.avis}>{lieu.avis}</Text>
+                  <Text style={styles.avis}>{lieu.nombre_commentaires} avis membres</Text>
                 </View>
               </View>
               <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
@@ -158,30 +309,24 @@ const DetailsLieu = () => {
             </View>
             
             <View style={styles.ageContainer}>
-              {lieu.tranchesAge.map((age, index) => (
+              {tranchesAge.map((age, index) => (
                 <View key={index} style={styles.ageBadge}>
                   <Text style={styles.ageBadgeText}>{age}</Text>
                 </View>
               ))}
             </View>
             
-            <View style={styles.iconsContainer}>
-              <MaterialIcons name="sports-soccer" size={30} color="#333" />
-              <MaterialIcons name="stroller" size={30} color="#333" />
-              <MaterialIcons name="microwave" size={30} color="#333" />
-              <MaterialIcons name="baby-changing-station" size={30} color="#333" />
-              <MaterialIcons name="restaurant" size={30} color="#333" />
-            </View>
+            {/* Utilisation du composant IconesLieux avec les équipements du lieu */}
+            <IconesLieux equipements={lieu.equipements} />
             
             <View style={styles.actionsContainer}>
               <View style={styles.rowButtons}>
                 <TouchableOpacity
                   style={[styles.smallButton, styles.avisButton]}
                   onPress={() => {
-                    const nomLieu = lieu.nom; 
                     router.push({
                       pathname: '/avis',
-                      params: { nomLieu: nomLieu },
+                      params: { nomLieu: lieu.nom, lieuId: lieu.id },
                     });
                   }}>
                   <Text style={styles.smallButtonText}>Donner mon avis</Text>
@@ -189,10 +334,9 @@ const DetailsLieu = () => {
                 <TouchableOpacity
                   style={[styles.smallButton, styles.voirAvisButton]}
                   onPress={() => {
-                    const nomLieu = lieu.nom;
                     router.push({
                       pathname: '/voir-avis',
-                      params: { nomLieu: nomLieu },
+                      params: { nomLieu: lieu.nom, lieuId: lieu.id },
                     });
                   }}>
                   <Text style={styles.smallButtonText}>Voir les avis</Text>
@@ -200,13 +344,21 @@ const DetailsLieu = () => {
               </View>
               
               <View style={styles.newButtonsContainer}>
-                <TouchableOpacity style={styles.iconButton}>
-                  <MaterialIcons name="phone" size={24} color="#333" />
-                  <Text style={styles.iconButtonText}>Appeler</Text>
+                <TouchableOpacity 
+                  style={styles.iconButton}
+                  onPress={handleCall}
+                  disabled={!lieu.adresse.telephone}
+                >
+                  <MaterialIcons name="phone" size={24} color={lieu.adresse.telephone ? "#333" : "#999"} />
+                  <Text style={[styles.iconButtonText, !lieu.adresse.telephone && styles.disabledText]}>Appeler</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton}>
-                  <MaterialIcons name="language" size={24} color="#333" />
-                  <Text style={styles.iconButtonText}>Site web</Text>
+                <TouchableOpacity 
+                  style={styles.iconButton}
+                  onPress={handleWebsite}
+                  disabled={!lieu.adresse.site_web}
+                >
+                  <MaterialIcons name="language" size={24} color={lieu.adresse.site_web ? "#333" : "#999"} />
+                  <Text style={[styles.iconButtonText, !lieu.adresse.site_web && styles.disabledText]}>Site web</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={handleGpsPress}>
                   <MaterialIcons name="place" size={24} color="#333" />
@@ -225,6 +377,45 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "white",
+  },
+  loadingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  disabledText: {
+    color: "#999", // Gray color for disabled text
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#f8d7da",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#333",
+    textAlign: "center",
+  },
+  retryButton: {
+    backgroundColor: colorButtonFirst,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  retryButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#721c24",
+    textAlign: "center",
+    marginTop: 10,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -383,13 +574,6 @@ const styles = StyleSheet.create({
     color: "#333",
     marginTop: 5,
     textAlign: "center",
-  },
-  iconsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-    width: "100%",
-    maxWidth: 400,
   },
   favoriteIconContainer: {
     position: "absolute",
