@@ -1,3 +1,4 @@
+
 /**
  * Bouton de fermeture / retour
  *
@@ -12,6 +13,7 @@
  * Usage :
  * <ExitButton onPress={...} />
  */
+
 
 import React from 'react';
 import { Pressable, Text, StyleSheet } from 'react-native';
@@ -36,18 +38,12 @@ const styles = StyleSheet.create({
     right: 15,
     top: 15,
     padding: 10,
-    backgroundColor: '#28603E', // vert foncé
-    borderRadius: 25,
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
     zIndex: 10,
   },
   closeButtonText: {
     fontSize: 30,
-    color: 'white', // croix blanche
-    fontWeight: 'bold',
+    color: '#000000', // Croix noire
+    fontWeight: '200', // Plus fin que 'bold'
     textAlign: 'center',
     lineHeight: 30,
     marginTop: -2,
