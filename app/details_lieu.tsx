@@ -74,8 +74,8 @@ interface ApiResponse {
 
 const DetailsLieu = () => {
   const router = useRouter();
-  const params = useLocalSearchParams();
-  const lieuId = params.id?.toString() || "2"; // Utiliser l'ID passé en paramètre ou "1" par défaut
+  const params = useLocalSearchParams() as {id:string};
+  const lieuId = params.id?.toString() || "2";
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lieu, setLieu] = useState<Lieu | null>(null);
   const [loading, setLoading] = useState(true);
