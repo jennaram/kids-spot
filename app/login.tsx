@@ -1,168 +1,137 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  StyleSheet,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
   SafeAreaView,
-  ScrollView
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  Alert,
+  StyleSheet,
+  View
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
 
-// Types pour les props des composants
-interface BackButtonProps {
-  style?: object; // Définir le style directement au lieu de containerStyle
-}
-
-interface InputFieldProps {
-  label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  placeholder?: string;
-  keyboardType?: string;
-  autoCapitalize?: string;
-  secureTextEntry?: boolean;
-}
-
-interface MainButtonProps {
-  title: string;
-  onPress: () => void;
-  loading?: boolean; // Renommé de isLoading à loading
-}
-
-interface InLineLinkProps {
-  text: string;
-  linkText?: string;
-  onPress: () => void;
-  style?: object;
-}
-
-interface GoogleLoginButtonProps {
-  onPress: () => void;
-  loading?: boolean; // Renommé de isLoading à loading
-  disabled?: boolean; // Renommé de isDisabled à disabled
-}
-
 // Composants
-import BackButton from './components/BackButton';
-import LogoHeader from './components/LogoHeader';
-import InputField from './components/Form/InputField';
-import MainButton from './components/Form/MainButton';
-import InLineLink from './components/InlineLink';
-import FormSeparator from './components/Form/FormSeparator';
-import GoogleLoginButton from './components/Form/GoogleLoginButton';
+import { BackButton } from './components/BackButton';
+import { AppLogo } from './components/AppLogo';
+import { FormInput } from './components/Form/InputField';
+import { AuthButton } from './components/Form/MainButton';
+import { AuthSeparator } from './components/Form/SeparatorWithText ';
+import { GoogleAuthButton } from './components/Form/GoogleLoginButton';
+import { AuthFooterLink } from './components/InlineLink';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-  const [credentials, setCredentials] = useState({
-    email: '',
-    password: '',
-  });
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
 
   const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
-    androidClientId: "VOTRE_CLIENT_ID_ANDROID",
-    iosClientId: "VOTRE_CLIENT_ID_IOS",
-    webClientId: "VOTRE_CLIENT_ID_WEB",
+    androidClientId: 'VOTRE_CLIENT_ID_ANDROID',
+    iosClientId: 'VOTRE_CLIENT_ID_IOS',
+    webClientId: 'VOTRE_CLIENT_ID_WEB',
   });
 
   useEffect(() => {
     if (googleResponse?.type === 'success') {
-      handleGoogleSignIn(googleResponse.authentication?.accessToken);
+      const token = googleResponse.authentication?.accessToken;
+      handleGoogleSignIn(token);
     }
   }, [googleResponse]);
-
-  const handleGoogleSignIn = async (token?: string) => {
-    if (!token) return;
-    
-    try {
-      setIsLoading(true);
-      const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      const userData = await response.json();
-      if (userData) router.replace('/points');
-    } catch (error) {
-      Alert.alert('Erreur', 'Échec de la connexion avec Google');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleInputChange = (field: string, value: string) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
   };
 
   const handleEmailLogin = () => {
+    const { email, password } = credentials;
+    if (!email || !password) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      return;
+    }
+
     setIsLoading(true);
-    // Simulation de connexion
     setTimeout(() => {
       setIsLoading(false);
       router.replace('/main');
     }, 1500);
   };
 
+  const handleGoogleSignIn = async (token?: string) => {
+    if (!token) return;
+
+    try {
+      setIsLoading(true);
+      const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const user = await res.json();
+      if (user) router.replace('/main');
+    } catch {
+      Alert.alert('Erreur', 'Échec de la connexion avec Google');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BackButton style={styles.backButtonContainer} />
-      
+      <BackButton onPress={() => router.back()} style={styles.backButton} />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.content}>
-            <LogoHeader />
+          <View style={styles.logoContainer}>
+            <AppLogo size={120} style={styles.logo} />
+          </View>
 
-            <InputField
+          <View style={styles.content}>
+            <FormInput
               label="Adresse mail"
               value={credentials.email}
-              onChangeText={(text) => handleInputChange('email', text)}
+              onChangeText={text => handleInputChange('email', text)}
               placeholder="email@exemple.com"
               keyboardType="email-address"
               autoCapitalize="none"
             />
 
-            <InputField
+            <FormInput
               label="Mot de passe"
               value={credentials.password}
-              onChangeText={(text) => handleInputChange('password', text)}
+              onChangeText={text => handleInputChange('password', text)}
               placeholder="••••••••"
               secureTextEntry
             />
 
-            <MainButton
+            <AuthButton
               title="Connexion"
               onPress={handleEmailLogin}
-              loading={isLoading} // Renommé de isLoading à loading
+              loading={isLoading}
             />
 
-            <InLineLink
+            <AuthFooterLink
               text="Mot de passe oublié ?"
               onPress={() => router.push('/forgotpassword')}
               style={styles.forgotPasswordLink}
             />
 
-            <FormSeparator />
+            <AuthSeparator text="ou" />
 
-            <GoogleLoginButton
+            <GoogleAuthButton
               onPress={() => googlePromptAsync()}
-              loading={isLoading} // Renommé de isLoading à loading
-              disabled={!googleRequest || isLoading} // Renommé de isDisabled à disabled
+              loading={isLoading}
+              disabled={!googleRequest || isLoading}
             />
 
             <View style={styles.signUpContainer}>
-              <InLineLink
+              <AuthFooterLink
                 text="Vous n'avez pas de compte ?"
                 linkText="Inscrivez-vous"
                 onPress={() => router.push('/registration')}
@@ -183,7 +152,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  backButtonContainer: {
+  backButton: {
     position: 'absolute',
     top: Platform.select({ ios: 50, android: 30 }),
     left: 20,
@@ -191,12 +160,19 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
+    paddingHorizontal: 25,
     paddingBottom: 40,
+  },
+  logoContainer: {
+    marginTop: 40,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  logo: {
+    alignSelf: 'center',
   },
   content: {
     flex: 1,
-    paddingHorizontal: 25,
     justifyContent: 'center',
   },
   forgotPasswordLink: {
@@ -206,6 +182,5 @@ const styles = StyleSheet.create({
   signUpContainer: {
     marginTop: 20,
     justifyContent: 'center',
-    flexDirection: 'row',
   },
 });
