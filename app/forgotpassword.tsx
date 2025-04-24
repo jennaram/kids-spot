@@ -1,32 +1,44 @@
 import React, { useState } from 'react';
 import {
-  View,
-  StyleSheet,
   SafeAreaView,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
+  Platform,
   Alert,
-  Image
+  StyleSheet,
+  View
 } from 'react-native';
 import { router } from 'expo-router';
 import { colorButtonFirst } from './style/styles';
-import BackButton from "./components/BackButton";
-import FormInput from "./components/Form/InputField";
-import SubmitButton from "./components/Form/SubmitButton";
-import ConfirmationModal from "./components/Form/AlertPopUp";
-const appLogo = require('../assets/images/Logo.png');
+
+// Composants optimisés
+import { BackButton } from './components/BackButton';
+import { FormInput } from './components/Form/InputField';
+import { SubmitButton } from './components/Form/SubmitButton';
+import { ConfirmationModal } from './components/Form/AlertPopUp';
+import { AppLogo } from './components/AppLogo';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleResetPassword = () => {
-    if (email.includes('@') && email.includes('.')) {
-      setShowConfirmation(true);
-    } else {
+    if (!validateEmail(email)) {
       Alert.alert('Erreur', 'Veuillez entrer une adresse email valide');
+      return;
     }
+
+    setLoading(true);
+    // Simulation d'envoi d'email
+    setTimeout(() => {
+      setLoading(false);
+      setShowConfirmation(true);
+    }, 1000);
+  };
+
+  const validateEmail = (email: string) => {
+    return email.includes('@') && email.includes('.');
   };
 
   const closeModalAndRedirect = () => {
@@ -36,7 +48,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BackButton navigateTo="/login" />
+      <BackButton onPress={() => router.back()} style={styles.backButton} />
       
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -46,8 +58,13 @@ export default function ForgotPasswordScreen() {
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <Image source={appLogo} style={styles.logo} />
+          {/* Logo centré en haut avec espacement */}
+          <View style={styles.logoContainer}>
+            <AppLogo size={150} />
+          </View>
+
 
           <View style={styles.formContainer}>
             <FormInput
@@ -56,12 +73,13 @@ export default function ForgotPasswordScreen() {
               onChangeText={setEmail}
               placeholder="email@exemple.com"
               keyboardType="email-address"
-              // autoCapitalize is removed as it is not supported by FormInput
+              autoCapitalize="none"
             />
 
             <SubmitButton
               title="Réinitialiser mot de passe"
               onPress={handleResetPassword}
+              loading={loading}
             />
           </View>
         </ScrollView>
@@ -70,6 +88,7 @@ export default function ForgotPasswordScreen() {
           visible={showConfirmation}
           email={email}
           onClose={closeModalAndRedirect}
+          title="Email envoyé"
         />
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -81,19 +100,32 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  formContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
   container: {
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 30,
+    left: 20,
+    zIndex: 10,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 30,
   },
   logo: {
-    width: 150,
-    height: 150,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginTop: 40,
+    marginBottom: 30,
   },
-})
+  formContainer: {
+    width: '100%',
+    paddingHorizontal: 25,
+    marginTop: 20,
+  },
+});
