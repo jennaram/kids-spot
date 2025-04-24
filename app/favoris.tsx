@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -33,6 +34,8 @@ const Favoris = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [favoris, setFavoris] = useState<Favori[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>('');
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchFavoris = async () => {
@@ -103,6 +106,51 @@ const Favoris = () => {
       >
         <View style={styles.container}>
           <Title text="Favoris" />
+
+          {/* Recherche & Bouton Équipement */}
+          <View style={styles.searchRow}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Rechercher un lieu favori"
+              value={search}
+              onChangeText={setSearch}
+            />
+            <TouchableOpacity
+              style={styles.equipButton}
+              onPress={() => console.log('Afficher les équipements')}
+            >
+              <Text style={{ color: 'white' }}>Équipements</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Filtres principaux */}
+          <View style={styles.filterRow}>
+            {['Restaurant', 'Loisirs', 'Culturel'].map((type) => {
+              const isSelected = selectedType === type.toLowerCase();
+              return (
+                <TouchableOpacity
+                  key={type}
+                  style={[
+                    styles.filterButton,
+                    isSelected && styles.filterButtonActive,
+                  ]}
+                  onPress={() =>
+                    setSelectedType(isSelected ? null : type.toLowerCase())
+                  }
+                >
+                  <Text
+                    style={[
+                      styles.filterText,
+                      isSelected && styles.filterTextActive,
+                    ]}
+                  >
+                    {type}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
           {favoris.length > 0 ? (
             <FlatList
               data={favoris}
@@ -125,9 +173,47 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 10,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colorButtonThird,
+  },
+  searchRow: {
+    flexDirection: 'row',
+    padding: 12,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  equipButton: {
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    backgroundColor: colorButtonSecondary,
+    borderRadius: 8,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 8,
+    paddingHorizontal: 8,
+  },
+  filterButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: colorButtonThird,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colorButtonFirst,
+  },
+  filterButtonActive: {
+    backgroundColor: colorButtonFirst,
+  },
+  filterText: {
+    color: '#000',
+  },
+  filterTextActive: {
+    color: colorButtonThird,
   },
   favoriCard: {
     flexDirection: 'row',
