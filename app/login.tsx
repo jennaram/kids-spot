@@ -11,6 +11,7 @@ import {
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Types pour les props des composants
 interface BackButtonProps {
@@ -115,16 +116,17 @@ export default function LoginScreen() {
   
       const data = await response.json();
   
-      if (data.success) {
-        // Connexion réussie
+      if (data.success && data.token) {
+        // Stocker le token localement
+        await AsyncStorage.setItem('userToken', data.token);
+  
         Alert.alert("Succès", "Connexion réussie !");
-        router.replace('/main'); 
+        router.replace('/main'); // Redirection vers la page principale
       } else {
-        // Connexion échouée
         Alert.alert("Erreur", data.message || "Email ou mot de passe incorrect.");
       }
     } catch (error) {
-      Alert.alert("Erreur", "Impossible de se connecter. Vérifie ta connexion.");
+      Alert.alert("Erreur", "Impossible de se connecter.");
       console.error("Login error", error);
     } finally {
       setIsLoading(false);
