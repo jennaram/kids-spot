@@ -26,7 +26,10 @@ export function Navigation() {
                     key={index}
                     imageName={imageName}
                     link={`/${link.toLowerCase()}`} 
-                    active={route.name.toLowerCase() === link.toLowerCase()}
+                    active={
+                        route.name.toLowerCase() === link.toLowerCase() ||
+                        (link.toLowerCase() === 'main' && route.name.toLowerCase() === 'location')
+                    }
                 />
             ))}
         </View>
