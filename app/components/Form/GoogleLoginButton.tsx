@@ -1,49 +1,42 @@
-/**
- * Bouton de connexion Google standard
- * 
- * Responsabilités :
- * - Intègre le logo Google officiel
- * - Gère les états désactivé/chargement
- * - Style cohérent avec les guidelines Google
- * 
- * Props :
- * @param onPress: () => void
- * @param loading?: boolean
- * @param disabled?: boolean
- * 
- * Usage :
- * <GoogleAuthButton onPress={...} />
- */
-
 import React from 'react';
 import { View, TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
 import { colorButtonThird } from '../../style/styles';
 
-interface GoogleAuthButtonProps {
+type GoogleAuthButtonProps = {
   onPress: () => void;
-  loading: boolean;
-  disabled: boolean;
-}
+  loading?: boolean;
+  disabled?: boolean;
+};
 
-const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ onPress, loading, disabled }) => (
-  <View style={styles.googleButtonWrapper}>
-    <TouchableOpacity
-      style={styles.googleButton}
-      onPress={onPress}
-      disabled={disabled}
-    >
-      <View style={styles.googleButtonContent}>
-        <Image
-          source={require('../../../assets/images/google-logo.png')}   
-          style={styles.googleLogo}
-        />
-        <Text style={styles.googleButtonText}>
-          {loading ? 'Connexion...' : 'Continuer avec Google'}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  </View>
-);
+export function GoogleAuthButton({
+  onPress,
+  loading = false,
+  disabled = false,
+}: GoogleAuthButtonProps) {
+  return (
+    <View style={styles.googleButtonWrapper}>
+      <TouchableOpacity
+        style={[
+          styles.googleButton,
+          disabled && styles.disabledButton,
+        ]}
+        onPress={onPress}
+        disabled={disabled || loading}
+        activeOpacity={0.8}
+      >
+        <View style={styles.googleButtonContent}>
+          <Image
+            source={require('../../../assets/images/google-logo.png')}
+            style={styles.googleLogo}
+          />
+          <Text style={styles.googleButtonText}>
+            {loading ? 'Connexion...' : 'Continuer avec Google'}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   googleButtonWrapper: {
@@ -61,6 +54,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: 'center',
     elevation: 2,
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   googleButtonContent: {
     flexDirection: 'row',

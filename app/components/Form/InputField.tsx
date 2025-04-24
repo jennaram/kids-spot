@@ -2,35 +2,37 @@ import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { colorButtonThird } from '../../style/styles';
 
-interface FormInputProps {
+type FormInputProps = {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
   secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
-}
+};
 
-const FormInput: React.FC<FormInputProps> = ({
+export function FormInput({
   label,
   value,
   onChangeText,
   placeholder,
   secureTextEntry = false,
   keyboardType = 'default',
-}) => (
-  <View style={styles.inputGroup}>
-    <Text style={styles.label}>{label}</Text>
-    <TextInput
-      style={styles.input}
-      value={value}
-      onChangeText={onChangeText}
-      placeholder={placeholder}
-      secureTextEntry={secureTextEntry}
-      keyboardType={keyboardType}
-    />
-  </View>
-);
+}: FormInputProps) {
+  return (
+    <View style={styles.inputGroup}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType}
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   inputGroup: {
