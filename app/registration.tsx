@@ -33,7 +33,7 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
     phone: '',
   });
   const [loading, setLoading] = useState(false);
-  
+
   // ==================== GOOGLE AUTH CONFIG ====================
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId: "VOTRE_CLIENT_ID_ANDROID",
@@ -58,7 +58,7 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
       const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       const userData = await response.json();
       if (userData) {
         navigation?.navigate('points') || router.replace('/points');
@@ -76,13 +76,14 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
   };
 
   const handleSignUp = async () => {
+
     if (formData.password !== formData.confirmPassword) {
       Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const response = await fetch('https://seb-prod.alwaysdata.net/kidsspot/users/create.php', {
         method: 'POST',
@@ -91,50 +92,59 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
         },
         body: JSON.stringify({
           pseudo: formData.pseudo,
-          email: formData.email,
-          password: formData.password,
-          phone: formData.phone,
+          mail: formData.email,
+          mot_de_passe: formData.password,
+          telephone: formData.phone,
         }),
       });
-  
-      const data = await response.json();
-  
-      if (response.ok && data?.success) {
-        Alert.alert('Succès', 'Inscription réussie !');
-        router.replace('/login');
-      } else {
-        Alert.alert('Erreur', data?.message || "Une erreur s'est produite.");
+    
+      const text = await response.text();
+      console.log('Réponse brute:', text);
+    
+      try {
+        const data = JSON.parse(text);
+        if (response.ok && data?.success) {
+          Alert.alert('Succès', 'Inscription réussie !');
+          router.replace('/login');
+        } else {
+          Alert.alert('Erreur', data?.message || "Une erreur s'est produite.");
+        }
+      } catch (error) {
+        console.error('Erreur JSON:', error);
+        Alert.alert('Erreur', 'La réponse du serveur est invalide.');
       }
+    
     } catch (error) {
       Alert.alert('Erreur', "Impossible de communiquer avec le serveur.");
       console.error('Signup error:', error);
     } finally {
       setLoading(false);
     }
+
   };
-  
+
 
   // ==================== MAIN RENDER ====================
   return (
     <SafeAreaView style={styles.safeArea}>
       <BackButton navigateTo="/login" />
-      
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.content}>
             <Text style={[fontTitle, styles.titleText]}>Inscription</Text>
-            
-            <GoogleAuthButton 
-              onPress={() => promptAsync()} 
-              loading={loading} 
-              disabled={!request || loading} 
+
+            <GoogleAuthButton
+              onPress={() => promptAsync()}
+              loading={loading}
+              disabled={!request || loading}
             />
 
             <FormSeparator />
