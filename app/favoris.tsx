@@ -11,8 +11,16 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
 import Layout from './components/LayoutNav';
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
-import { fontTitle, loadFonts } from './style/styles';
+import MenuBurger from './components/menuburger';
+import { Title } from '@/components/Title';
+import {
+  colorButtonFirst,
+  colorButtonSecondary,
+  colorButtonThird,
+  colorFourth,
+  fontSubtitle,
+  fontTitle,
+} from './style/styles';
 
 interface Favori {
   id: string;
@@ -76,36 +84,45 @@ const Favoris = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
+        <MenuBurger />
+        <Title text="Favoris" />
         <Text>Chargement...</Text>
       </View>
     );
   }
 
   return (
-    <Layout
-      activeTab="favorite"
-      onMapPress={() => navigation.navigate('Map')}
-      onCalendarPress={() => navigation.navigate('Calendar')}
-      onAddPress={() => navigation.navigate('Add')}
-      onFavoritePress={() => navigation.navigate('Favorites')}
-    >
-      <View style={styles.container}>
-        <Text style={[fontTitle]}>FAVORIS</Text>
-        {favoris.length > 0 ? (
-          <FlatList
-            data={favoris}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
-        ) : (
-          <Text style={styles.noFavorisText}>Aucun favori trouvé.</Text>
-        )}
-      </View>
-    </Layout>
+    <View style={styles.safeArea}>
+      <MenuBurger />
+      <Layout
+        activeTab="favorite"
+        onMapPress={() => navigation.navigate('Map')}
+        onCalendarPress={() => navigation.navigate('Calendar')}
+        onAddPress={() => navigation.navigate('Add')}
+        onFavoritePress={() => navigation.navigate('Favorites')}
+      >
+        <View style={styles.container}>
+          <Title text="Favoris" />
+          {favoris.length > 0 ? (
+            <FlatList
+              data={favoris}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          ) : (
+            <Text style={styles.noFavorisText}>Aucun favori trouvé.</Text>
+          )}
+        </View>
+      </Layout>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colorButtonThird,
+  },
   container: {
     flex: 1,
     paddingTop: 20,
