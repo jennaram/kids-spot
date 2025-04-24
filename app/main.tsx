@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { router, useFocusEffect, useRouter } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
@@ -45,7 +45,6 @@ export default function MapScreen() {
       setNearbyPlaces(placesData.data);
     } else {
       console.error('Erreur lors de la récupération des lieux à proximité');
-      // Vous pouvez éventuellement afficher une erreur à l'utilisateur ici
     }
   };
 
@@ -54,7 +53,6 @@ export default function MapScreen() {
     if (location) {
       setUserLocation(location);
       setError(null);
-      // Une fois la localisation obtenue, chargez les lieux à proximité
       loadNearbyPlaces(location.latitude, location.longitude);
     } else {
       setError('Impossible d\'obtenir la localisation.');
@@ -74,12 +72,8 @@ export default function MapScreen() {
 
   if (error) {
     return (
-      <View
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}
-      >
-        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>
-          {error}
-        </Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
         {Platform.OS === 'android' && error.includes('Google Play services') && (
           <Button
             title="Vérifier Google Play Services"
@@ -94,7 +88,7 @@ export default function MapScreen() {
 
   if (!userLocation) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loadingContainer}>
         <Text>Chargement de votre position...</Text>
       </View>
     );
@@ -140,9 +134,9 @@ export default function MapScreen() {
               title={item.nom}
               description={item.description}
             >
-              {item.nom === 'Bibliothèque Louise bis' ? ( // Vérifie si le lieu est la bibliothèque Louise bis
+              {item.nom === 'Bibliothèque Louise bis' ? (
                 <Image
-                  source={iconByType.culture} // Utilise l'icône de culture
+                  source={iconByType.culture}
                   style={styles.cultureMarker}
                   resizeMode="contain"
                 />
@@ -156,12 +150,10 @@ export default function MapScreen() {
         ) : null}
       </MapView>
 
-      {/* MenuBurger en overlay sur la carte */}
       <View style={styles.menuContainer}>
         <MenuBurger />
       </View>
 
-      {/* Bouton pour switcher vers la liste des lieux */}
       <TouchableOpacity
         onPress={() => router.navigate('/Location')}
         style={styles.switchButton}
@@ -193,9 +185,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
-  cultureMarker: { // Style pour l'icône de culture
+  cultureMarker: {
     width: 40,
     height: 40,
+    backgroundColor: 'white',
+    borderRadius: 25,
   },
   switchButton: {
     position: 'absolute',
