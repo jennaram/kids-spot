@@ -1,79 +1,88 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
-import { colorButtonThird } from '../../style/styles';
+import { 
+  StyleSheet, 
+  Text, 
+  TouchableOpacity, 
+  Image, 
+  View, 
+  ActivityIndicator,
+  GestureResponderEvent 
+} from 'react-native';
 
 type GoogleAuthButtonProps = {
-  onPress: () => void;
+  onPress: (event: GestureResponderEvent) => void;
   loading?: boolean;
   disabled?: boolean;
 };
 
-export function GoogleAuthButton({
-  onPress,
-  loading = false,
-  disabled = false,
+export function GoogleAuthButton({ 
+  onPress, 
+  loading = false, 
+  disabled = false
 }: GoogleAuthButtonProps) {
   return (
-    <View style={styles.googleButtonWrapper}>
-      <TouchableOpacity
-        style={[
-          styles.googleButton,
-          disabled && styles.disabledButton,
-        ]}
-        onPress={onPress}
-        disabled={disabled || loading}
-        activeOpacity={0.8}
-      >
-        <View style={styles.googleButtonContent}>
-          <Image
-            source={require('../../../assets/images/google-logo.png')}
-            style={styles.googleLogo}
-          />
-          <Text style={styles.googleButtonText}>
-            {loading ? 'Connexion...' : 'Continuer avec Google'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={[
+        styles.button, 
+        (disabled || loading) && styles.disabled
+      ]}
+      onPress={onPress}
+      activeOpacity={0.8}
+      disabled={disabled || loading}
+      accessibilityLabel="Continuer avec Google"
+    >
+      <View style={styles.buttonContent}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#757575" />
+        ) : (
+          <>
+            <Image
+              source={require('../../../assets/images/google-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+              accessibilityIgnoresInvertColors
+            />
+            <Text style={styles.buttonText}>Continuer avec Google</Text>
+          </>
+        )}
+      </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  googleButtonWrapper: {
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  googleButton: {
-    width: '100%',
-    maxWidth: 300,
-    height: 50,
-    backgroundColor: colorButtonThird,
+  button: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 15,
+    borderColor: '#E0E0E0',
+    height: 50,
+    width: '100%',
     justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
     elevation: 2,
+    marginVertical: 10
   },
-  disabledButton: {
-    opacity: 0.6,
-  },
-  googleButtonContent: {
+  buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 15,
+    justifyContent: 'center'
   },
-  googleLogo: {
+  logo: {
     width: 20,
     height: 20,
-    marginRight: 12,
+    marginRight: 12
   },
-  googleButtonText: {
+  buttonText: {
     fontSize: 16,
-    color: '#444',
     fontWeight: '500',
+    color: '#3C4043'
   },
+  disabled: {
+    opacity: 0.6
+  }
 });
-
-export default GoogleAuthButton;
