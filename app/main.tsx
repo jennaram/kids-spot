@@ -6,22 +6,17 @@ import {
   Text,
   Platform,
   Linking,
-  Button,
   TouchableOpacity,
+  StyleSheet,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
-
-
-// useEffect permet d'exécuter des effets secondaires (comme des appels API) dans les composants
-
-import Layout from './components/LayoutNav';
-// Importe le composant personnalisé qui structure la page avec une navigation
-
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
+import Layout from './components/LayoutNav';
+import MenuBurger from './components/menuburger';
 
 // Icônes personnalisées
 const iconByType = {
@@ -31,7 +26,7 @@ const iconByType = {
 
 export default function MapScreen() {
   const router = useRouter();
-  const navigation = useNavigation(); // Si nécessaire plus tard
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -39,6 +34,7 @@ export default function MapScreen() {
   const [error, setError] = useState<string | null>(null);
   const [locationSubscription, setLocationSubscription] =
     useState<Location.LocationSubscription | null>(null);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   // Démarrage de la géolocalisation
   const startLocationTracking = async () => {
@@ -132,19 +128,15 @@ export default function MapScreen() {
 
   if (error) {
     return (
-      <View
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}
-      >
-        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>
-          {error}
-        </Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
         {Platform.OS === 'android' && (
-          <Button
-            title="Vérifier Google Play Services"
-            onPress={() =>
-              Linking.openURL('market://details?id=com.google.android.gms')
-            }
-          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => Linking.openURL('market://details?id=com.google.android.gms')}
+          >
+            <Text style={styles.buttonText}>Vérifier Google Play Services</Text>
+          </TouchableOpacity>
         )}
       </View>
     );
@@ -152,23 +144,16 @@ export default function MapScreen() {
 
   if (!userLocation) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loadingContainer}>
         <Text>Chargement de votre position...</Text>
       </View>
     );
   }
 
   return (
-    <Layout
-    activeTab="map"
-    onMapPress={() => navigation.navigate('Map')}
-    onCalendarPress={() => navigation.navigate('Calendar')}
-    onAddPress={() => navigation.navigate('Add')}
-    onFavoritePress={() => navigation.navigate('Favorites')}
-  >
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <MapView
-        style={{ flex: 1 }}
+        style={styles.map}
         region={{
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
@@ -189,28 +174,102 @@ export default function MapScreen() {
         >
           <Image
             source={iconByType.user}
-            style={{ width: 40, height: 40 }}
+            style={styles.userMarker}
             resizeMode="contain"
           />
         </Marker>
       </MapView>
 
+      {/* MenuBurger en overlay sur la carte */}
+      <View style={styles.menuContainer}>
+        <MenuBurger />
+      </View>
+
+      {/* Bouton pour switcher vers la liste des lieux */}
       <TouchableOpacity
         onPress={() => router.push('/listelieux')}
-        style={{
-          position: 'absolute',
-          bottom: 100,
-          right: 10,
-          borderRadius: 50,
-          padding: 10,
-        }}
+        style={styles.switchButton}
       >
         <Image
           source={iconByType.switchmap}
-          style={{ width: 40, height: 40 }}
+          style={styles.switchIcon}
         />
       </TouchableOpacity>
-      </View>
-    </Layout>
+
+      {/* Barre de navigation en bas */}
+      <Layout
+        activeTab="map"
+        onMapPress={() => navigation.navigate('Map')}
+        onCalendarPress={() => navigation.navigate('Calendar')}
+        onAddPress={() => navigation.navigate('Add')}
+        onFavoritePress={() => navigation.navigate('Favorites')}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  menuContainer: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 30,
+    left: 20,
+    zIndex: 1,
+  },
+  userMarker: {
+    width: 40,
+    height: 40,
+  },
+  switchButton: {
+    position: 'absolute',
+    bottom: 100,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  switchIcon: {
+    width: 30,
+    height: 30,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
