@@ -79,21 +79,45 @@ export default function LoginScreen() {
 
   const handleGoogleSignIn = async (token?: string) => {
     if (!token) return;
-    
+  
     try {
       setIsLoading(true);
-      const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+  
+      // 1. Récupère les infos de l'utilisateur depuis Google
+      const googleResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
-      const userData = await response.json();
-      if (userData) router.replace('/points');
+  
+      const googleUser = await googleResponse.json();
+      const { email, name } = googleUser;
+  
+      // 2. Envoie les infos à ton propre backend
+      const apiResponse = await fetch('https://ton-api.com/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, name }), // tu peux adapter selon ce que ton backend attend
+      });
+  
+      const data = await apiResponse.json();
+  
+      // 3. Si tout va bien, stocke le token et redirige
+      if (apiResponse.ok && data.token) {
+        await AsyncStorage.setItem('userToken', data.token);
+        router.replace('/main');
+      } else {
+        Alert.alert('Erreur', data.message || 'Connexion échouée avec votre compte Google');
+      }
+  
     } catch (error) {
-      Alert.alert('Erreur', 'Échec de la connexion avec Google');
+      console.error(error);
+      Alert.alert('Erreur', 'Une erreur est survenue pendant la connexion Google.');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const handleInputChange = (field: string, value: string) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
