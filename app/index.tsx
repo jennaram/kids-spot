@@ -55,6 +55,7 @@ export default function Index() {
       }]}>
         Bienvenue sur Kids Spot
       </Text>
+      <Button title="Test liste lieux" onPress={() => router.push('/Location')} /> 
       <Button title="Accueil" onPress={() => router.push('/accueil')} /> 
       <Button title="Voir la carte" onPress={() => router.push('/main')} />
       <Button title="Evenement" onPress={() => router.push('/evenement')} />
