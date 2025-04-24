@@ -35,7 +35,7 @@ export const eventCardStyles = StyleSheet.create({
   },
   card: {
     width: cardWidth,
-    height: cardWidth * 0.8, // Aspect ratio plus proche du style Airbnb
+    height: cardWidth * 0.8, 
     borderRadius: 16,
     backgroundColor: '#fff',
     shadowColor: '#000',
@@ -55,7 +55,7 @@ export const eventCardStyles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '65%', // L'image prend 65% de la hauteur de la carte
+    height: '70%', // L'image prend 70% de la hauteur de la carte
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
   },
@@ -106,10 +106,10 @@ export const eventCardStyles = StyleSheet.create({
     lineHeight: 22,
   },
   boutonRetour: {
-    alignSelf: 'flex-end',
+    position: 'absolute',
+    top: 240,               // distance depuis le haut
+    right: 20,             // distance depuis la droite
     backgroundColor: colorButtonFirst,
-    marginTop: 20,
-    marginEnd: 20,
   },
   readMoreButton: {
     alignSelf: 'flex-start',
