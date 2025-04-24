@@ -75,17 +75,44 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (formData.password !== formData.confirmPassword) {
       Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
+  
     setLoading(true);
-    setTimeout(() => {
+  
+    try {
+      const response = await fetch('https://seb-prod.alwaysdata.net/kidsspot/users/create.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pseudo: formData.pseudo,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data?.success) {
+        Alert.alert('Succès', 'Inscription réussie !');
+        router.replace('/login');
+      } else {
+        Alert.alert('Erreur', data?.message || "Une erreur s'est produite.");
+      }
+    } catch (error) {
+      Alert.alert('Erreur', "Impossible de communiquer avec le serveur.");
+      console.error('Signup error:', error);
+    } finally {
       setLoading(false);
-      Alert.alert('Succès', 'Inscription réussie!');
-    }, 1500);
+    }
   };
+  
 
   // ==================== MAIN RENDER ====================
   return (
