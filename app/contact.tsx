@@ -40,7 +40,7 @@ const teamMembers = [
     linkedin: "https://www.linkedin.com/in/moussa-kebe-b36ba9226/",
   },
   {
-    name: "Sebastien Drillaud",
+    name: "Sébastien Drillaud",
     github: "https://github.com/Seb-Prod",
     linkedin: "https://www.linkedin.com/in/s%C3%A9bastien-drillaud-b68b3318a/",
   },
@@ -65,10 +65,10 @@ export default function ContactScreen() {
         onFavoritePress={() => navigation.navigate("Favorites")}
       >
         <ScrollView contentContainerStyle={styles.container}>
-          <Title text="Contact" />
+          <Title text="Contactez-nous" />
           
           <View style={styles.content}>
-            <Text style={styles.subtitle}>Projet réalisé par :</Text>
+            <Text style={styles.subtitle}>Ce projet a été réalisé par :</Text>
             
             {teamMembers.map((member) => (
               <View key={member.name} style={styles.member}>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
     textAlign: "center",
-    color: colorButtonFirst,
+    color: "black",
     fontWeight: 'bold',
   },
   member: {
