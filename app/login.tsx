@@ -98,14 +98,39 @@ export default function LoginScreen() {
     setCredentials(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleEmailLogin = () => {
+  const handleEmailLogin = async () => {
     setIsLoading(true);
-    // Simulation de connexion
-    setTimeout(() => {
+  
+    try {
+      const response = await fetch('https://seb-prod.alwaysdata.net/kidsspot/users/login.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        // Connexion réussie
+        Alert.alert("Succès", "Connexion réussie !");
+        router.replace('/main'); 
+      } else {
+        // Connexion échouée
+        Alert.alert("Erreur", data.message || "Email ou mot de passe incorrect.");
+      }
+    } catch (error) {
+      Alert.alert("Erreur", "Impossible de se connecter. Vérifie ta connexion.");
+      console.error("Login error", error);
+    } finally {
       setIsLoading(false);
-      router.replace('/main');
-    }, 1500);
+    }
   };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
