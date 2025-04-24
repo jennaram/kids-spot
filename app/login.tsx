@@ -133,14 +133,14 @@ export default function LoginScreen() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: credentials.email,
-          password: credentials.password,
+          mail: credentials.email,
+          mot_de_passe: credentials.password,
         }),
       });
   
       const data = await response.json();
   
-      if (data.success && data.token) {
+      if (response.ok && data.token) {
         // Stocker le token localement
         await AsyncStorage.setItem('userToken', data.token);
   

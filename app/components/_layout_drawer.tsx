@@ -14,7 +14,7 @@ interface CustomDrawerLayoutProps {
 
 // Configuration globale des routes
 const ROUTES = {
-  HOME: "/",
+  HOME: "/accueil",
   PROFILE: "/profil",
   ADD_PLACE: "/add-place",
   ABOUT: "/about",
