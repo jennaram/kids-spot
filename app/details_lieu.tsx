@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  SafeAreaView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -20,6 +21,8 @@ import { Alert, Platform, Linking } from 'react-native';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
 import { IconesLieux } from '@/components/IconesLieux';
+import { Navigation } from "@/components/Navigation";
+import MenuBurger from "./components/menuburger";
 
 // Interface pour les données récupérées de l'API
 interface Lieu {
@@ -257,13 +260,8 @@ const DetailsLieu = () => {
   const imageUrl = lieu.image_url || require("../assets/images/parc_montsouris.jpg");
   
   return (
-    <Layout
-      activeTab={undefined}
-      onMapPress={() => navigation.navigate('Map')}
-      onCalendarPress={() => navigation.navigate('Calendar')}
-      onAddPress={() => navigation.navigate('Add')}
-      onFavoritePress={() => navigation.navigate('Favorites')}
-    >
+    <SafeAreaView style={styles.safeArea}>
+      <MenuBurger/>
       <View style={styles.mainContainer}>
         {/* Contenu scrollable */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -369,11 +367,16 @@ const DetailsLieu = () => {
           </View>
         </ScrollView>
       </View>
-    </Layout>
+      <Navigation/>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colorButtonThird,
+},
   mainContainer: {
     flex: 1,
     backgroundColor: "white",
