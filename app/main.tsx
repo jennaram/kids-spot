@@ -26,6 +26,7 @@ import { Navigation } from '@/components/Navigation';
 const iconByType = {
   user: require('../assets/images/user-location.png'),
   switchmap: require('../assets/images/switchmap.png'),
+  culture: require('../assets/images/icon-culture2.png'), // Nouvelle icône pour la culture
 };
 
 export default function MapScreen() {
@@ -99,16 +100,6 @@ export default function MapScreen() {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
   return (
     <View style={styles.container}>
       <MapView
@@ -149,19 +140,20 @@ export default function MapScreen() {
               title={item.nom}
               description={item.description}
             >
-              <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
-                <Text style={{ color: 'white' }}>{item.nom}</Text>
-              </View>
+              {item.nom === 'Bibliothèque Louise bis' ? ( // Vérifie si le lieu est la bibliothèque Louise bis
+                <Image
+                  source={iconByType.culture} // Utilise l'icône de culture
+                  style={styles.cultureMarker}
+                  resizeMode="contain"
+                />
+              ) : (
+                <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
+                  <Text style={{ color: 'white' }}>{item.nom}</Text>
+                </View>
+              )}
             </Marker>
           ))
         ) : null}
-
-        
-        
-
-
-
-
       </MapView>
 
       {/* MenuBurger en overlay sur la carte */}
@@ -181,7 +173,6 @@ export default function MapScreen() {
       </TouchableOpacity>
       <Navigation />
     </View>
-
   );
 }
 
@@ -199,6 +190,10 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   userMarker: {
+    width: 40,
+    height: 40,
+  },
+  cultureMarker: { // Style pour l'icône de culture
     width: 40,
     height: 40,
   },
