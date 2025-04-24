@@ -11,9 +11,17 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation"; 
-import Layout from "./components/LayoutNav"; 
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
-import { fontTitle, loadFonts } from './style/styles';
+import Layout from "./components/LayoutNav";
+import MenuBurger from "./components/menuburger";
+import { Title } from '@/components/Title';
+import { 
+  colorButtonFirst, 
+  colorButtonSecondary, 
+  colorButtonThird, 
+  colorFourth, 
+  fontSubtitle,
+  fontTitle 
+} from './style/styles';
 
 const teamMembers = [
   {
@@ -32,12 +40,12 @@ const teamMembers = [
     linkedin: "https://www.linkedin.com/in/moussa-kebe-b36ba9226/",
   },
   {
-    name: "Sebastien",
+    name: "Sebastien Drillaud",
     github: "https://github.com/Seb-Prod",
     linkedin: "https://www.linkedin.com/in/s%C3%A9bastien-drillaud-b68b3318a/",
   },
   {
-    name: "Ludovic",
+    name: "Ludovic Denis",
     github: "https://github.com/Ludus78",
     linkedin: "https://www.linkedin.com/in/ludovic-denis-698b97196/",
   },
@@ -47,61 +55,95 @@ export default function ContactScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
-    <Layout
-      activeTab="undefined" // Ou une valeur valide selon ton layout (ex: "contact", "profile", etc.)
-      onMapPress={() => navigation.navigate("Map")}
-      onCalendarPress={() => navigation.navigate("Calendar")}
-      onAddPress={() => navigation.navigate("Add")}
-      onFavoritePress={() => navigation.navigate("Favorites")}
-    >
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={[fontTitle]}>Contact</Text>
-        <Text style={styles.subtitle}>Projet réalisé par :</Text>
-        {teamMembers.map((member) => (
-          <View key={member.name} style={styles.member}>
-            <Text style={styles.name}>{member.name}</Text>
-            <TouchableOpacity onPress={() => Linking.openURL(member.github)}>
-              <FontAwesome
-                name="github"
-                size={24}
-                color="black"
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => Linking.openURL(member.linkedin)}>
-              <FontAwesome
-                name="linkedin"
-                size={24}
-                color="#0077B5"
-                style={styles.icon}
-              />
-            </TouchableOpacity>
+    <View style={styles.safeArea}>
+      <MenuBurger />
+      <Layout
+        activeTab="undefined"
+        onMapPress={() => navigation.navigate("Map")}
+        onCalendarPress={() => navigation.navigate("Calendar")}
+        onAddPress={() => navigation.navigate("Add")}
+        onFavoritePress={() => navigation.navigate("Favorites")}
+      >
+        <ScrollView contentContainerStyle={styles.container}>
+          <Title text="Contact" />
+          
+          <View style={styles.content}>
+            <Text style={styles.subtitle}>Projet réalisé par :</Text>
+            
+            {teamMembers.map((member) => (
+              <View key={member.name} style={styles.member}>
+                <Text style={styles.name}>{member.name}</Text>
+                <View style={styles.iconsContainer}>
+                  <TouchableOpacity 
+                    onPress={() => Linking.openURL(member.github)}
+                    style={styles.iconButton}
+                  >
+                    <FontAwesome
+                      name="github"
+                      size={24}
+                      color="black"
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    onPress={() => Linking.openURL(member.linkedin)}
+                    style={styles.iconButton}
+                  >
+                    <FontAwesome
+                      name="linkedin"
+                      size={24}
+                      color="#0077B5"
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
           </View>
-        ))}
-      </ScrollView>
-    </Layout>
+        </ScrollView>
+      </Layout>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    paddingTop: 50,
+  safeArea: {
+    flex: 1,
     backgroundColor: colorButtonThird,
+  },
+  container: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: colorButtonThird,
+  },
+  content: {
+    marginTop: 20,
   },
   subtitle: {
     fontSize: 18,
     marginBottom: 20,
     textAlign: "center",
+    color: colorButtonFirst,
+    fontWeight: 'bold',
   },
   member: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 15,
+    padding: 15,
+    backgroundColor: colorFourth,
+    borderRadius: 10,
   },
   name: {
-    fontSize: 18,
+    fontSize: 16,
     flex: 1,
+  },
+  iconsContainer: {
+    flexDirection: "row",
+  },
+  iconButton: {
+    padding: 8,
   },
   icon: {
     marginHorizontal: 5,
