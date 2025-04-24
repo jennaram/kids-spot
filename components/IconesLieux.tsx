@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 interface EquipementItem {
@@ -27,17 +27,19 @@ export function IconesLieux({ equipements }: IconesLieuxProps) {
   };
 
   return (
-    <View style={styles.iconsContainer}>
+    <View style={styles.container}>
       {equipements.map((equipement, index) => {
         const iconName = iconMapping[equipement.nom];
         
         return iconName ? (
-          <MaterialIcons 
-            key={index} 
-            name={iconName} 
-            size={30} 
-            color="#333" 
-          />
+          <View key={index} style={styles.iconWrapper}>
+            <MaterialIcons 
+              name={iconName} 
+              size={30} 
+              color="#333" 
+            />
+            <Text style={styles.iconText}>{equipement.nom}</Text>
+          </View>
         ) : null;
       })}
     </View>
@@ -45,11 +47,22 @@ export function IconesLieux({ equipements }: IconesLieuxProps) {
 }
 
 const styles = StyleSheet.create({
-  iconsContainer: {
+  container: {
     flexDirection: "row",
     justifyContent: "space-around",
+    flexWrap: "wrap",
     marginBottom: 20,
     width: "100%",
     maxWidth: 400,
+  },
+  iconWrapper: {
+    alignItems: "center",
+    padding: 8,
+    minWidth: 80,
+  },
+  iconText: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: "center",
   }
 });

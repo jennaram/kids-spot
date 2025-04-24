@@ -212,7 +212,7 @@ const DetailsLieu = () => {
   if (loading) {
     return (
       <Layout
-        activeTab="undefined"
+        activeTab={undefined}
         onMapPress={() => navigation.navigate('Map')}
         onCalendarPress={() => navigation.navigate('Calendar')}
         onAddPress={() => navigation.navigate('Add')}
@@ -230,7 +230,7 @@ const DetailsLieu = () => {
   if (error || !lieu) {
     return (
       <Layout
-        activeTab="undefined"
+        activeTab={undefined}
         onMapPress={() => navigation.navigate('Map')}
         onCalendarPress={() => navigation.navigate('Calendar')}
         onAddPress={() => navigation.navigate('Add')}
@@ -258,7 +258,7 @@ const DetailsLieu = () => {
   
   return (
     <Layout
-      activeTab="undefined"
+      activeTab={undefined}
       onMapPress={() => navigation.navigate('Map')}
       onCalendarPress={() => navigation.navigate('Calendar')}
       onAddPress={() => navigation.navigate('Add')}
