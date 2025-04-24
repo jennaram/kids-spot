@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
   SafeAreaView,
-  ScrollView
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  Alert,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
 import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
 import { fontTitle } from './style/styles';
-import BackButton from "./components/BackButton";
-import GoogleAuthButton from "./components/Form/GoogleLoginButton";
-import FormInput from "./components/Form/InputField";
-import SubmitButton from "./components/Form/SubmitButton";
-import FormSeparator from "./components/Form/FormSeparator";
 
-// Initialisation des services
+// Composants optimisés
+import { BackButton } from './components/BackButton';
+import { GoogleAuthButton } from './components/Form/GoogleLoginButton';
+import { FormInput } from './components/Form/InputField';
+import { SubmitButton } from './components/Form/SubmitButton';
+import { AuthSeparator } from './components/Form/SeparatorWithText ';
+import { AuthFooterLink } from './components/InlineLink';
+
 WebBrowser.maybeCompleteAuthSession();
 
-export default function RegistrationScreen({ navigation }: { navigation: any }) {
-  // ==================== STATE MANAGEMENT ====================
+export default function RegistrationScreen() {
   const [formData, setFormData] = useState({
     pseudo: '',
     email: '',
@@ -34,25 +35,21 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
   });
   const [loading, setLoading] = useState(false);
   
-  // ==================== GOOGLE AUTH CONFIG ====================
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
     androidClientId: "VOTRE_CLIENT_ID_ANDROID",
     iosClientId: "VOTRE_CLIENT_ID_IOS",
     webClientId: "VOTRE_CLIENT_ID_WEB",
   });
 
-  // ==================== EFFECTS ====================
   useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response;
-      if (authentication?.accessToken) {
-        getUserInfo(authentication.accessToken);
-      }
+    if (googleResponse?.type === 'success') {
+      handleGoogleSignIn(googleResponse.authentication?.accessToken);
     }
-  }, [response]);
+  }, [googleResponse]);
 
-  // ==================== API CALLS ====================
-  const getUserInfo = async (token: string) => {
+  const handleGoogleSignIn = async (token?: string) => {
+    if (!token) return;
+    
     try {
       setLoading(true);
       const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
@@ -60,9 +57,7 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
       });
       
       const userData = await response.json();
-      if (userData) {
-        navigation?.navigate('points') || router.replace('/points');
-      }
+      if (userData) router.replace('/points');
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion avec Google');
     } finally {
@@ -70,9 +65,8 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
     }
   };
 
-  // ==================== EVENT HANDLERS ====================
-  const handleChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSignUp = () => {
@@ -80,14 +74,15 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
       Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
+    
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       Alert.alert('Succès', 'Inscription réussie!');
+      router.replace('/main');
     }, 1500);
   };
 
-  // ==================== MAIN RENDER ====================
   return (
     <SafeAreaView style={styles.safeArea}>
       <BackButton navigateTo="/login" />
@@ -100,38 +95,40 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
           <View style={styles.content}>
             <Text style={[fontTitle, styles.titleText]}>Inscription</Text>
             
             <GoogleAuthButton 
-              onPress={() => promptAsync()} 
-              loading={loading} 
-              disabled={!request || loading} 
+              onPress={() => googlePromptAsync()} 
+              loading={loading}
+              disabled={!googleRequest || loading}
             />
 
-            <FormSeparator />
+            <AuthSeparator text="ou" />
 
             <View style={styles.formContainer}>
               <FormInput
                 label="Pseudo"
                 value={formData.pseudo}
-                onChangeText={(t) => handleChange('pseudo', t)}
+                onChangeText={(text) => handleInputChange('pseudo', text)}
                 placeholder="Votre pseudo"
               />
 
               <FormInput
                 label="Email"
                 value={formData.email}
-                onChangeText={(t) => handleChange('email', t)}
+                onChangeText={(text) => handleInputChange('email', text)}
                 placeholder="email@exemple.com"
                 keyboardType="email-address"
+                autoCapitalize="none"
               />
 
               <FormInput
                 label="Mot de passe"
                 value={formData.password}
-                onChangeText={(t) => handleChange('password', t)}
+                onChangeText={(text) => handleInputChange('password', text)}
                 placeholder="••••••••"
                 secureTextEntry
               />
@@ -139,7 +136,7 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
               <FormInput
                 label="Confirmation"
                 value={formData.confirmPassword}
-                onChangeText={(t) => handleChange('confirmPassword', t)}
+                onChangeText={(text) => handleInputChange('confirmPassword', text)}
                 placeholder="••••••••"
                 secureTextEntry
               />
@@ -147,7 +144,7 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
               <FormInput
                 label="Téléphone"
                 value={formData.phone}
-                onChangeText={(t) => handleChange('phone', t)}
+                onChangeText={(text) => handleInputChange('phone', text)}
                 placeholder="06 12 34 56 78"
                 keyboardType="phone-pad"
               />
@@ -157,6 +154,13 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
                 onPress={handleSignUp}
                 loading={loading}
               />
+
+              <AuthFooterLink
+                text="Déjà un compte ?"
+                linkText="Connectez-vous"
+                onPress={() => router.push('/login')}
+                style={styles.loginLink}
+              />
             </View>
           </View>
         </ScrollView>
@@ -165,7 +169,6 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
   );
 }
 
-// ==================== STYLES ====================
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -197,5 +200,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+  },
+  loginLink: {
+    marginTop: 15,
+    alignSelf: 'center',
   },
 });
