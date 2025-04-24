@@ -8,15 +8,19 @@ import {
   Linking,
   TouchableOpacity,
   StyleSheet,
+  Button,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { router, useFocusEffect, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
 import Layout from './components/LayoutNav';
 import MenuBurger from './components/menuburger';
+import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
+import getUserLocation from '@/hooks/localisation';
+import { Navigation } from '@/components/Navigation';
 
 // Icônes personnalisées
 const iconByType = {
@@ -25,118 +29,63 @@ const iconByType = {
 };
 
 export default function MapScreen() {
-  const router = useRouter();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
+
+  const [nearbyPlaces, setNearbyPlaces] = useState<any[] | null>(null);
+
   const [error, setError] = useState<string | null>(null);
-  const [locationSubscription, setLocationSubscription] =
-    useState<Location.LocationSubscription | null>(null);
-  const [menuVisible, setMenuVisible] = useState(false);
 
-  // Démarrage de la géolocalisation
-  const startLocationTracking = async () => {
-    try {
-      // Android : Vérifie les services et permissions
-      if (Platform.OS === 'android') {
-        const [hasPlayServices, permissionStatus] = await Promise.all([
-          Location.hasServicesEnabledAsync(),
-          Location.requestForegroundPermissionsAsync(),
-        ]);
-
-        if (!hasPlayServices) {
-          Alert.alert(
-            'Services Google requis',
-            'Cette application nécessite Google Play Services pour la géolocalisation',
-            [
-              {
-                text: 'Activer',
-                onPress: () => Linking.openSettings(),
-              },
-              {
-                text: 'Annuler',
-                style: 'cancel',
-              },
-            ]
-          );
-          return;
-        }
-
-        if (permissionStatus.status !== 'granted') {
-          setError('Permission de localisation refusée');
-          return;
-        }
-      } else {
-        // iOS
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setError('Permission de localisation refusée');
-          return;
-        }
-      }
-
-      const initialLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
-      setUserLocation(initialLocation.coords);
-
-      const sub = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.BestForNavigation,
-          distanceInterval: 10,
-          timeInterval: 5000,
-          mayShowUserSettingsDialog: true,
-        },
-        (location) => {
-          setUserLocation(location.coords);
-        }
-      );
-
-      setLocationSubscription(sub);
-    } catch (err) {
-      console.error('Erreur de géolocalisation:', err);
-      setError(
-        Platform.OS === 'android'
-          ? "Erreur des services Google - Redémarrez l'application"
-          : 'Erreur de localisation'
-      );
+  const loadNearbyPlaces = async (lat: number, lng: number) => {
+    const placesData = await fetchNearbyPlaces(lat, lng);
+    if (placesData && placesData.status === 'success' && placesData.data) {
+      setNearbyPlaces(placesData.data);
+    } else {
+      console.error('Erreur lors de la récupération des lieux à proximité');
+      // Vous pouvez éventuellement afficher une erreur à l'utilisateur ici
     }
   };
 
-  // Timeout en cas de chargement long
+  const fetchLocationAndPlaces = async () => {
+    const location = await getUserLocation();
+    if (location) {
+      setUserLocation(location);
+      setError(null);
+      // Une fois la localisation obtenue, chargez les lieux à proximité
+      loadNearbyPlaces(location.latitude, location.longitude);
+    } else {
+      setError('Impossible d\'obtenir la localisation.');
+    }
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (Platform.OS === 'android' && !userLocation) {
-        setError('Initialisation lente - Vérifiez votre connexion');
-      }
-    }, 10000);
+    fetchLocationAndPlaces();
+  }, []);
 
-    return () => clearTimeout(timer);
-  }, [userLocation]);
-
-  // Recharger la géoloc quand on revient sur l'écran
   useFocusEffect(
     React.useCallback(() => {
-      startLocationTracking();
-      return () => {
-        locationSubscription?.remove();
-      };
+      fetchLocationAndPlaces();
+      return () => { };
     }, [])
   );
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-        {Platform.OS === 'android' && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => Linking.openURL('market://details?id=com.google.android.gms')}
-          >
-            <Text style={styles.buttonText}>Vérifier Google Play Services</Text>
-          </TouchableOpacity>
+      <View
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}
+      >
+        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>
+          {error}
+        </Text>
+        {Platform.OS === 'android' && error.includes('Google Play services') && (
+          <Button
+            title="Vérifier Google Play Services"
+            onPress={() =>
+              Linking.openURL('market://details?id=com.google.android.gms')
+            }
+          />
         )}
       </View>
     );
@@ -144,11 +93,21 @@ export default function MapScreen() {
 
   if (!userLocation) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Chargement de votre position...</Text>
       </View>
     );
   }
+
+
+
+
+
+
+
+
+
+
 
   return (
     <View style={styles.container}>
@@ -178,6 +137,33 @@ export default function MapScreen() {
             resizeMode="contain"
           />
         </Marker>
+
+        {nearbyPlaces && nearbyPlaces.length > 0 ? (
+          nearbyPlaces.map((item) => (
+            <Marker
+              key={item.id}
+              coordinate={{
+                latitude: item.position.latitude,
+                longitude: item.position.longitude,
+              }}
+              title={item.nom}
+              description={item.description}
+            >
+              {/* Vous pouvez personnaliser l'icône ici si vous le souhaitez */}
+              <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
+                <Text style={{ color: 'white' }}>{item.nom}</Text>
+              </View>
+            </Marker>
+          ))
+        ) : (
+          <View>
+            <Text>Aucun lieu trouvé à proximité.</Text>
+          </View>
+        )}
+
+
+
+
       </MapView>
 
       {/* MenuBurger en overlay sur la carte */}
@@ -187,7 +173,7 @@ export default function MapScreen() {
 
       {/* Bouton pour switcher vers la liste des lieux */}
       <TouchableOpacity
-        onPress={() => router.push('/listelieux')}
+        onPress={() => router.navigate('/Location')}
         style={styles.switchButton}
       >
         <Image
@@ -195,16 +181,9 @@ export default function MapScreen() {
           style={styles.switchIcon}
         />
       </TouchableOpacity>
-
-      {/* Barre de navigation en bas */}
-      <Layout
-        activeTab="map"
-        onMapPress={() => navigation.navigate('Map')}
-        onCalendarPress={() => navigation.navigate('Calendar')}
-        onAddPress={() => navigation.navigate('Add')}
-        onFavoritePress={() => navigation.navigate('Favorites')}
-      />
+      <Navigation />
     </View>
+
   );
 }
 
