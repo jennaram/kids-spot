@@ -55,7 +55,7 @@ export const eventCardStyles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '70%', // L'image prend 70% de la hauteur de la carte
+    height: '65%', // L'image prend 70% de la hauteur de la carte
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
   },
