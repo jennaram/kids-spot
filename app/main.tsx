@@ -36,10 +36,10 @@ export default function MapScreen() {
     latitude: number;
     longitude: number;
   } | null>(null);
-
   const [nearbyPlaces, setNearbyPlaces] = useState<any[] | null>(null);
-
   const [error, setError] = useState<string | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<any | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
 
   const loadNearbyPlaces = async (lat: number, lng: number) => {
     const placesData = await fetchNearbyPlaces(lat, lng);
@@ -96,6 +96,21 @@ export default function MapScreen() {
     );
   }
 
+  const formatEventDate = (dateEvent) => {
+    if (!dateEvent || !dateEvent.debut) return 'Pas de date spécifiée';
+    
+    const dateDebut = new Date(dateEvent.debut);
+    const dateFin = dateEvent.fin ? new Date(dateEvent.fin) : null;
+    
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    
+    if (dateFin && dateEvent.debut !== dateEvent.fin) {
+      return `Du ${dateDebut.toLocaleDateString('fr-FR', options)} au ${dateFin.toLocaleDateString('fr-FR', options)}`;
+    }
+    
+    return `Le ${dateDebut.toLocaleDateString('fr-FR', options)}`;
+  };
+
   return (
     <View style={styles.container}>
       <MapView
@@ -126,43 +141,85 @@ export default function MapScreen() {
         </Marker>
 
         {nearbyPlaces && nearbyPlaces.length > 0 ? (
-  nearbyPlaces.map((item) => (
-    <Marker
-      key={item.id}
-      coordinate={{
-        latitude: item.position.latitude,
-        longitude: item.position.longitude,
-      }}
-      title={item.nom}
-      description={item.description}
-    >
-      {item.type[0].nom === 'Culture' ? (
-        <Image
-          source={iconByType.Culture}
-          style={styles.cultureMarker}
-          resizeMode="contain"
-        />
-      ) : item.type[0].nom === 'Restaurant' ? (
-        <Image
-          source={iconByType.Restaurant}
-          style={styles.foodMarker}
-          resizeMode="contain"
-        />
-      ) : item.type[0].nom === 'Loisir' ? (
-        <Image
-          source={iconByType.Loisir}
-          style={styles.loisirsMarker}
-          resizeMode="contain"
-        />
-      ) : (
-        <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
-          <Text style={{ color: 'white' }}>{item.nom}</Text>
+          nearbyPlaces.map((item) => (
+            <Marker
+              key={item.id}
+              coordinate={{
+                latitude: item.position.latitude,
+                longitude: item.position.longitude,
+              }}
+              onPress={() => {
+                setSelectedPlace(item);
+                setShowPopup(true);
+              }}
+              tracksInfoWindowChanges={false}
+            >
+              {item.type[0].nom === 'Culture' ? (
+                <Image
+                  source={iconByType.Culture}
+                  style={styles.cultureMarker}
+                  resizeMode="contain"
+                />
+              ) : item.type[0].nom === 'Restaurant' ? (
+                <Image
+                  source={iconByType.Restaurant}
+                  style={styles.foodMarker}
+                  resizeMode="contain"
+                />
+              ) : item.type[0].nom === 'Loisir' ? (
+                <Image
+                  source={iconByType.Loisir}
+                  style={styles.loisirsMarker}
+                  resizeMode="contain"
+                />
+              ) : (
+                <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
+                  <Text style={{ color: 'white' }}>{item.nom}</Text>
+                </View>
+              )}
+            </Marker>
+          ))
+        ) : null}
+      </MapView>
+
+      {showPopup && selectedPlace && (
+        <View style={styles.popupContainer}>
+          <TouchableOpacity 
+            style={styles.closeButton} 
+            onPress={() => setShowPopup(false)}
+          >
+            <Text style={styles.closeButtonText}>×</Text>
+          </TouchableOpacity>
+          
+          <Text style={styles.popupTitle}>{selectedPlace.nom}</Text>
+          
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Horaires:</Text>
+            <Text style={styles.infoValue}>{selectedPlace.horaires}</Text>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Adresse:</Text>
+            <Text style={styles.infoValue}>
+              {selectedPlace.adresse.adresse}, {selectedPlace.adresse.code_postal} {selectedPlace.adresse.ville}
+            </Text>
+          </View>
+          
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Type:</Text>
+            <Text style={styles.infoValue}>{selectedPlace.type[0].nom}</Text>
+          </View>
+          
+          {selectedPlace.est_evenement && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Événement:</Text>
+              <Text style={styles.infoValue}>{formatEventDate(selectedPlace.date_evenement)}</Text>
+            </View>
+          )}
+          
+          <Text style={styles.description}>{selectedPlace.description}</Text>
         </View>
       )}
-    </Marker>
-  ))
-) : null}
-      </MapView>
 
       <View style={styles.menuContainer}>
         <MenuBurger />
@@ -196,7 +253,7 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   userMarker: {
-    width: 40,
+    width: 40, 
     height: 40,
   },
   cultureMarker: {
@@ -206,7 +263,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     elevation: 10,
   },
-
   foodMarker: {
     width: 40,
     height: 40,
@@ -267,5 +323,56 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  popupContainer: {
+    position: 'absolute',
+    bottom: 170, // Augmenté pour être au-dessus de la navbar et switchmap
+    left: 20,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    maxHeight: '60%', // Limite la hauteur à 60% de l'écran
+  },
+  popupTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    marginBottom: 5,
+  },
+  infoLabel: {
+    fontWeight: 'bold',
+    minWidth: 80,
+    color: '#333',
+  },
+  infoValue: {
+    flex: 1,
+    color: '#555',
+  },
+  description: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 5,
+    right: 10,
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 20,
+    color: '#333',
   },
 });
