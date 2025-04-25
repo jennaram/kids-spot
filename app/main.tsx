@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Platform.OS === 'ios' ? 50 : 30,
     left: 20,
-    zIndex: 1,
+    zIndex: 100,
   },
   userMarker: {
     width: 40,
@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: '#ff9770',
     borderRadius: 25,
+    elevation: 10,
   },
 
   foodMarker: {
@@ -211,12 +212,14 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: '#95d5b2',
     borderRadius: 25,
+    elevation: 10,
   },
   loisirsMarker: {
     width: 40,
     height: 40,
     backgroundColor: '#8ecae6',
     borderRadius: 25,
+    elevation: 10,
   },
   switchButton: {
     position: 'absolute',
