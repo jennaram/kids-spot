@@ -76,14 +76,15 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
   };
 
   const handleSignUp = async () => {
-
+    console.log("je soumet le formulaire")
     if (formData.password !== formData.confirmPassword) {
       Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
 
     setLoading(true);
-
+    
+    console.log("je tente la requete")
     try {
       const response = await fetch('https://seb-prod.alwaysdata.net/kidsspot/users/create.php', {
         method: 'POST',
@@ -98,20 +99,14 @@ export default function RegistrationScreen({ navigation }: { navigation: any }) 
         }),
       });
     
-      const text = await response.text();
-      console.log('Réponse brute:', text);
-    
-      try {
-        const data = JSON.parse(text);
-        if (response.ok && data?.success) {
-          Alert.alert('Succès', 'Inscription réussie !');
-          router.replace('/login');
-        } else {
-          Alert.alert('Erreur', data?.message || "Une erreur s'est produite.");
-        }
-      } catch (error) {
-        console.error('Erreur JSON:', error);
-        Alert.alert('Erreur', 'La réponse du serveur est invalide.');
+      const data = await response.json();
+      console.log(data.message);
+      if (response.ok) {
+        // Stocker le token localement
+        Alert.alert("Succès", "compte créé avec succès !");
+        router.replace('/main'); // Redirection vers la page principale
+      } else {
+        Alert.alert("Erreur", data.message);
       }
     
     } catch (error) {
