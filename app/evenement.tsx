@@ -13,7 +13,7 @@ import { colorButtonThird } from './style/styles';
 import { Lieu } from './types/lieu';
 // Import du composant Card
 import EventCard from './components/EventCard';
-import MenuBurger from './components/menuburger';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/Navigation';
 import {ExitButton} from './components/ExitButton';
@@ -117,7 +117,7 @@ const Evenement = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <MenuBurger/>
+      <BurgerMenu/>
       <Title text={'Événements'}/>
       
       <ScrollView >

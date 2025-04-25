@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
 import { fontTitle } from './style/styles';
-import MenuBurger from './components/menuburger';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/Navigation";
 import { Title } from '@/components/Title';
 
@@ -33,7 +33,7 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.safeArea}>
       {/* Menu burger */}
       
-      <MenuBurger />
+      <BurgerMenu/>
       <Title text={'Mon Profil'}/>
 
 

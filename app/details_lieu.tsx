@@ -21,7 +21,7 @@ import { Alert, Platform, Linking } from 'react-native';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { IconesLieux } from '@/components/IconesLieux';
 import { Navigation } from "@/components/Navigation";
-import MenuBurger from "./components/menuburger";
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Lieu } from "./types/lieu";
 import { AvisButton } from "../components/Lieux/AvisButton";
 import LieuActionButtons from "../components/Lieux/LieuActionButtons";
@@ -201,7 +201,7 @@ const DetailsLieu = () => {
   const imageUrl = lieu.image_url || require("../assets/images/parc_montsouris.jpg");
   return (
     <SafeAreaView style={styles.safeArea}>
-      <MenuBurger/>
+      <BurgerMenu/>
       <View style={styles.mainContainer}>
         {/* Contenu scrollable */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>

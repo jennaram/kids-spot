@@ -60,7 +60,7 @@ export function BurgerMenu() {
     const menuItems: { imageName: IoniconName; text: string; link: string }[] = [
         { imageName: "home", text: "Accueil", link: "/accueil" },
         { imageName: "person", text: "Mon profil", link: "/profil" },
-        { imageName: "add-circle", text: "Ajouter un lieu", link: "/ajouter" },
+        { imageName: "add-circle", text: "Ajouter un lieu", link: "/add-place" },
         { imageName: "information-circle", text: "À propos", link: "/about" },
         { imageName: "mail", text: "Contact", link: "/contact" },
     ];

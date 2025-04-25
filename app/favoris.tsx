@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
 import Layout from './components/LayoutNav';
-import MenuBurger from './components/menuburger';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import {
   colorButtonFirst,
@@ -87,7 +87,7 @@ const Favoris = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <MenuBurger />
+        <BurgerMenu/>
         <Title text="Favoris" />
         <Text>Chargement...</Text>
       </View>
@@ -96,7 +96,7 @@ const Favoris = () => {
 
   return (
     <View style={styles.safeArea}>
-      <MenuBurger />
+      <BurgerMenu/>
       <Layout
         activeTab="favorite"
         onMapPress={() => navigation.navigate('Map')}
