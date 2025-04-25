@@ -1,16 +1,28 @@
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
-import CustomDrawerLayout from './components/_layout_drawer';
 
 export default function RootLayout() {
-  // Let Expo Router manage screens based on file structure within the Drawer/Stack
   return (
-    <CustomDrawerLayout>
-      {/* Stack will automatically handle routes based on files in the app directory */}
-      {/* Remove explicit Stack.Screen definitions unless truly necessary for specific configs */}
-      <Stack screenOptions={{ headerShown: false }}>
-         {/* Example: If you need specific options for a layout route */}
-         {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-      </Stack>
-    </CustomDrawerLayout>
+    <View style={styles.container}>
+      {/* Ce Stack.Screen permet de configurer l'en-tête pour toutes les pages */}
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+      
+      {/* Le contenu de chaque page sera injecté ici */}
+      <View>
+        <Stack.Screen />
+      </View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5'
+  }
+});

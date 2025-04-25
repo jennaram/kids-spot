@@ -12,7 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation"; 
 import Layout from "./components/LayoutNav";
-import MenuBurger from "./components/menuburger";
+// import MenuBurger from "./components/menuburger";
 import { Title } from '@/components/Title';
 import { 
   colorButtonFirst, 
@@ -22,6 +22,8 @@ import {
   fontSubtitle,
   fontTitle 
 } from './style/styles';
+import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const teamMembers = [
   {
@@ -55,8 +57,8 @@ export default function ContactScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
-    <View style={styles.safeArea}>
-      <MenuBurger />
+    <SafeAreaView style={styles.safeArea}>
+      <BurgerMenu/>
       <Layout
         activeTab="undefined"
         onMapPress={() => navigation.navigate("Map")}
@@ -102,7 +104,7 @@ export default function ContactScreen() {
           </View>
         </ScrollView>
       </Layout>
-    </View>
+    </SafeAreaView>
   );
 }
 
