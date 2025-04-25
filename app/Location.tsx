@@ -18,6 +18,7 @@ import { Title } from '@/components/Title';
 import { Navigation } from '@/components/Navigation';
 import { Card } from '@/components/LitleCard/Card';
 import MenuBurger from './components/menuburger';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 
 
 export default function MapScreen() {
@@ -93,7 +94,7 @@ export default function MapScreen() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <MenuBurger/>
+            <BurgerMenu/>
             <Title text={'Liste des lieux à proximité'}></Title>
            
             {nearbyPlaces && nearbyPlaces.length > 0 ? (

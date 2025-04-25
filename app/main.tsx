@@ -17,7 +17,6 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
 import Layout from './components/LayoutNav';
-import MenuBurger from './components/menuburger';
 import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
 import getUserLocation from '@/hooks/localisation';
 import { Navigation } from '@/components/Navigation';
@@ -166,7 +165,7 @@ export default function MapScreen() {
 
       {/* MenuBurger en overlay sur la carte */}
       <View style={styles.menuContainer}>
-        <MenuBurger />
+        {/* <MenuBurger /> */}
       </View>
 
       {/* Bouton pour switcher vers la liste des lieux */}
