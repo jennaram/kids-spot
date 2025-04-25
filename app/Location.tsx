@@ -7,70 +7,22 @@ import {
     Button,
     StyleSheet,
     SafeAreaView,
-    FlatList,
     ScrollView
 } from 'react-native';
-import { useFocusEffect, useRouter } from 'expo-router';
-import getUserLocation from '@/hooks/localisation';
-import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
 import { colorButtonThird } from './style/styles';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/Navigation';
 import { Card } from '@/components/LitleCard/Card';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
+import { useLocation } from '@/context';
 
 
 export default function MapScreen() {
-    const [userLocation, setUserLocation] = useState<{
-        latitude: number;
-        longitude: number;
-    } | null>(null);
-
-    const [nearbyPlaces, setNearbyPlaces] = useState<any[] | null>(null);
-
-    const [error, setError] = useState<string | null>(null);
-
-    const loadNearbyPlaces = async (lat: number, lng: number) => {
-        const placesData = await fetchNearbyPlaces(lat, lng);
-        if (placesData && placesData.status === 'success' && placesData.data) {
-            setNearbyPlaces(placesData.data);
-        } else {
-            console.error('Erreur lors de la récupération des lieux à proximité');
-            // Vous pouvez éventuellement afficher une erreur à l'utilisateur ici
-        }
-    };
-
-    const fetchLocationAndPlaces = async () => {
-        const location = await getUserLocation();
-        if (location) {
-            setUserLocation(location);
-            setError(null);
-            // Une fois la localisation obtenue, chargez les lieux à proximité
-            loadNearbyPlaces(location.latitude, location.longitude);
-        } else {
-            setError('Impossible d\'obtenir la localisation.');
-        }
-    };
-
-    useEffect(() => {
-        fetchLocationAndPlaces();
-    }, []);
-
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchLocationAndPlaces();
-            return () => { };
-        }, [])
-    );
-
+    const { userLocation, nearbyPlaces, error, refreshLocation } = useLocation();
     if (error) {
         return (
-            <View
-                style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}
-            >
-                <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>
-                    {error}
-                </Text>
+            <View>
+                <Text style={{ color: 'red' }}>{error}</Text>
                 {Platform.OS === 'android' && error.includes('Google Play services') && (
                     <Button
                         title="Vérifier Google Play Services"

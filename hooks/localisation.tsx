@@ -1,10 +1,24 @@
 import * as Location from 'expo-location';
-import { Platform, PermissionsAndroid, Alert, Linking } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
+
+// Fonction pour obtenir la position avec timeout
+const getPositionWithTimeout = async (timeoutMs: number = 5000): Promise<Location.LocationObject> => {
+  return Promise.race([
+    // Demander la position actuelle
+    Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced, // Précision équilibrée
+    }),
+    // Si dépassement de délai, rejeter la promesse
+    new Promise<Location.LocationObject>((_, reject) =>
+      setTimeout(() => reject(new Error('Localisation trop longue')), timeoutMs)
+    ),
+  ]);
+};
 
 async function getUserLocation(): Promise<{ latitude: number; longitude: number } | null> {
   try {
-    // Demander les permissions
     let permissionStatus: Location.PermissionResponse;
+
     if (Platform.OS === 'android') {
       const [hasPlayServices, foregroundStatus] = await Promise.all([
         Location.hasServicesEnabledAsync(),
@@ -38,12 +52,18 @@ async function getUserLocation(): Promise<{ latitude: number; longitude: number 
       return null;
     }
 
-    // Obtenir la localisation actuelle
-    const location = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.High,
-    });
+    // Essayer d'abord d'obtenir la dernière position connue
+    let location = await Location.getLastKnownPositionAsync({});
 
-    return { latitude: location.coords.latitude, longitude: location.coords.longitude };
+    // Si aucune position connue, utiliser la fonction avec timeout
+    if (!location) {
+      location = await getPositionWithTimeout(5000); // Timeout après 5 secondes
+    }
+
+    return {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
 
   } catch (error: any) {
     console.error('Erreur lors de la récupération de la localisation:', error);
