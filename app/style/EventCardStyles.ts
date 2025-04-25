@@ -1,5 +1,6 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird } from './styles';
+import {ExitButton} from '../components/ExitButton';
 
 // Obtenir la largeur de l'écran pour calculer les dimensions
 const { width } = Dimensions.get('window');
@@ -138,12 +139,6 @@ export const eventCardStyles = StyleSheet.create({
     color: 'black',
     flex: 1,
   },
-  closeButton: {
-    borderColor: colorButtonFirst,
-    borderRadius: 8,
-    padding: 8,
-    backgroundColor: colorButtonFirst,
-  },
   modalBody: {
     flex: 1,
     padding: 20,
@@ -155,4 +150,8 @@ export const eventCardStyles = StyleSheet.create({
   descriptionContainer: {
     marginVertical: 5,
   },
+  exitButtonCustom: {
+    top: 5, 
+  },
+
 });

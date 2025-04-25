@@ -16,7 +16,7 @@ import EventCard from './components/EventCard';
 import MenuBurger from './components/menuburger';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/Navigation';
-
+import {ExitButton} from './components/ExitButton';
 
 const Evenement = () => {
   // État pour stocker la liste des lieux
@@ -132,6 +132,7 @@ const Evenement = () => {
           />
         ))}
       </ScrollView>
+     {/* barre de nav*/}
       <Navigation></Navigation>
       {/* Modal pour la description complète */}
       <Modal
@@ -143,12 +144,8 @@ const Evenement = () => {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={[fontTitle, styles.modalHeaderTitle]}>{currentNom}</Text>
-            <TouchableOpacity 
-              style={[styles.closeButton, ButtonStyle]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={{ color: colorButtonThird }}>Fermer</Text>
-            </TouchableOpacity>
+            <ExitButton onPress={() => setModalVisible(false)} 
+            style={styles.exitButtonCustom}/>
           </View>
           <ScrollView style={styles.modalBody}>
             <Text style={styles.fullDescriptionText}>{currentDescription}</Text>

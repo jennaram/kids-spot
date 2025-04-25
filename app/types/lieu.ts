@@ -41,4 +41,5 @@ export interface Lieu {
   }[];
   note_moyenne: number;
   nombre_commentaires: number;
+  image_url?: string;
 }
