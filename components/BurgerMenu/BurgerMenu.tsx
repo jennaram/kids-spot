@@ -47,7 +47,7 @@ export function BurgerMenu() {
     }, [isModalVisible]);
 
     function handleNavigate(link: string): void {
-        router.navigate(link);
+        router.push(link);
         onClose();
     }
 

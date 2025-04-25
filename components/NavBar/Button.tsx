@@ -11,7 +11,7 @@ type Props = {
 export function Button({ imageName, link, active }: Props) {
     return (
         <TouchableOpacity
-            onPress={() => router.navigate(link)}
+            onPress={() => router.push(link)}
             style={[styles.button, active && styles.activeItem]}
         >
             <Ionicons
