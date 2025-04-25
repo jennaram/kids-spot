@@ -5,9 +5,11 @@ import { Item } from "./Item";
 import { router } from "expo-router";
 import { Logo } from "./Logo";
 import { Ionicons } from "@expo/vector-icons";
+import { ExitButton } from "./ExitButton";
 
 export function BurgerMenu() {
     type IoniconName = ComponentProps<typeof Ionicons>["name"];
+    const [menuWidth, setMenuWidth] = useState(0);
     const [isModalVisible, setModalVisibility] = useState(false);
     const [position, setPosition] = useState<{ top: number, left: number } | null>(null);
 
@@ -49,6 +51,11 @@ export function BurgerMenu() {
         onClose();
     }
 
+    function handleExit(): void {
+        console.log("exit?")
+        onClose();
+    }
+
 
     const menuItems: { imageName: IoniconName; text: string; link: string }[] = [
         { imageName: "home", text: "Accueil", link: "/accueil" },
@@ -81,6 +88,10 @@ export function BurgerMenu() {
 
                 {position && (
                     <Animated.View
+                        onLayout={(event) => {
+                            const width = event.nativeEvent.layout.width;
+                            setMenuWidth(width);
+                        }}
                         style={[
                             styles.popup,
                             {
@@ -90,8 +101,11 @@ export function BurgerMenu() {
                             }
                         ]}
                     >
-                        <SafeAreaView style={{flex:1}}>
+                        <SafeAreaView style={{ flex: 1 }}>
+
+                            <ExitButton onPress={handleExit} style={{ left: menuWidth + 0 }} />
                             <Logo />
+
                             <View style={{ flexGrow: 1 }}>
                                 {menuItems.map((item, index) => (
                                     <Item
@@ -105,7 +119,15 @@ export function BurgerMenu() {
                                 ))}
                             </View>
 
-                            <Item style={styles.logoutItem} imageName={"log-out"} text={"Déconnexion"} link={"/Logout"} color={"#d9534f"} onPress={handleNavigate}></Item>
+                            <Item
+                                style={styles.logoutItem}
+                                imageName={"log-out"}
+                                text={"Déconnexion"}
+                                link={"/Logout"}
+                                color={"#d9534f"}
+                                onPress={handleNavigate}
+                            />
+
                         </SafeAreaView>
                     </Animated.View>
                 )}
@@ -115,9 +137,9 @@ export function BurgerMenu() {
 }
 
 export const styles = StyleSheet.create({
-    container:{
+    container: {
         alignSelf: 'flex-start',
-        margin:15,
+        margin: 15,
     },
     button: {
         margin: 0,
@@ -141,4 +163,5 @@ export const styles = StyleSheet.create({
         paddingTop: 10,
         marginTop: 10,
     },
+    
 });
