@@ -54,13 +54,13 @@ export function BurgerMenu() {
         { imageName: "home", text: "Accueil", link: "/accueil" },
         { imageName: "person", text: "Mon profil", link: "/profil" },
         { imageName: "add-circle", text: "Ajouter un lieu", link: "/ajouter" },
-        { imageName: "information-circle", text: "À propos", link: "/a-propos" },
+        { imageName: "information-circle", text: "À propos", link: "/about" },
         { imageName: "mail", text: "Contact", link: "/contact" },
     ];
 
     return (
         <>
-            <Pressable onPress={onButtonPress}>
+            <Pressable onPress={onButtonPress} style={styles.container}>
                 <View
                     style={styles.button}
                 >
@@ -115,8 +115,12 @@ export function BurgerMenu() {
 }
 
 export const styles = StyleSheet.create({
+    container:{
+        alignSelf: 'flex-start',
+        margin:15,
+    },
     button: {
-        margin: 15
+        margin: 0,
     },
     popup: {
         backgroundColor: "white",
