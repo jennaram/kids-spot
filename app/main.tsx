@@ -72,6 +72,32 @@ export default function MapScreen() {
     }, [])
   );
 
+  const navigateToDetails = (place: { id: string }) => {
+    // Ferme la popup
+    setShowPopup(false);
+    
+    // Navigation vers la page details_lieu avec les données du lieu
+    router.push({
+      pathname: '/details_lieu',
+      params: { id: place.id }
+    });
+  };
+
+  const formatEventDate = (dateEvent: { debut: string; fin?: string }) => {
+    if (!dateEvent || !dateEvent.debut) return 'Pas de date spécifiée';
+    
+    const dateDebut = new Date(dateEvent.debut);
+    const dateFin = dateEvent.fin ? new Date(dateEvent.fin) : null;
+    
+    const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" };
+    
+    if (dateFin && dateEvent.debut !== dateEvent.fin) {
+      return `Du ${dateDebut.toLocaleDateString('fr-FR', options)} au ${dateFin.toLocaleDateString('fr-FR', options)}`;
+    }
+    
+    return `Le ${dateDebut.toLocaleDateString('fr-FR', options)}`;
+  };
+
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -95,21 +121,6 @@ export default function MapScreen() {
       </View>
     );
   }
-
-  const formatEventDate = (dateEvent) => {
-    if (!dateEvent || !dateEvent.debut) return 'Pas de date spécifiée';
-    
-    const dateDebut = new Date(dateEvent.debut);
-    const dateFin = dateEvent.fin ? new Date(dateEvent.fin) : null;
-    
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
-    
-    if (dateFin && dateEvent.debut !== dateEvent.fin) {
-      return `Du ${dateDebut.toLocaleDateString('fr-FR', options)} au ${dateFin.toLocaleDateString('fr-FR', options)}`;
-    }
-    
-    return `Le ${dateDebut.toLocaleDateString('fr-FR', options)}`;
-  };
 
   return (
     <View style={styles.container}>
@@ -183,10 +194,17 @@ export default function MapScreen() {
       </MapView>
 
       {showPopup && selectedPlace && (
-        <View style={styles.popupContainer}>
+        <TouchableOpacity 
+          style={styles.popupContainer}
+          activeOpacity={0.95}
+          onPress={() => navigateToDetails(selectedPlace)}
+        >
           <TouchableOpacity 
             style={styles.closeButton} 
-            onPress={() => setShowPopup(false)}
+            onPress={(e) => {
+              e.stopPropagation(); // Empêche la propagation du clic à la popup parente
+              setShowPopup(false);
+            }}
           >
             <Text style={styles.closeButtonText}>×</Text>
           </TouchableOpacity>
@@ -218,7 +236,12 @@ export default function MapScreen() {
           )}
           
           <Text style={styles.description}>{selectedPlace.description}</Text>
-        </View>
+          
+          <View style={styles.seeMoreContainer}>
+            <Text style={styles.seeMoreText}>Voir plus de détails</Text>
+            <Text style={styles.arrowRight}>→</Text>
+          </View>
+        </TouchableOpacity>
       )}
 
       <View style={styles.menuContainer}>
@@ -326,7 +349,7 @@ const styles = StyleSheet.create({
   },
   popupContainer: {
     position: 'absolute',
-    bottom: 170, // Augmenté pour être au-dessus de la navbar et switchmap
+    bottom: 170, // Au-dessus de la navbar
     left: 20,
     right: 20,
     backgroundColor: 'white',
@@ -340,7 +363,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    maxHeight: '60%', // Limite la hauteur à 60% de l'écran
+    maxHeight: '60%', // Limite la hauteur
   },
   popupTitle: {
     fontSize: 18,
@@ -364,15 +387,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginTop: 10,
+    maxHeight: 100, // Limite la hauteur de la description pour ne pas surcharger la popup
+    overflow: 'hidden', // Cache le texte qui dépasse
   },
   closeButton: {
     position: 'absolute',
     top: 5,
     right: 10,
     padding: 5,
+    zIndex: 10, // Assure que le bouton est au-dessus et cliquable
   },
   closeButtonText: {
     fontSize: 20,
     color: '#333',
   },
+  seeMoreContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 10,
+    paddingTop: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  seeMoreText: {
+    color: '#2196F3',
+    fontWeight: '600',
+  },
+  arrowRight: {
+    fontSize: 16,
+    color: '#2196F3',
+    marginLeft: 5,
+  }
 });
