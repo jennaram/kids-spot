@@ -72,7 +72,7 @@ export default function MapScreen() {
     }, [])
   );
 
-  const navigateToDetails = (place: { id: string }) => {
+  const navigateToDetails = (place) => {
     // Ferme la popup
     setShowPopup(false);
     
@@ -83,19 +83,33 @@ export default function MapScreen() {
     });
   };
 
-  const formatEventDate = (dateEvent: { debut: string; fin?: string }) => {
+  const formatEventDate = (dateEvent) => {
     if (!dateEvent || !dateEvent.debut) return 'Pas de date spécifiée';
     
     const dateDebut = new Date(dateEvent.debut);
     const dateFin = dateEvent.fin ? new Date(dateEvent.fin) : null;
     
-    const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" };
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
     
     if (dateFin && dateEvent.debut !== dateEvent.fin) {
       return `Du ${dateDebut.toLocaleDateString('fr-FR', options)} au ${dateFin.toLocaleDateString('fr-FR', options)}`;
     }
     
     return `Le ${dateDebut.toLocaleDateString('fr-FR', options)}`;
+  };
+
+  // Fonction pour obtenir le style de fond correspondant au type de lieu
+  const getIconBackgroundStyle = (typeName) => {
+    switch(typeName) {
+      case 'Culture':
+        return styles.cultureBackground;
+      case 'Restaurant':
+        return styles.restaurantBackground;
+      case 'Loisir':
+        return styles.loisirBackground;
+      default:
+        return {};
+    }
   };
 
   if (error) {
@@ -209,7 +223,19 @@ export default function MapScreen() {
             <Text style={styles.closeButtonText}>×</Text>
           </TouchableOpacity>
           
-          <Text style={styles.popupTitle}>{selectedPlace.nom}</Text>
+          <View style={styles.headerContainer}>
+            <View style={[
+              styles.iconContainer, 
+              getIconBackgroundStyle(selectedPlace.type[0].nom)
+            ]}>
+              <Image
+                source={iconByType[selectedPlace.type[0].nom]}
+                style={styles.popupIcon}
+                resizeMode="contain"
+              />
+            </View>
+            <Text style={styles.popupTitle}>{selectedPlace.nom}</Text>
+          </View>
           
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Horaires:</Text>
@@ -365,10 +391,36 @@ const styles = StyleSheet.create({
     elevation: 5,
     maxHeight: '60%', // Limite la hauteur
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  popupIcon: {
+    width: 24,
+    height: 24,
+  },
+  cultureBackground: {
+    backgroundColor: '#ff9770',
+  },
+  restaurantBackground: {
+    backgroundColor: '#95d5b2',
+  },
+  loisirBackground: {
+    backgroundColor: '#8ecae6',
+  },
   popupTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    flex: 1,
   },
   infoRow: {
     flexDirection: 'row',
