@@ -26,9 +26,9 @@ import { Navigation } from '@/components/Navigation';
 const iconByType = {
   user: require('../assets/images/user-location.png'),
   switchmap: require('../assets/images/switchmap.png'),
-  culture: require('../assets/images/icon-culture2.png'),
-  food: require('../assets/images/icon-food2.png'),
-  loisirs: require('../assets/images/icon-loisirs2.png'),
+  Culture: require('../assets/images/icon-culture2.png'),
+  Restaurant: require('../assets/images/icon-food2.png'),
+  Loisir: require('../assets/images/icon-loisirs2.png'),
 };
 
 export default function MapScreen() {
@@ -136,22 +136,22 @@ export default function MapScreen() {
       title={item.nom}
       description={item.description}
     >
-      {item.nom === 'Bibliothèque Louise bis' ? (
+      {item.type[0].nom === 'Culture' ? (
         <Image
-          source={iconByType.culture}
+          source={iconByType.Culture}
           style={styles.cultureMarker}
           resizeMode="contain"
         />
-      ) : item.nom === 'Aire de Jeux Parc Monceau' || item.nom === 'Jardin des Plantes' ? (
+      ) : item.type[0].nom === 'Restaurant' ? (
         <Image
-          source={iconByType.loisirs}
-          style={styles.loisirsMarker}
+          source={iconByType.Restaurant}
+          style={styles.foodMarker}
           resizeMode="contain"
         />
-      ) : item.nom === 'Le P\'tit Café Familial' ? (
+      ) : item.type[0].nom === 'Loisir' ? (
         <Image
-          source={iconByType.food}
-          style={styles.foodMarker}
+          source={iconByType.Loisir}
+          style={styles.loisirsMarker}
           resizeMode="contain"
         />
       ) : (
