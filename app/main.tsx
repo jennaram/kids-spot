@@ -72,7 +72,7 @@ export default function MapScreen() {
     }, [])
   );
 
-  const navigateToDetails = (place) => {
+  const navigateToDetails = (place: { id: string }) => {
     // Ferme la popup
     setShowPopup(false);
     
@@ -83,19 +83,22 @@ export default function MapScreen() {
     });
   };
 
-  const formatEventDate = (dateEvent) => {
-    if (!dateEvent || !dateEvent.debut) return 'Pas de date spécifiée';
-    
-    const dateDebut = new Date(dateEvent.debut);
-    const dateFin = dateEvent.fin ? new Date(dateEvent.fin) : null;
-    
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
-    
-    if (dateFin && dateEvent.debut !== dateEvent.fin) {
-      return `Du ${dateDebut.toLocaleDateString('fr-FR', options)} au ${dateFin.toLocaleDateString('fr-FR', options)}`;
-    }
-    
-    return `Le ${dateDebut.toLocaleDateString('fr-FR', options)}`;
+  // Calculer la distance entre deux coordonnées en km
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Rayon de la terre en km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const distance = R * c; // Distance en km
+    return distance.toFixed(1); // Arrondi à une décimale
+  };
+  
+  const deg2rad = (deg) => {
+    return deg * (Math.PI/180);
   };
 
   // Fonction pour obtenir le style de fond correspondant au type de lieu
@@ -207,7 +210,7 @@ export default function MapScreen() {
         ) : null}
       </MapView>
 
-      {showPopup && selectedPlace && (
+      {showPopup && selectedPlace && userLocation && (
         <TouchableOpacity 
           style={styles.popupContainer}
           activeOpacity={0.95}
@@ -237,31 +240,18 @@ export default function MapScreen() {
             <Text style={styles.popupTitle}>{selectedPlace.nom}</Text>
           </View>
           
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Horaires:</Text>
-            <Text style={styles.infoValue}>{selectedPlace.horaires}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Adresse:</Text>
-            <Text style={styles.infoValue}>
-              {selectedPlace.adresse.adresse}, {selectedPlace.adresse.code_postal} {selectedPlace.adresse.ville}
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoText}>{selectedPlace.adresse.ville}</Text>
+            <Text style={styles.infoText}>
+              {calculateDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                selectedPlace.position.latitude,
+                selectedPlace.position.longitude
+              )} km
             </Text>
+            <Text style={styles.infoText}>{selectedPlace.horaires}</Text>
           </View>
-          
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Type:</Text>
-            <Text style={styles.infoValue}>{selectedPlace.type[0].nom}</Text>
-          </View>
-          
-          {selectedPlace.est_evenement && (
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Événement:</Text>
-              <Text style={styles.infoValue}>{formatEventDate(selectedPlace.date_evenement)}</Text>
-            </View>
-          )}
-          
-          <Text style={styles.description}>{selectedPlace.description}</Text>
           
           <View style={styles.seeMoreContainer}>
             <Text style={styles.seeMoreText}>Voir plus de détails</Text>
@@ -389,7 +379,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    maxHeight: '60%', // Limite la hauteur
   },
   headerContainer: {
     flexDirection: 'row',
@@ -422,25 +411,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flex: 1,
   },
-  infoRow: {
-    flexDirection: 'row',
-    marginBottom: 5,
+  infoContainer: {
+    marginBottom: 10,
   },
-  infoLabel: {
-    fontWeight: 'bold',
-    minWidth: 80,
-    color: '#333',
-  },
-  infoValue: {
-    flex: 1,
-    color: '#555',
-  },
-  description: {
+  infoText: {
     fontSize: 14,
-    color: '#666',
-    marginTop: 10,
-    maxHeight: 100, // Limite la hauteur de la description pour ne pas surcharger la popup
-    overflow: 'hidden', // Cache le texte qui dépasse
+    color: '#555',
+    marginBottom: 5,
   },
   closeButton: {
     position: 'absolute',
@@ -463,12 +440,12 @@ const styles = StyleSheet.create({
     borderTopColor: '#eee',
   },
   seeMoreText: {
-    color: '#2196F3',
+    color: '#000', // Changé en noir
     fontWeight: '600',
   },
   arrowRight: {
     fontSize: 16,
-    color: '#2196F3',
+    color: '#000', // Changé en noir
     marginLeft: 5,
   }
 });
