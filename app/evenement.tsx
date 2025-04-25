@@ -132,6 +132,7 @@ const Evenement = () => {
           />
         ))}
       </ScrollView>
+     {/* barre de nav*/}
       <Navigation></Navigation>
       {/* Modal pour la description complète */}
       <Modal

@@ -19,55 +19,16 @@ import Layout from "./components/LayoutNav";
 import { Share } from 'react-native';
 import { Alert, Platform, Linking } from 'react-native';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
-import { fontTitle, loadFonts } from './style/styles';
 import { IconesLieux } from '@/components/IconesLieux';
 import { Navigation } from "@/components/Navigation";
 import MenuBurger from "./components/menuburger";
-
+import { Lieu } from "./types/lieu";
+import { AvisButton } from "../components/Lieux/AvisButton";
+import LieuActionButtons from "../components/Lieux/LieuActionButtons";
+import ShareButton from "../components/Lieux/ShareButton";
+import FavoriteButton from "@/components/Lieux/FavoriteButton";
 // Interface pour les données récupérées de l'API
-interface Lieu {
-  id: number;
-  nom: string;
-  description: string;
-  horaires: string;
-  adresse: {
-    adresse: string;
-    ville: string;
-    code_postal: string;
-    telephone?: string;
-    site_web?: string;
-  };
-  type: {
-    id: number;
-    nom: string;
-  }[];
-  est_evenement: boolean;
-  date_evenement?: {
-    debut: string | null;
-    fin: string | null;
-  };
-  position: {
-    latitude: number;
-    longitude: number;
-  };
-  equipements: {
-    id: number;
-    nom: string;
-  }[];
-  ages: {
-    id: number;
-    nom: string;
-  }[];
-  commentaires?: {
-    pseudo: string;
-    commentaire: string;
-    note: number;
-    date_ajout: string;
-  }[];
-  note_moyenne: number;
-  nombre_commentaires: number;
-  image_url?: string;
-}
+
 
 // Interface pour la réponse de l'API
 interface ApiResponse {
@@ -265,18 +226,17 @@ const DetailsLieu = () => {
       <View style={styles.mainContainer}>
         {/* Contenu scrollable */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {/* Image principale */}
+          {/* Image principale avec bouton favori */}
           <View style={styles.imageContainer}>
             <Image
               source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl}
               style={styles.headerImage}
               resizeMode="cover"
             />
-            <View style={styles.favoriteIconContainer}>
-              <TouchableOpacity onPress={handleFavoriteToggle}>
-                <MaterialIcons name="favorite-border" size={24} color="white" />
-              </TouchableOpacity>
-            </View>
+            {/* Bouton favori positionné directement dans le conteneur d'image */}
+            <FavoriteButton
+              onToggle={handleFavoriteToggle}
+            />
           </View>
 
           {/* Contenu principal */}
@@ -294,9 +254,7 @@ const DetailsLieu = () => {
                   <Text style={styles.avis}>{lieu.nombre_commentaires} avis membres</Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-                <MaterialIcons name="share" size={24} color="#333" />
-              </TouchableOpacity>
+              <ShareButton onPress={handleShare} />
             </View>
             
             <Text style={styles.nom}>{lieu.nom}</Text>
@@ -313,56 +271,21 @@ const DetailsLieu = () => {
                 </View>
               ))}
             </View>
-            
             {/* Utilisation du composant IconesLieux avec les équipements du lieu */}
             <IconesLieux equipements={lieu.equipements} />
             
             <View style={styles.actionsContainer}>
               <View style={styles.rowButtons}>
-                <TouchableOpacity
-                  style={[styles.smallButton, styles.avisButton]}
-                  onPress={() => {
-                    router.push({
-                      pathname: '/avis',
-                      params: { nomLieu: lieu.nom, lieuId: lieu.id },
-                    });
-                  }}>
-                  <Text style={styles.smallButtonText}>Donner mon avis</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.smallButton, styles.voirAvisButton]}
-                  onPress={() => {
-                    router.push({
-                      pathname: '/voir-avis',
-                      params: { nomLieu: lieu.nom, lieuId: lieu.id },
-                    });
-                  }}>
-                  <Text style={styles.smallButtonText}>Voir les avis</Text>
-                </TouchableOpacity>
+                <AvisButton type="donner" nomLieu={lieu.nom} lieuId={lieu.id.toString()} />
+                <AvisButton type="voir" nomLieu={lieu.nom} lieuId={lieu.id.toString()} />
               </View>
-              
-              <View style={styles.newButtonsContainer}>
-                <TouchableOpacity 
-                  style={styles.iconButton}
-                  onPress={handleCall}
-                  disabled={!lieu.adresse.telephone}
-                >
-                  <MaterialIcons name="phone" size={24} color={lieu.adresse.telephone ? "#333" : "#999"} />
-                  <Text style={[styles.iconButtonText, !lieu.adresse.telephone && styles.disabledText]}>Appeler</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.iconButton}
-                  onPress={handleWebsite}
-                  disabled={!lieu.adresse.site_web}
-                >
-                  <MaterialIcons name="language" size={24} color={lieu.adresse.site_web ? "#333" : "#999"} />
-                  <Text style={[styles.iconButtonText, !lieu.adresse.site_web && styles.disabledText]}>Site web</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={handleGpsPress}>
-                  <MaterialIcons name="place" size={24} color="#333" />
-                  <Text style={styles.iconButtonText}>Y aller</Text>
-                </TouchableOpacity>
-              </View>
+              <LieuActionButtons
+                onCall={handleCall}
+                onWebsite={handleWebsite}
+                onGps={handleGpsPress}
+                telephone={lieu.adresse.telephone}
+                siteWeb={lieu.adresse.site_web}
+              />
             </View>
           </View>
         </ScrollView>
@@ -373,6 +296,12 @@ const DetailsLieu = () => {
 };
 
 const styles = StyleSheet.create({
+  rowButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: colorButtonThird,
@@ -385,9 +314,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  disabledText: {
-    color: "#999", // Gray color for disabled text
-  },
+ 
   errorContainer: {
     flex: 1,
     justifyContent: "center",
@@ -475,32 +402,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
-  shareButton: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 8,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  avisButton: {
-    backgroundColor: colorButtonFirst,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 15,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  voirAvisButton: {
-    backgroundColor: colorButtonFirst,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 15,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
+ 
   description: {
     fontSize: 16,
     lineHeight: 24,
@@ -541,52 +443,8 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     marginTop: 20,
   },
-  rowButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
-  },
-  smallButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  smallButtonText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  newButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  iconButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 10,
-    flex: 1,
-    marginHorizontal: 10,
-  },
-  iconButtonText: {
-    fontSize: 12,
-    color: "#333",
-    marginTop: 5,
-    textAlign: "center",
-  },
-  favoriteIconContainer: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: 20,
-    padding: 5,
-    zIndex: 10,
-  },
+ 
+  
   ratingWrapper: {
     flex: 1,
     alignItems: "center",
