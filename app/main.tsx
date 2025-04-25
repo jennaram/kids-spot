@@ -26,7 +26,9 @@ import { Navigation } from '@/components/Navigation';
 const iconByType = {
   user: require('../assets/images/user-location.png'),
   switchmap: require('../assets/images/switchmap.png'),
-  culture: require('../assets/images/icon-culture2.png'), // Nouvelle icône pour la culture
+  culture: require('../assets/images/icon-culture2.png'),
+  food: require('../assets/images/icon-food2.png'),
+  loisirs: require('../assets/images/icon-loisirs2.png'),
 };
 
 export default function MapScreen() {
@@ -124,30 +126,42 @@ export default function MapScreen() {
         </Marker>
 
         {nearbyPlaces && nearbyPlaces.length > 0 ? (
-          nearbyPlaces.map((item) => (
-            <Marker
-              key={item.id}
-              coordinate={{
-                latitude: item.position.latitude,
-                longitude: item.position.longitude,
-              }}
-              title={item.nom}
-              description={item.description}
-            >
-              {item.nom === 'Bibliothèque Louise bis' ? (
-                <Image
-                  source={iconByType.culture}
-                  style={styles.cultureMarker}
-                  resizeMode="contain"
-                />
-              ) : (
-                <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
-                  <Text style={{ color: 'white' }}>{item.nom}</Text>
-                </View>
-              )}
-            </Marker>
-          ))
-        ) : null}
+  nearbyPlaces.map((item) => (
+    <Marker
+      key={item.id}
+      coordinate={{
+        latitude: item.position.latitude,
+        longitude: item.position.longitude,
+      }}
+      title={item.nom}
+      description={item.description}
+    >
+      {item.nom === 'Bibliothèque Louise bis' ? (
+        <Image
+          source={iconByType.culture}
+          style={styles.cultureMarker}
+          resizeMode="contain"
+        />
+      ) : item.nom === 'Aire de Jeux Parc Monceau' || item.nom === 'Jardin des Plantes' ? (
+        <Image
+          source={iconByType.loisirs}
+          style={styles.loisirsMarker}
+          resizeMode="contain"
+        />
+      ) : item.nom === 'Le P\'tit Café Familial' ? (
+        <Image
+          source={iconByType.food}
+          style={styles.foodMarker}
+          resizeMode="contain"
+        />
+      ) : (
+        <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
+          <Text style={{ color: 'white' }}>{item.nom}</Text>
+        </View>
+      )}
+    </Marker>
+  ))
+) : null}
       </MapView>
 
       <View style={styles.menuContainer}>
@@ -188,7 +202,20 @@ const styles = StyleSheet.create({
   cultureMarker: {
     width: 40,
     height: 40,
-    backgroundColor: '#e76f51',
+    backgroundColor: '#ff9770',
+    borderRadius: 25,
+  },
+
+  foodMarker: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#95d5b2',
+    borderRadius: 25,
+  },
+  loisirsMarker: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#8ecae6',
     borderRadius: 25,
   },
   switchButton: {
