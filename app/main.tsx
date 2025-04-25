@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   cultureMarker: {
     width: 40,
     height: 40,
-    backgroundColor: 'white',
+    backgroundColor: '#e76f51',
     borderRadius: 25,
   },
   switchButton: {
