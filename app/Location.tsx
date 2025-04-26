@@ -8,7 +8,7 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { useLocation } from '@/context';
 import { SwitchButton } from '@/components/switchButtonMapList';
 import FiltreButtons from '@/components/Filtres/FiltreButtons';
-import { useFadeInOut } from '@/components/Filtres/Animation';
+import { useFadeInOut } from '@/hooks/Animation';
 import { Place } from '@/Types/types';
 import { Row } from '@/components/Row';
 import LoadingView from '@/components/Messages/LocationLoading';
@@ -16,15 +16,18 @@ import ErrorView from '@/components/Messages/ErrorView';
 import SearchBar from '@/components/Filtres/SearchBar';
 
 export default function NearbyPlacesScreen() {
+    // Récupération des données de localisation
     const { userLocation, nearbyPlaces, error, refreshLocation } = useLocation();
     const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const { fadeAnim, fadeIn, fadeOut } = useFadeInOut();
 
+    // Gère la sélection d'un filtre
     const handleFilterPress = (typeId: number | null) => {
         setSelectedTypeId(typeId);
     };
 
+    // Applique les filtres type et recherche
     const filteredPlaces = (nearbyPlaces ?? []).filter((place: Place) => {
         const matchType = selectedTypeId
             ? place.type?.some((t) => t.id === selectedTypeId)
@@ -36,27 +39,32 @@ export default function NearbyPlacesScreen() {
     });
 
     if (error) {
+        // Affiche une vue d'erreur en cas de problème
         return <ErrorView error={error} />;
     }
 
     if (!userLocation) {
+        // Affiche un loader pendant la récupération de la localisation
         return <LoadingView />;
     }
 
     return (
         <SafeAreaView style={styles.safeArea}>
+            {/* Menu burger */}
             <Row style={{ marginLeft: 0 }}>
                 <BurgerMenu />
             </Row>
 
+            {/* Titre principal */}
             <Title text={'Liste des lieux à proximité'} />
 
+            {/* Filtres par type */}
             <FiltreButtons selectedTypeId={selectedTypeId} onPress={(id) => fadeOut(() => handleFilterPress(id))} />
 
-            {/* Utilisation du composant SearchBar */}
+            {/* Barre de recherche */}
             <SearchBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-            {/* Liste des lieux filtrés */}
+            {/* Liste filtrée des lieux */}
             {filteredPlaces.length > 0 ? (
                 <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
                     <ScrollView>
@@ -66,12 +74,16 @@ export default function NearbyPlacesScreen() {
                     </ScrollView>
                 </Animated.View>
             ) : (
+                // Message si aucun lieu n'est trouvé
                 <View style={styles.emptyContainer}>
                     <Text>Aucun lieu trouvé à proximité.</Text>
                 </View>
             )}
 
+            {/* Bouton pour basculer la vue liste/carte */}
             <SwitchButton type={'liste'} />
+
+            {/* Barre de navigation */}
             <Navigation />
         </SafeAreaView>
     );

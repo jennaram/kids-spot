@@ -18,7 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
 import Layout from './components/LayoutNav';
 import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
-import getUserLocation from '@/hooks/localisation';
+import getUserLocation from '@/services/localisation';
 import { Navigation } from '@/components/NavBar/Navigation';
 
 // Icônes personnalisées
