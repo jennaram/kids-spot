@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird } from './style/styles';
 import { fontTitle } from './style/styles';
-import { Navigation } from "@/components/Navigation";
+import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from '@/components/Title';
 import { MaterialIcons } from '@expo/vector-icons'; // Ajout de l'import pour les icônes
 

@@ -15,7 +15,7 @@ import { Lieu } from './types/lieu';
 import EventCard from './components/EventCard';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
-import { Navigation } from '@/components/Navigation';
+import { Navigation } from '@/components/NavBar/Navigation';
 import {ExitButton} from './components/ExitButton';
 
 const Evenement = () => {

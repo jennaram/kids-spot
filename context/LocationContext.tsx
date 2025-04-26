@@ -1,6 +1,5 @@
 // context/location/LocationContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Platform, Linking } from 'react-native';
 import getUserLocation from '@/hooks/localisation'; // 🔁 ton import perso
 import fetchNearbyPlaces from '@/api/fetchNearbyPlaces'; // 🔁 ton import perso
 

@@ -63,6 +63,7 @@ export function BurgerMenu() {
         { imageName: "add-circle", text: "Ajouter un lieu", link: "/add-place" },
         { imageName: "information-circle", text: "À propos", link: "/about" },
         { imageName: "mail", text: "Contact", link: "/contact" },
+        { imageName: "mail", text: "Contact", link: "/listelieux" },
     ];
 
     return (

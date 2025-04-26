@@ -19,7 +19,7 @@ import { RootStackParamList } from './types/navigation';
 import Layout from './components/LayoutNav';
 import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
 import getUserLocation from '@/hooks/localisation';
-import { Navigation } from '@/components/Navigation';
+import { Navigation } from '@/components/NavBar/Navigation';
 
 // Icônes personnalisées
 const iconByType = {
@@ -264,7 +264,7 @@ export default function MapScreen() {
       </View>
 
       <TouchableOpacity
-        onPress={() => router.navigate('/Location')}
+        onPress={() => router.push('/Location')}
         style={styles.switchButton}
       >
         <Image

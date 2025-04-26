@@ -20,7 +20,7 @@ import { Share } from 'react-native';
 import { Alert, Platform, Linking } from 'react-native';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { IconesLieux } from '@/components/IconesLieux';
-import { Navigation } from "@/components/Navigation";
+import { Navigation } from "@/components/NavBar/Navigation";
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Lieu } from "./types/lieu";
 import { AvisButton } from "../components/Lieux/AvisButton";
