@@ -5,15 +5,15 @@ import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { Card } from '@/components/LitleCard/Card';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
-import { useLocation } from '@/context';
+import { useLocation } from '@/context/locate';
 import { SwitchButton } from '@/components/switchButtonMapList';
 import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { useFadeInOut } from '@/hooks/Animation';
-import { Place } from '@/Types/types';
+import { Place } from '@/Types/place';
 import { Row } from '@/components/Row';
 import LoadingView from '@/components/Messages/LocationLoading';
-import ErrorView from '@/components/Messages/ErrorView';
 import SearchBar from '@/components/Filtres/SearchBar';
+import ErrorScreen from '@/components/ErrorScreen';
 
 export default function NearbyPlacesScreen() {
     // Récupération des données de localisation
@@ -38,10 +38,7 @@ export default function NearbyPlacesScreen() {
         return matchType && matchSearch;
     });
 
-    if (error) {
-        // Affiche une vue d'erreur en cas de problème
-        return <ErrorView error={error} />;
-    }
+    if (error) return <ErrorScreen message="Aucun lieu de trouvé !" />;
 
     if (!userLocation) {
         // Affiche un loader pendant la récupération de la localisation

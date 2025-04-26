@@ -20,7 +20,7 @@ export const AvisButton: React.FC<AvisButtonProps> = ({ type, nomLieu, lieuId })
   const router = useRouter();
 
   const handlePress = () => {
-    const path = type === 'donner' ? '/avis' : '/voir-avis';
+    const path = type === 'donner' ? '/avis' : '/ReadReviews';
     router.push({
       pathname: path,
       params: { nomLieu, lieuId },

@@ -2,7 +2,7 @@ import { colorButtonFirst, fontSubtitle } from "@/app/style/styles";
 import { Link } from "expo-router";
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import { useState } from "react";
-import { Place } from '@/Types/types';
+import { Place } from '@/Types/place';
 
 // URL de base pour charger les images depuis internet
 const IMAGE_BASE_URL = 'https://ton-site.com/images/';

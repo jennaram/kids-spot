@@ -1,22 +1,25 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
-import { LocationProvider } from '@/context/LocationContext';
+import { LocationProvider } from '@/context/locate/LocationContext';
+import { AuthProvider } from '@/context/auth';
 
 export default function RootLayout() {
   return (
-    <LocationProvider>
-      <View style={styles.container}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        />
-        <View>
-          <Stack.Screen />
+    <AuthProvider>
+      <LocationProvider>
+        <View style={styles.container}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          />
+          <View>
+            <Stack.Screen />
+          </View>
         </View>
-      </View>
-    </LocationProvider>
+      </LocationProvider>
+    </AuthProvider>
   );
 }
 

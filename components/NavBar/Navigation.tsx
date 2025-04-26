@@ -38,6 +38,7 @@ export function Navigation() {
 
 const styles = StyleSheet.create({
     container: {
+        flex:1,
         flexDirection: 'row',
         backgroundColor: '#2D5E3D',
         height: 60,
