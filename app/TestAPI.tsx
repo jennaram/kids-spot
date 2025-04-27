@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, ScrollView, Button, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, Button, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import fetchPlace from '../api/fetchPlace';
 import fetchNearbyPlaces from '../api/fetchNearbyPlaces';
 import fetchComments from '../api/fetchComments';
@@ -10,7 +10,9 @@ import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { Place } from '@/Types/place';
 import { PlaceDetail } from '@/Types/placeDetail';
-import { Comment } from '@/Types/comments'; // <- nouveau type importé
+import { Comment } from '@/Types/comments';
+import { useAuth } from '@/context/auth/AuthContext';
+import { authService } from '@/services/authService';
 
 export default function PlaceScreen() {
   const [place, setPlace] = useState<PlaceDetail | null>(null);
@@ -19,6 +21,7 @@ export default function PlaceScreen() {
   const [averageNote, setAverageNote] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { token, setToken } = useAuth();
 
   async function handleFetchPlace() {
     setLoading(true);
@@ -63,6 +66,18 @@ export default function PlaceScreen() {
     setLoading(false);
   }
 
+  async function handleLogin() {
+    const email = 'seb.prod@gmail.com';  // Utilisateur d'exemple
+    const password = 'sebT5656';  // Mot de passe d'exemple
+    try {
+      const authResult = await authService.login(email, password);
+      setToken(authResult.token); // Sauvegarder le token dans le contexte
+      Alert.alert('Connexion réussie', 'Vous êtes connecté avec succès !');
+    } catch (error) {
+      Alert.alert('Erreur de connexion', 'Impossible de se connecter avec ces identifiants.');
+    }
+  }
+
   if (loading) return <ActivityIndicator />;
 
   if (error) return <ErrorScreen message="Erreur lors du chargement des données." />;
@@ -79,6 +94,10 @@ export default function PlaceScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContainer}
         >
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.button} onPress={handleFetchPlace}>
             <Text style={styles.buttonText}>Charger un lieu</Text>
           </TouchableOpacity>

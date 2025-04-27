@@ -1,74 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { Image, Text, View, Button, ActivityIndicator } from "react-native";
+// src/pages/IndexPage.tsx
+import { useEffect } from "react";
 import { useRouter } from 'expo-router';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as Font from 'expo-font';
-import { fontTitle } from "./style/styles";
+import { useAuth } from "@/context/auth";
+import Loader from "@/components/Loader";
+import { refreshToken } from "@/services/apiPost";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Stack = createNativeStackNavigator();
-
-// Fonction de chargement des polices
-const loadFonts = async () => {
-  await Font.loadAsync({
-    'BebasNeue-Regular': require('../assets/fonts/BebasNeue-Regular.ttf')
-  });
-};
-
-export default function Index() {
+export default function IndexPage() {
+  const { token, loading, setToken } = useAuth();
   const router = useRouter();
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  
-  // Chargement des polices au démarrage de l'application
+
   useEffect(() => {
-    async function prepare() {
-      try {
-        await loadFonts();
-        setFontsLoaded(true);
-      } catch (e) {
-        console.warn('Erreur lors du chargement des polices:', e);
-        // En cas d'erreur, on continue quand même
-        setFontsLoaded(true);
+    if (!loading) {
+      if (token) {
+        // Si un token existe déjà et est valide, on redirige directement
+        router.replace("/Location");
+      } else {
+        // Ce n'est que si aucun token valide n'existe qu'on tente l'auto-login
+        router.replace("/accueil")
       }
     }
-    
-    prepare();
-  }, []);
-  
-  // Affichage d'un chargement pendant que les polices se chargent
-  if (!fontsLoaded) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color="#D37230" />
-        <Text style={{ marginTop: 10 }}>Chargement...</Text>
-      </View>
-    );
-  }
-  
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Image
-        source={require('../assets/images/Logo.png')}
-        style={{ width: 200, height: 200, resizeMode: 'contain', marginBottom: 20 }}
-      />
-      <Text style={[fontTitle, {
-        marginBottom: 20
-      }]}>
-        Bienvenue sur Kids Spot
-      </Text>
-      <Button title="Test liste lieux" onPress={() => router.push('/Location')} /> 
-      <Button title="Accueil" onPress={() => router.push('/accueil')} /> 
-      <Button title="Voir la carte" onPress={() => router.push('/main')} />
-      <Button title="Evenement" onPress={() => router.push('/evenement')} />
-      <Button title="Voir le detail des lieux" onPress={() => router.push('/details_lieu')} />
-      <Button title="Ajouter un lieux" onPress={() => router.push('/add-place')} />
-      <Button title="Inscription" onPress={() => router.push('/registration')} />
-      <Button title="A propos" onPress={() => router.push('/about')} />
-      
-      <Button title="Contact" onPress={() => router.push('/contact')} />
-      <Button title="Connexion" onPress={() => router.push('/login')} />
-      <Button title="Avis" onPress={() => router.push('/avis')} /> 
-      <Button title="favoris" onPress={() => router.push('/favoris')} /> 
-      <Button title="Mon profil" onPress={() => router.push('/profil')} /> 
-    </View>
-  );
+  }, [token, loading, router, setToken]);
+
+  if (loading) return <Loader />; // Si on attend que le token soit vérifié
+
+  return <></>;
 }
