@@ -96,8 +96,9 @@ export default function PlaceScreen() {
     }
   }
 
-  async function handleFavotites() {
+  async function handleFavorites() {
     console.log(favorites);
+    
   }
 
   async function handleAddToFavorites(lieuId: number) {
@@ -108,7 +109,7 @@ export default function PlaceScreen() {
         Alert.alert('Erreur', 'Vous devez être connecté pour ajouter un favori');
         return;
       }
-
+      
       // ID du lieu à ajouter aux favoris
       
 
@@ -148,7 +149,7 @@ export default function PlaceScreen() {
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={handleFavotites}>
+          <TouchableOpacity style={styles.button} onPress={handleFavorites}>
             <Text style={styles.buttonText}>Favoris</Text>
           </TouchableOpacity>
 
