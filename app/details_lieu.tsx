@@ -29,6 +29,7 @@ import ShareButton from "../components/Lieux/ShareButton";
 import FavoriteButton from "@/components/Lieux/FavoriteButton";
 import AgeBadges from "@/components/Lieux/AgeBadges";
 import styles from "./style/DetailLieuxStyles";
+import fetchPlace from "@/api/fetchPlace";
 // Interface pour les données récupérées de l'APi
 // Interface pour la réponse de l'API
 interface ApiResponse {
@@ -38,59 +39,30 @@ interface ApiResponse {
 const DetailsLieu = () => {
   const router = useRouter();
   const params = useLocalSearchParams() as {id:string};
+  console.log("params", params);
   const lieuId = params.id?.toString() || "2";
+  console.log("lieuId", lieuId);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [lieu, setLieu] = useState<Lieu | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lieu, setPlace] = useState<Lieu | null>(null);
   
-  useEffect(() => {
-    const fetchLieuDetails = async () => {
-      try {
-        setLoading(true);
-        console.log(`Récupération des données pour l'ID: ${lieuId}`);
-        
-        const response = await fetch(`https://seb-prod.alwaysdata.net/kidsspot/lieux/${lieuId}`);
-        
-        if (!response.ok) {
-          throw new Error(`Erreur lors de la récupération des données: ${response.status}`);
-        }
-        
-        const result: ApiResponse = await response.json();
-        console.log('Données reçues:', JSON.stringify(result, null, 2));
-        
-        if (!result.data) {
-          throw new Error('Données non trouvées dans la réponse API');
-        }
-        
-        // Vérifier que les champs obligatoires sont présents
-        if (!result.data.nom || !result.data.description) {
-          throw new Error('Les données du lieu sont incomplètes');
-        }
-        
-        setLieu({
-          ...result.data,
-          // Fournir des valeurs par défaut pour les propriétés potentiellement manquantes
-          equipements: result.data.equipements || [],
-          ages: result.data.ages || [],
-          note_moyenne: result.data.note_moyenne || 0,
-          nombre_commentaires: result.data.nombre_commentaires || 0,
-          adresse: {
-            ...result.data.adresse,
-            telephone: result.data.adresse?.telephone || '',
-            site_web: result.data.adresse?.site_web || '',
-          }
-        });
-      } catch (err) {
-        console.error("Erreur lors de la récupération des détails du lieu:", err);
-        setError(`Impossible de charger les détails du lieu (ID: ${lieuId})`);
-      } finally {
-        setLoading(false);
-      }
-    };
+  async function handleFetchPlace() {
+    setLoading(true);
+    //setError(false);
+    const result = await fetchPlace(Number(lieuId));
+    if (result === null) {
+     // setError(true);
+    } else {
+      setPlace(result.data);
+    }
+    setLoading(false);
+  }
 
-    fetchLieuDetails();
-  }, [lieuId]);
+useEffect(() => {handleFetchPlace()}
+, []);
+
+
 
   // Fonction de partage
   const handleShare = async () => {
