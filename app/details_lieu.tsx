@@ -1,4 +1,5 @@
 
+// Ajoutez d'abord l'import de votre composant BottomModal
 import React, { useEffect, useState } from "react";
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -29,12 +30,15 @@ import AgeBadges from "@/components/Lieux/AgeBadges";
 import styles from "./style/DetailLieuxStyles";
 import fetchPlace from "@/api/fetchPlace";
 import { useAuth } from "@/context/auth";
+import BottomModal from "../components/ModalRedirection"; // Importez votre composant BottomModal
+
 // Interface pour les données récupérées de l'APi
 // Interface pour la réponse de l'API
 interface ApiResponse {
   status: string;
   data: Lieu;
 }
+
 const DetailsLieu = () => {
   const params = useLocalSearchParams() as {id:string};
   const lieuId = params.id?.toString() || "2";
@@ -43,6 +47,9 @@ const DetailsLieu = () => {
   const [error, setError] = useState<string | null>(null);
   const [lieu, setPlace] = useState<Lieu | null>(null);
   const {token, setToken} = useAuth();
+  // État pour contrôler la visibilité de la modal de redirection
+  const [modalVisible, setModalVisible] = useState(false);
+
   async function handleFetchPlace() {
     setLoading(true);
     //setError(false);
@@ -55,10 +62,10 @@ const DetailsLieu = () => {
     setLoading(false);
   }
 
-useEffect(() => {handleFetchPlace()}
-, [lieuId]);
+  useEffect(() => {handleFetchPlace()}
+  , [lieuId]);
 
-console.log("token,", token);
+  console.log("token,", token);
 
   // Fonction de partage
   const handleShare = async () => {
@@ -80,8 +87,17 @@ console.log("token,", token);
     }
   };
 
+  // Fonction modifiée pour gérer le clic sur favori en vérifiant la connexion
   function handleFavoriteToggle() {
-    console.log("Favori cliqué");
+    // Vérifier si l'utilisateur est connecté (token existe)
+    if (!token) {
+      // Si non connecté, afficher la modal de redirection
+      setModalVisible(true);
+    } else {
+      // Si connecté, effectuer l'action de favori normal
+      console.log("Favori ajouté/retiré");
+      // Ici, ajoutez votre logique pour ajouter/retirer des favoris
+    }
   }
 
   // Fonction pour gérer la navigation GPS
@@ -228,8 +244,17 @@ console.log("token,", token);
           </View>
         </ScrollView>
       </View>
+      
+      {/* Modal de redirection qui s'affiche quand l'utilisateur n'est pas connecté */}
+      <BottomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title="Connectez-vous pour ajouter aux favoris"
+      />
+      
       <Navigation/>
     </SafeAreaView>
   );
 };
+
 export default DetailsLieu;
