@@ -15,18 +15,31 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
 
 export default function PlaceScreen() {
+  // Un lieu en détaille
   const [place, setPlace] = useState<PlaceDetail | null>(null);
+
+  // Liste des lieux autour
   const [nearbyPlaces, setNearbyPlaces] = useState<Place[]>([]);
+
+  // Commentaire d'un lieu
   const [comments, setComments] = useState<Comment[]>([]);
+  // Note du lieux
   const [averageNote, setAverageNote] = useState<string | null>(null);
+
+  // Erreurs
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  // Token lors du login
   const { token, setToken } = useAuth();
+
+  // Chargement
+  const [loading, setLoading] = useState(false);
+  
 
   async function handleFetchPlace() {
     setLoading(true);
     setError(false);
-    const result = await fetchPlace(2);
+    const result = await fetchPlace(77);
     if (result === null) {
       setError(true);
     } else {
