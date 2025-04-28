@@ -211,6 +211,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     flex: 1,
+    textAlign: 'center',
+  
   },
   infoContainer: {
     marginBottom: 15,
@@ -219,10 +221,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     marginBottom: 5,
+    textAlign: 'center',
   },
   detailsButton: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 10,
     borderTopWidth: 1,
