@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "177846460217",
+    "project_id": "kids-spot-tp",
+    "storage_bucket": "kids-spot-tp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177846460217:android:ed37a9ac749b2ce6d152e8",
+        "android_client_info": {
+          "package_name": "com.kidsspot.geolocapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClg8lhBe1xeF-4z6iNdegYoXkQMjM8w-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

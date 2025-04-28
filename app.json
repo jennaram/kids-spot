@@ -12,7 +12,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "experiments": {
-      "newArchEnabled": true
+      "tsconfigPaths": true
     },
     "plugins": [
       [
@@ -41,18 +41,21 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      "package": "com.anonymous.geolocapp"
+      "package": "com.kidsspot.geolocapp"
     },
     "extra": {
       "eas": {
         "projectId": "c5b48353-099a-4910-8ccf-d4a7060bfbd9"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
+    "runtimeVersion": "1.0.0",
+    "cli": {
+      "appVersionSource": "remote"
     },
     "updates": {
-      "url": "https://u.expo.dev/c5b48353-099a-4910-8ccf-d4a7060bfbd9"
+      "url": "https://u.expo.dev/c5b48353-099a-4910-8ccf-d4a7060bfbd9",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0
     }
   }
 }
