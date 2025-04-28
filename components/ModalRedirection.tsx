@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
 
 interface BottomModalProps {
   visible: boolean;
@@ -12,6 +13,9 @@ const BottomModal: React.FC<BottomModalProps> = ({ visible, onClose, title = "S'
   const navigation = useNavigation();
   const slideAnim = useRef(new Animated.Value(0)).current;
   const { height } = Dimensions.get('window');
+  
+
+
 
   useEffect(() => {
     if (visible) {
@@ -153,3 +157,5 @@ const styles = StyleSheet.create({
 });
 
 export default BottomModal;
+
+// Removed conflicting local useState function
