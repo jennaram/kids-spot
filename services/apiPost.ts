@@ -1,11 +1,12 @@
 import { API_BASE_URL } from '@/api/apiConfig';
 
-export async function apiPost(endpoint: string, body: object) {
+export async function apiPost(endpoint: string, body: object, token?: string) {
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
       },
       body: JSON.stringify(body),
     });
