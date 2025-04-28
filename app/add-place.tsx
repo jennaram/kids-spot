@@ -14,6 +14,7 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 
 // Styles
 import { colorButtonFirst, colorButtonThird } from './style/styles';
+import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
@@ -135,6 +136,10 @@ const AddPlaceScreen = () => {
            key === '3-6' ? '3-6 ans' : '7 ans et plus';
   };
 
+  function setPhotoUri(uri: string): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <BurgerMenu/>
@@ -149,6 +154,7 @@ const AddPlaceScreen = () => {
             onChangeText={setPlaceName}
             placeholder="Entrez le nom du lieu"
           />
+            <PhotoPickerButton onPhotoSelected={(uri) => setPhotoUri(uri)} />
         </View>
 
         {/* Type de lieu - aligné à gauche */}
