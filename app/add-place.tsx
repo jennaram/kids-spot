@@ -3,12 +3,23 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet,
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+
+// Composants
+import { Navigation } from '@/components/NavBar/Navigation';
+import { Title } from '../components/Title';
+import { FormInput } from './components/Form/InputField';
+import SubmitButton from './components/Form/SubmitButton';
+
+// Styles
+import { colorButtonFirst, colorButtonThird } from './style/styles';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird } from './style/styles';
-import { fontTitle } from './style/styles';
-import { Navigation } from "@/components/NavBar/Navigation";
-import { Title } from '@/components/Title';
-import { MaterialIcons } from '@expo/vector-icons'; // Ajout de l'import pour les icônes
+
+// Types
+type PlaceType = 'restaurant' | 'culture' | 'leisure';
+type LocationType = { latitude: number; longitude: number } | null;
+type EquipmentKeys = 'strollerAccess' | 'playArea' | 'microwave' | 'highChair' | 'changingTable';
+type EquipmentType = Record<EquipmentKeys, boolean>;
 
 const AddPlaceScreen = () => {
   const router = useRouter();
@@ -125,9 +136,8 @@ const AddPlaceScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* Menu burger */}
-      <MenuBurger />
+    <View style={styles.safeArea}>
+      <BurgerMenu/>
 
       <ScrollView 
         style={styles.container} 
@@ -141,7 +151,7 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Nom du lieu </Text>
+          <Text style={styles.label}>Nom du lieu *</Text>
           <FormInput
             label=""
             value={placeName}
@@ -176,7 +186,7 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Adresse </Text>
+          <Text style={styles.label}>Adresse *</Text>
           <View style={styles.inputWithIcon}>
             <TextInput
               style={styles.inputWithIconField}
