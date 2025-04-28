@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet, Alert, SafeAreaView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
@@ -7,13 +7,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 // Composants
 import { Navigation } from '@/components/NavBar/Navigation';
-import { Title } from '../components/Title';
+import { Title } from '@/components/Title';
 import { FormInput } from './components/Form/InputField';
 import SubmitButton from './components/Form/SubmitButton';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 
 // Styles
 import { colorButtonFirst, colorButtonThird } from './style/styles';
-import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
@@ -136,20 +136,11 @@ const AddPlaceScreen = () => {
   };
 
   return (
-    <View style={styles.safeArea}>
+    <SafeAreaView style={styles.container}>
       <BurgerMenu/>
-
-      <ScrollView 
-        style={styles.container} 
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.headerContainer}>
-          <View style={styles.titleContainer}>
-            <Title text={'Ajouter un lieu'} />
-          </View>
-        </View>
-
+      <Title text={'Ajouter un lieu'}/>
+      
+      <ScrollView style={styles.scrollView}>
         <View style={styles.section}>
           <Text style={styles.label}>Nom du lieu</Text>
           <FormInput
@@ -160,28 +151,27 @@ const AddPlaceScreen = () => {
           />
         </View>
 
+        {/* Type de lieu - aligné à gauche */}
         <View style={styles.section}>
           <Text style={styles.label}>Type de lieu</Text>
-          <View style={styles.centeredRow}>
-            <View style={styles.radioContainer}>
-              {placeTypeOptions.map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  style={[
-                    styles.radioButton, 
-                    placeType === type && styles.radioSelected
-                  ]}
-                  onPress={() => setPlaceType(type as PlaceType)}
-                >
-                  <Text style={[
-                    styles.radioText, 
-                    placeType === type && styles.radioTextSelected
-                  ]}>
-                    {getTranslatedLabel(type, 'placeType')}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+          <View style={styles.radioGroup}>
+            {placeTypeOptions.map((type) => (
+              <TouchableOpacity
+                key={type}
+                style={[
+                  styles.radioButton, 
+                  placeType === type && styles.radioSelected
+                ]}
+                onPress={() => setPlaceType(type as PlaceType)}
+              >
+                <Text style={[
+                  styles.radioText, 
+                  placeType === type && styles.radioTextSelected
+                ]}>
+                  {getTranslatedLabel(type, 'placeType')}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
@@ -232,28 +222,27 @@ const AddPlaceScreen = () => {
           ))}
         </View>
 
+        {/* Tranche d'âge - aligné à gauche */}
         <View style={styles.section}>
           <Text style={styles.label}>Tranche d'âge</Text>
-          <View style={styles.centeredRow}>
-            <View style={styles.radioContainer}>
-              {ageRangeOptions.map((age) => (
-                <TouchableOpacity
-                  key={age}
-                  style={[
-                    styles.radioButton, 
-                    ageRanges.includes(age) && styles.radioSelected
-                  ]}
-                  onPress={() => toggleAgeRange(age)}
-                >
-                  <Text style={[
-                    styles.radioText, 
-                    ageRanges.includes(age) && styles.radioTextSelected
-                  ]}>
-                    {getTranslatedLabel(age, 'ageRange')}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+          <View style={styles.radioGroup}>
+            {ageRangeOptions.map((age) => (
+              <TouchableOpacity
+                key={age}
+                style={[
+                  styles.radioButton, 
+                  ageRanges.includes(age) && styles.radioSelected
+                ]}
+                onPress={() => toggleAgeRange(age)}
+              >
+                <Text style={[
+                  styles.radioText, 
+                  ageRanges.includes(age) && styles.radioTextSelected
+                ]}>
+                  {getTranslatedLabel(age, 'ageRange')}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
@@ -281,9 +270,10 @@ const AddPlaceScreen = () => {
           </View>
         )}
 
+        {/* Note - aligné à gauche */}
         <View style={styles.section}>
           <Text style={styles.label}>Note (sur 5)</Text>
-          <View style={styles.ratingContainer}>
+          <View style={styles.ratingGroup}>
             {ratingOptions.map((star) => (
               <TouchableOpacity 
                 key={star} 
@@ -303,32 +293,23 @@ const AddPlaceScreen = () => {
           title="Ajouter le lieu" 
           onPress={handleSubmit} 
         />
+        
+        <View style={styles.bottomSpacer} />
       </ScrollView>
       
       <Navigation />
-    </View>
+    </SafeAreaView>
   );
 };
 
-// Styles optimisés avec StyleSheet.create
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colorButtonThird,
-  },
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: colorButtonThird,
   },
-  scrollContent: {
-    paddingBottom: 40
-  },
-  headerContainer: {
-    marginBottom: 20,
-  },
-  titleContainer: {
-    alignItems: 'center',
+  scrollView: {
+    flex: 1,
+    padding: 20,
   },
   section: {
     marginBottom: 20,
@@ -339,6 +320,35 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'left', 
   },
+  // Groupes de boutons radio alignés à gauche
+  radioGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start', // Alignement à gauche
+  },
+  ratingGroup: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start', // Alignement à gauche
+  },
+  radioButton: {
+    padding: 10,
+    marginRight: 10,
+    marginBottom: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  radioSelected: {
+    backgroundColor: colorButtonFirst,
+    borderColor: colorButtonFirst,
+  },
+  radioText: {
+    color: '#333',
+  },
+  radioTextSelected: {
+    color: 'white',
+  },
+  // ... (autres styles inchangés)
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
@@ -372,32 +382,6 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  centeredRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  radioContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  radioButton: {
-    padding: 10,
-    margin: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  radioSelected: {
-    backgroundColor: colorButtonFirst,
-    borderColor: colorButtonFirst,
-  },
-  radioText: {
-    color: '#333',
-  },
-  radioTextSelected: {
-    color: 'white',
   },
   mapContainer: {
     height: 200,
@@ -438,18 +422,17 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     fontSize: 16,
   },
-  ratingContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
   star: {
     fontSize: 30,
     color: '#ddd',
-    marginHorizontal: 5,
+    marginRight: 10,
   },
   starSelected: {
     color: '#f1c40f',
   },
+  bottomSpacer: {
+    height: 60,
+  }
 });
 
 export default AddPlaceScreen;
