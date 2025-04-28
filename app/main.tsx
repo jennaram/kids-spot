@@ -17,8 +17,8 @@ import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
 import getUserLocation from '@/services/localisation';
 import { Navigation } from '@/components/NavBar/Navigation';
 import PlacePopUp from '@/components/MainMap/PlacePopUp';
-import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu'; // <-- importe ton BurgerMenu
-import styles from '@/app/style/MapScreen.style'; // ton style actuel
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu'; // <-- Importe ton BurgerMenu
+import styles from '@/app/style/MapScreen.style'; // Ton style actuel
 
 // Icônes personnalisées
 const iconByType = {
@@ -36,6 +36,7 @@ export default function MapScreen() {
   const [selectedPlace, setSelectedPlace] = useState<any | null>(null);
   const [showPopup, setShowPopup] = useState(false);
 
+  // Fonction pour charger les lieux à proximité
   const loadNearbyPlaces = async (lat: number, lng: number) => {
     const placesData = await fetchNearbyPlaces(lat, lng);
     if (placesData && placesData.status === 'success' && placesData.data) {
@@ -45,6 +46,7 @@ export default function MapScreen() {
     }
   };
 
+  // Récupère la localisation et les lieux
   const fetchLocationAndPlaces = async () => {
     const location = await getUserLocation();
     if (location) {
@@ -56,10 +58,12 @@ export default function MapScreen() {
     }
   };
 
+  // Chargement initial des données de localisation
   useEffect(() => {
     fetchLocationAndPlaces();
   }, []);
 
+  // Mise à jour lorsque le composant reprend le focus
   useFocusEffect(
     React.useCallback(() => {
       fetchLocationAndPlaces();
@@ -67,6 +71,7 @@ export default function MapScreen() {
     }, [])
   );
 
+  // Gestion des erreurs d'obtention de la localisation
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -83,6 +88,7 @@ export default function MapScreen() {
     );
   }
 
+  // Affichage de l'écran de chargement
   if (!userLocation) {
     return (
       <View style={styles.loadingContainer}>
@@ -93,7 +99,7 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Map */}
+      {/* Carte */}
       <MapView
         style={styles.map}
         region={{
@@ -102,14 +108,14 @@ export default function MapScreen() {
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         }}
-        showsUserLocation={false}
+        showsUserLocation={true}
         showsMyLocationButton={true}
         loadingEnabled={true}
         userLocationPriority="high"
         userLocationUpdateInterval={5000}
         provider={Platform.OS === 'android' ? 'google' : undefined}
       >
-        {/* Marker pour l'utilisateur */}
+        {/* Marqueur pour l'utilisateur */}
         <Marker
           coordinate={userLocation}
           anchor={{ x: 0.5, y: 0.5 }}
@@ -122,7 +128,7 @@ export default function MapScreen() {
           />
         </Marker>
 
-        {/* Markers pour les lieux */}
+        {/* Marqueurs pour les lieux */}
         {nearbyPlaces && nearbyPlaces.length > 0 && nearbyPlaces.map((item) => (
           <Marker
             key={item.id}
@@ -181,4 +187,3 @@ export default function MapScreen() {
     </View>
   );
 };
-

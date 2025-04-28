@@ -2,10 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Modal, Image } from 'react-native';
 import { router } from 'expo-router';
 import styles from '@/app/style/PlacePopUp.style';
-
-
-
-
+import { Row } from '../Row';
 
 // Définition des types pour les props
 interface PlacePopUpProps {
@@ -113,8 +110,8 @@ const PlacePopUp: React.FC<PlacePopUpProps> = ({
           <View style={styles.handle} />
           <View style={styles.content}>
             <View style={styles.headerContainer}>
-              <View style={[
-                styles.iconContainer,
+              <Row style={[
+                styles.popupIcon,
                 getIconBackgroundStyle(place.type[0].nom)
               ]}>
                 <Image
@@ -122,7 +119,7 @@ const PlacePopUp: React.FC<PlacePopUpProps> = ({
                   style={styles.popupIcon}
                   resizeMode="contain"
                 />
-              </View>
+              </Row>
               <Text style={styles.popupTitle}>{place.nom}</Text>
             </View>
 
@@ -154,4 +151,3 @@ const PlacePopUp: React.FC<PlacePopUpProps> = ({
 };
 
 export default PlacePopUp;
-

@@ -37,33 +37,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    justifyContent: 'center', // Centre l'ensemble du contenu dans le header
   },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
+  iconTitleContainer: {
+    flexDirection: 'row',   // Aligne l'icône et le titre sur la même ligne
+    justifyContent: 'center', // Centre l'icône et le titre
+    alignItems: 'center',   // Centre verticalement l'icône et le titre
   },
   popupIcon: {
-    width: 24,
-    height: 24,
-  },
-  cultureBackground: {
-    backgroundColor: '#ff9770',
-  },
-  restaurantBackground: {
-    backgroundColor: '#95d5b2',
-  },
-  loisirBackground: {
-    backgroundColor: '#8ecae6',
+    width: 40,
+    height: 40,
+    borderRadius: 25, // Cercle autour de l'icône
+    justifyContent: 'center', // Centre l'icône dans le cercle
+    alignItems: 'center', // Centre l'icône dans le cercle
+    elevation: 10, // Ajoute de l'ombre pour l'effet de profondeur
   },
   popupTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    flex: 1,
     textAlign: 'center',
+  },
+  cultureBackground: {
+    backgroundColor: '#ff9770', // Culture : couleur orange
+  },
+  restaurantBackground: {
+    backgroundColor: '#95d5b2', // Restaurant : couleur verte
+  },
+  loisirBackground: {
+    backgroundColor: '#8ecae6', // Loisir : couleur bleu clair
   },
   infoContainer: {
     marginBottom: 15,
