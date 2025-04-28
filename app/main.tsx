@@ -16,9 +16,9 @@ import { useNavigation } from '@react-navigation/native';
 import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
 import getUserLocation from '@/services/localisation';
 import { Navigation } from '@/components/NavBar/Navigation';
-import PlacePopUp from '@/components/MainMap/PlacePopUp'; 
-import styles from '@/app/style/MapScreen.style';
-
+import PlacePopUp from '@/components/MainMap/PlacePopUp';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu'; // <-- importe ton BurgerMenu
+import styles from '@/app/style/MapScreen.style'; // ton style actuel
 
 // Icônes personnalisées
 const iconByType = {
@@ -30,10 +30,7 @@ const iconByType = {
 };
 
 export default function MapScreen() {
-  const [userLocation, setUserLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [nearbyPlaces, setNearbyPlaces] = useState<any[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<any | null>(null);
@@ -66,7 +63,7 @@ export default function MapScreen() {
   useFocusEffect(
     React.useCallback(() => {
       fetchLocationAndPlaces();
-      return () => { };
+      return () => {};
     }, [])
   );
 
@@ -96,6 +93,7 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Map */}
       <MapView
         style={styles.map}
         region={{
@@ -111,6 +109,7 @@ export default function MapScreen() {
         userLocationUpdateInterval={5000}
         provider={Platform.OS === 'android' ? 'google' : undefined}
       >
+        {/* Marker pour l'utilisateur */}
         <Marker
           coordinate={userLocation}
           anchor={{ x: 0.5, y: 0.5 }}
@@ -123,49 +122,36 @@ export default function MapScreen() {
           />
         </Marker>
 
-        {nearbyPlaces && nearbyPlaces.length > 0 ? (
-          nearbyPlaces.map((item) => (
-            <Marker
-              key={item.id}
-              coordinate={{
-                latitude: item.position.latitude,
-                longitude: item.position.longitude,
-              }}
-              onPress={() => {
-                setSelectedPlace(item);
-                setShowPopup(true);
-              }}
-              tracksInfoWindowChanges={false}
-            >
-              {item.type[0].nom === 'Culture' ? (
-                <Image
-                  source={iconByType.Culture}
-                  style={styles.cultureMarker}
-                  resizeMode="contain"
-                />
-              ) : item.type[0].nom === 'Restaurant' ? (
-                <Image
-                  source={iconByType.Restaurant}
-                  style={styles.foodMarker}
-                  resizeMode="contain"
-                />
-              ) : item.type[0].nom === 'Loisir' ? (
-                <Image
-                  source={iconByType.Loisir}
-                  style={styles.loisirsMarker}
-                  resizeMode="contain"
-                />
-              ) : (
-                <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
-                  <Text style={{ color: 'white' }}>{item.nom}</Text>
-                </View>
-              )}
-            </Marker>
-          ))
-        ) : null}
+        {/* Markers pour les lieux */}
+        {nearbyPlaces && nearbyPlaces.length > 0 && nearbyPlaces.map((item) => (
+          <Marker
+            key={item.id}
+            coordinate={{
+              latitude: item.position.latitude,
+              longitude: item.position.longitude,
+            }}
+            onPress={() => {
+              setSelectedPlace(item);
+              setShowPopup(true);
+            }}
+            tracksInfoWindowChanges={false}
+          >
+            {item.type[0].nom === 'Culture' ? (
+              <Image source={iconByType.Culture} style={styles.cultureMarker} resizeMode="contain" />
+            ) : item.type[0].nom === 'Restaurant' ? (
+              <Image source={iconByType.Restaurant} style={styles.foodMarker} resizeMode="contain" />
+            ) : item.type[0].nom === 'Loisir' ? (
+              <Image source={iconByType.Loisir} style={styles.loisirsMarker} resizeMode="contain" />
+            ) : (
+              <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
+                <Text style={{ color: 'white' }}>{item.nom}</Text>
+              </View>
+            )}
+          </Marker>
+        ))}
       </MapView>
 
-      {/* Utilisation du nouveau composant PlacePopUp */}
+      {/* Composant PopUp */}
       <PlacePopUp
         visible={showPopup}
         onClose={() => setShowPopup(false)}
@@ -174,10 +160,12 @@ export default function MapScreen() {
         iconByType={iconByType}
       />
 
-      <View style={styles.menuContainer}>
-        {/* <MenuBurger /> */}
+      {/* Burger Menu flottant */}
+      <View style={styles.burgerMenuContainer}>
+        <BurgerMenu />
       </View>
 
+      {/* Bouton pour changer la carte */}
       <TouchableOpacity
         onPress={() => router.push('/Location')}
         style={styles.switchButton}
@@ -187,6 +175,8 @@ export default function MapScreen() {
           style={styles.switchIcon}
         />
       </TouchableOpacity>
+
+      {/* Barre de navigation */}
       <Navigation />
     </View>
   );
