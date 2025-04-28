@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import { colorButtonFirst } from '@/app/style/styles';
 
 interface BottomModalProps {
   visible: boolean;
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   button: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: colorButtonFirst,
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,

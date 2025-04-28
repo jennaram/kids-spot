@@ -208,8 +208,7 @@ const DetailsLieu = () => {
             />
             {/* Bouton favori positionné directement dans le conteneur d'image */}
             <FavoriteButton
-              onToggle={handleFavoriteToggle}
-            />
+              onToggle={handleFavoriteToggle} idPlace={Number(lieuId)}/>
           </View>
 
           {/* Contenu principal */}
