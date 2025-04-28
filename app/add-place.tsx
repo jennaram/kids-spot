@@ -6,14 +6,14 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 
 // Composants
-import MenuBurger from './components/menuburger';
-import { Navigation } from '@/components/Navigation';
+import { Navigation } from '@/components/NavBar/Navigation';
 import { Title } from '../components/Title';
 import { FormInput } from './components/Form/InputField';
 import SubmitButton from './components/Form/SubmitButton';
 
 // Styles
 import { colorButtonFirst, colorButtonThird } from './style/styles';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
@@ -137,7 +137,7 @@ const AddPlaceScreen = () => {
 
   return (
     <View style={styles.safeArea}>
-      <MenuBurger />
+      <BurgerMenu/>
 
       <ScrollView 
         style={styles.container} 
@@ -151,7 +151,7 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Nom du lieu </Text>
+          <Text style={styles.label}>Nom du lieu *</Text>
           <FormInput
             label=""
             value={placeName}
@@ -186,7 +186,7 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Adresse </Text>
+          <Text style={styles.label}>Adresse *</Text>
           <View style={styles.inputWithIcon}>
             <TextInput
               style={styles.inputWithIconField}
