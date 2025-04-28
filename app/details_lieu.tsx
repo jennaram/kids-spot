@@ -49,6 +49,7 @@ const DetailsLieu = () => {
   const {token, setToken} = useAuth();
   // État pour contrôler la visibilité de la modal de redirection
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Connectez-vous pour continuer");
 
   async function handleFetchPlace() {
     setLoading(true);
@@ -92,12 +93,21 @@ const DetailsLieu = () => {
     // Vérifier si l'utilisateur est connecté (token existe)
     if (!token) {
       // Si non connecté, afficher la modal de redirection
+      setModalTitle("Connectez-vous pour ajouter aux favoris");
       setModalVisible(true);
     } else {
       // Si connecté, effectuer l'action de favori normal
       console.log("Favori ajouté/retiré");
       // Ici, ajoutez votre logique pour ajouter/retirer des favoris
     }
+  }
+  function handleDonnerAvis() {
+    if (!token) {
+      setModalTitle("Connectez-vous pour donner votre avis");
+      setModalVisible(true);
+      return false;
+    }
+    return true;
   }
 
   // Fonction pour gérer la navigation GPS
@@ -230,7 +240,7 @@ const DetailsLieu = () => {
             <IconesLieux equipements={lieu.equipements} />
             <View style={styles.actionsContainer}>
               <View style={styles.rowButtons}>
-                <AvisButton type="donner" nomLieu={lieu.nom} lieuId={lieu.id.toString()} />
+                <AvisButton type="donner" nomLieu={lieu.nom} lieuId={lieu.id.toString()} onBeforeAction={handleDonnerAvis} />
                 <AvisButton type="voir" nomLieu={lieu.nom} lieuId={lieu.id.toString()} />
               </View>
               <LieuActionButtons
@@ -249,7 +259,7 @@ const DetailsLieu = () => {
       <BottomModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        title="Connectez-vous pour ajouter aux favoris"
+        title={modalTitle}
       />
       
       <Navigation/>

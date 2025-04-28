@@ -9,17 +9,25 @@ import { colorButtonFirst } from '@/app/style/styles';
  * @param {string} props.type - Type de bouton ('donner' ou 'voir')
  * @param {string} props.nomLieu - Nom du lieu concerné
  * @param {string} props.lieuId - ID du lieu concerné
+ * @param {Function} props.onBeforeAction - Fonction à exécuter avant l'action (retourne boolean)
  */
 interface AvisButtonProps {
   type: 'donner' | 'voir';
   nomLieu: string;
   lieuId: string;
+  onBeforeAction?: () => boolean;
 }
 
-export const AvisButton: React.FC<AvisButtonProps> = ({ type, nomLieu, lieuId }) => {
+export const AvisButton: React.FC<AvisButtonProps> = ({ type, nomLieu, lieuId, onBeforeAction }) => {
   const router = useRouter();
 
   const handlePress = () => {
+    // Si onBeforeAction est fourni, l'exécuter d'abord
+    // et ne continuer que si elle retourne true
+    if (onBeforeAction && !onBeforeAction()) {
+      return; // Arrêter si onBeforeAction retourne false
+    }
+    
     const path = type === 'donner' ? '/avis' : '/ReadReviews';
     router.push({
       pathname: path,
@@ -39,7 +47,6 @@ export const AvisButton: React.FC<AvisButtonProps> = ({ type, nomLieu, lieuId })
     </TouchableOpacity>
   );
 };
-
 
 const styles = StyleSheet.create({
   rowButtons: {
@@ -69,6 +76,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
 
 export default AvisButton;
