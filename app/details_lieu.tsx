@@ -7,7 +7,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
   SafeAreaView
@@ -15,10 +14,9 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
-import Layout from "./components/LayoutNav";
 import { Share } from 'react-native';
 import { Alert, Platform, Linking } from 'react-native';
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { colorButtonFirst } from './style/styles';
 import { IconesLieux } from '@/components/IconesLieux';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
@@ -30,6 +28,7 @@ import FavoriteButton from "@/components/Lieux/FavoriteButton";
 import AgeBadges from "@/components/Lieux/AgeBadges";
 import styles from "./style/DetailLieuxStyles";
 import fetchPlace from "@/api/fetchPlace";
+import { useAuth } from "@/context/auth";
 // Interface pour les données récupérées de l'APi
 // Interface pour la réponse de l'API
 interface ApiResponse {
@@ -37,16 +36,13 @@ interface ApiResponse {
   data: Lieu;
 }
 const DetailsLieu = () => {
-  const router = useRouter();
   const params = useLocalSearchParams() as {id:string};
-  console.log("params", params);
   const lieuId = params.id?.toString() || "2";
-  console.log("lieuId", lieuId);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lieu, setPlace] = useState<Lieu | null>(null);
-  
+  const {token, setToken} = useAuth();
   async function handleFetchPlace() {
     setLoading(true);
     //setError(false);
@@ -60,9 +56,9 @@ const DetailsLieu = () => {
   }
 
 useEffect(() => {handleFetchPlace()}
-, []);
+, [lieuId]);
 
-
+console.log("token,", token);
 
   // Fonction de partage
   const handleShare = async () => {
