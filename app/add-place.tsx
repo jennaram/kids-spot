@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet, Alert, SafeAreaView } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
@@ -14,15 +14,14 @@ const AddPlaceScreen = () => {
   const router = useRouter();
 
   // États du formulaire
-  const [placeType, setPlaceType] = useState<'restaurant' | 'culture' | 'leisure'>('restaurant');
+  const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [placeName, setPlaceName] = useState('');
   const [address, setAddress] = useState('');
-  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [location, setLocation] = useState<LocationType>(null);
   const [description, setDescription] = useState('');
   const [ageRanges, setAgeRanges] = useState<string[]>(['0-2']);
   const [rating, setRating] = useState(3);
-
-  const [equipments, setEquipments] = useState({
+  const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
     microwave: false,
@@ -30,36 +29,50 @@ const AddPlaceScreen = () => {
     changingTable: false,
   });
 
-  const placeIcons = {
-    restaurant: require('../assets/images/user-location-restaurant.png'),
-    culture: require('../assets/images/user-location-culture.png'),
-    leisure: require('../assets/images/user-location-loisir.png'),
-  };
+  // Mémoïsation des données constantes
+  const placeIcons = useMemo(() => ({
+    restaurant: require('@/assets/images/user-location-restaurant.png'),
+    culture: require('@/assets/images/user-location-culture.png'),
+    leisure: require('@/assets/images/user-location-loisir.png'),
+  }), []);
 
-  const handleGetCurrentLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Erreur', 'Permission de localisation refusée');
-      return;
+  const ageRangeOptions = useMemo(() => ['0-2', '3-6', '7+'], []);
+  const placeTypeOptions = useMemo(() => ['restaurant', 'culture', 'leisure'], []);
+  const ratingOptions = useMemo(() => [1, 2, 3, 4, 5], []);
+
+  // Gestion de la localisation
+  const handleGetCurrentLocation = useCallback(async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Erreur', 'Permission de localisation refusée');
+        return;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      });
+
+      const [addressResult] = await Location.reverseGeocodeAsync({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      });
+      
+      if (addressResult) {
+        const street = addressResult.street || '';
+        const city = addressResult.city || '';
+        setAddress(`${street}${street && city ? ', ' : ''}${city}`);
+      }
+    } catch (error) {
+      console.error('Error getting location:', error);
+      Alert.alert('Erreur', 'Impossible d\'obtenir la localisation actuelle');
     }
+  }, []);
 
-    const currentLocation = await Location.getCurrentPositionAsync({});
-    setLocation({
-      latitude: currentLocation.coords.latitude,
-      longitude: currentLocation.coords.longitude,
-    });
-
-    const [addressResult] = await Location.reverseGeocodeAsync({
-      latitude: currentLocation.coords.latitude,
-      longitude: currentLocation.coords.longitude,
-    });
-    
-    if (addressResult) {
-      setAddress(`${addressResult.street}, ${addressResult.city}`);
-    }
-  };
-
-  const handleSubmit = () => {
+  // Gestion de la soumission
+  const handleSubmit = useCallback(() => {
     if (!placeName || !address) {
       Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
       return;
@@ -79,50 +92,82 @@ const AddPlaceScreen = () => {
     console.log('Nouveau lieu:', newPlace);
     Alert.alert('Succès', 'Lieu ajouté avec succès!');
     router.push('/home');
-  };
+  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, router]);
 
-  const toggleAgeRange = (age: string) => {
-    setAgeRanges((prev) => (prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]));
+  // Gestion des tranches d'âge
+  const toggleAgeRange = useCallback((age: string) => {
+    setAgeRanges((prev) => 
+      prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]
+    );
+  }, []);
+
+  // Gestion des équipements
+  const toggleEquipment = useCallback((key: EquipmentKeys) => {
+    setEquipments(prev => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  // Traduction des labels
+  const getTranslatedLabel = (key: string, type: 'placeType' | 'equipment' | 'ageRange') => {
+    if (type === 'placeType') {
+      return key === 'restaurant' ? 'Restaurant' : 
+             key === 'culture' ? 'Culturel' : 'Loisir';
+    }
+    
+    if (type === 'equipment') {
+      return key === 'strollerAccess' ? 'Accès poussette' :
+             key === 'playArea' ? 'Aire de jeux' :
+             key === 'microwave' ? 'Micro-onde' :
+             key === 'highChair' ? 'Chaise haute' : 'Table à langer';
+    }
+    
+    return key === '0-2' ? '0-2 ans' : 
+           key === '3-6' ? '3-6 ans' : '7 ans et plus';
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Menu burger */}
-      <BurgerMenu/>
+      <MenuBurger />
 
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-        {/* Header avec titre - Centré */}
+      <ScrollView 
+        style={styles.container} 
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.headerContainer}>
           <View style={styles.titleContainer}>
             <Title text={'Ajouter un lieu'} />
           </View>
         </View>
 
-        {/* Nom du lieu */}
         <View style={styles.section}>
-          <Text style={styles.label}>Nom du lieu *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Entrez le nom du lieu"
+          <Text style={styles.label}>Nom du lieu </Text>
+          <FormInput
+            label=""
             value={placeName}
             onChangeText={setPlaceName}
+            placeholder="Entrez le nom du lieu"
           />
         </View>
 
-        {/* Type de lieu - Centré */}
         <View style={styles.section}>
           <Text style={styles.label}>Type de lieu</Text>
           <View style={styles.centeredRow}>
             <View style={styles.radioContainer}>
-              {['restaurant', 'culture', 'leisure'].map((type) => (
+              {placeTypeOptions.map((type) => (
                 <TouchableOpacity
                   key={type}
-                  style={[styles.radioButton, placeType === type && styles.radioSelected]}
-                  onPress={() => setPlaceType(type as any)}
+                  style={[
+                    styles.radioButton, 
+                    placeType === type && styles.radioSelected
+                  ]}
+                  onPress={() => setPlaceType(type as PlaceType)}
                 >
-                  <Text style={[styles.radioText, placeType === type && styles.radioTextSelected]}>
-                    {type === 'restaurant' ? 'Restaurant' : 
-                     type === 'culture' ? 'Culturel' : 'Loisir'}
+                  <Text style={[
+                    styles.radioText, 
+                    placeType === type && styles.radioTextSelected
+                  ]}>
+                    {getTranslatedLabel(type, 'placeType')}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -130,12 +175,8 @@ const AddPlaceScreen = () => {
           </View>
         </View>
 
-        {/* Adresse */}
         <View style={styles.section}>
-          <Text style={styles.label}>Adresse *</Text>
-        
-          
-          {/* Champ d'adresse avec icône de géolocalisation */}
+          <Text style={styles.label}>Adresse </Text>
           <View style={styles.inputWithIcon}>
             <TextInput
               style={styles.inputWithIconField}
@@ -152,11 +193,10 @@ const AddPlaceScreen = () => {
           </View>
         </View>
 
-        {/* Description */}
         <View style={styles.section}>
           <Text style={styles.label}>Description</Text>
           <TextInput
-            style={[styles.input, { height: 100 }]}
+            style={styles.multilineInput}
             placeholder="Entrez une description"
             value={description}
             onChangeText={setDescription}
@@ -164,41 +204,42 @@ const AddPlaceScreen = () => {
           />
         </View>
 
-        {/* Équipements */}
         <View style={styles.section}>
           <Text style={styles.label}>Équipements disponibles</Text>
           {Object.entries(equipments).map(([key, value]) => (
             <TouchableOpacity
               key={key}
               style={styles.checkbox}
-              onPress={() => setEquipments({...equipments, [key]: !value})}
+              onPress={() => toggleEquipment(key as EquipmentKeys)}
             >
               <View style={[styles.checkboxBox, value && styles.checkboxSelected]}>
                 {value && <Text style={styles.checkmark}>✓</Text>}
               </View>
               <Text style={styles.checkboxLabel}>
-                {key === 'strollerAccess' ? 'Accès poussette' :
-                 key === 'playArea' ? 'Aire de jeux' :
-                 key === 'microwave' ? 'Micro-onde' :
-                 key === 'highChair' ? 'Chaise haute' : 'Table à langer'}
+                {getTranslatedLabel(key, 'equipment')}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Tranche d'âge - Centré */}
         <View style={styles.section}>
           <Text style={styles.label}>Tranche d'âge</Text>
           <View style={styles.centeredRow}>
             <View style={styles.radioContainer}>
-              {['0-2', '3-6', '7+'].map((age) => (
+              {ageRangeOptions.map((age) => (
                 <TouchableOpacity
                   key={age}
-                  style={[styles.radioButton, ageRanges.includes(age) && styles.radioSelected]}
+                  style={[
+                    styles.radioButton, 
+                    ageRanges.includes(age) && styles.radioSelected
+                  ]}
                   onPress={() => toggleAgeRange(age)}
                 >
-                  <Text style={[styles.radioText, ageRanges.includes(age) && styles.radioTextSelected]}>
-                    {age === '0-2' ? '0-2 ans' : age === '3-6' ? '3-6 ans' : '7 ans et plus'}
+                  <Text style={[
+                    styles.radioText, 
+                    ageRanges.includes(age) && styles.radioTextSelected
+                  ]}>
+                    {getTranslatedLabel(age, 'ageRange')}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -206,7 +247,6 @@ const AddPlaceScreen = () => {
           </View>
         </View>
 
-        {/* Localisation */}
         {location && (
           <View style={styles.section}>
             <Text style={styles.label}>Localisation</Text>
@@ -223,7 +263,7 @@ const AddPlaceScreen = () => {
                 <Marker coordinate={location}>
                   <Image
                     source={placeIcons[placeType]}
-                    style={{ width: 40, height: 40 }}
+                    style={styles.markerImage}
                   />
                 </Marker>
               </MapView>
@@ -231,28 +271,36 @@ const AddPlaceScreen = () => {
           </View>
         )}
 
-        {/* Notation */}
         <View style={styles.section}>
           <Text style={styles.label}>Note (sur 5)</Text>
           <View style={styles.ratingContainer}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <TouchableOpacity key={star} onPress={() => setRating(star)}>
-                <Text style={[styles.star, star <= rating && styles.starSelected]}>★</Text>
+            {ratingOptions.map((star) => (
+              <TouchableOpacity 
+                key={star} 
+                onPress={() => setRating(star)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={[
+                  styles.star, 
+                  star <= rating && styles.starSelected
+                ]}>★</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitText}>Ajouter le lieu</Text>
-        </TouchableOpacity>
+        <SubmitButton 
+          title="Ajouter le lieu" 
+          onPress={handleSubmit} 
+        />
       </ScrollView>
-      <Navigation></Navigation>
-    </SafeAreaView>
+      
+      <Navigation />
+    </View>
   );
 };
 
-// Styles
+// Styles optimisés avec StyleSheet.create
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -263,11 +311,14 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: colorButtonThird,
   },
+  scrollContent: {
+    paddingBottom: 40
+  },
   headerContainer: {
     marginBottom: 20,
   },
   titleContainer: {
-    alignItems: 'center', // Centre le titre horizontalement
+    alignItems: 'center',
   },
   section: {
     marginBottom: 20,
@@ -285,7 +336,15 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
   },
-  // Nouveaux styles pour le champ avec icône
+  multilineInput: {
+    height: 100,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    textAlignVertical: 'top',
+  },
   inputWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -306,16 +365,16 @@ const styles = StyleSheet.create({
   },
   centeredRow: {
     flexDirection: 'row',
-    justifyContent: 'center', // Centre le contenu horizontalement
+    justifyContent: 'center',
   },
   radioContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center', // Centre les boutons radio
+    justifyContent: 'center',
   },
   radioButton: {
     padding: 10,
-    margin: 5, // Marge uniforme
+    margin: 5,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
@@ -330,17 +389,6 @@ const styles = StyleSheet.create({
   radioTextSelected: {
     color: 'white',
   },
-  locationButton: {
-    backgroundColor: colorButtonFirst,
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: colorButtonThird,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   mapContainer: {
     height: 200,
     borderRadius: 8,
@@ -349,6 +397,10 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  markerImage: {
+    width: 40, 
+    height: 40
   },
   checkbox: {
     flexDirection: 'row',
@@ -378,26 +430,15 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     flexDirection: 'row',
-    justifyContent: 'center', // Centre les étoiles de notation
+    justifyContent: 'center',
   },
   star: {
     fontSize: 30,
     color: '#ddd',
-    marginHorizontal: 5, // Marge horizontale uniforme
+    marginHorizontal: 5,
   },
   starSelected: {
     color: '#f1c40f',
-  },
-  submitButton: {
-    backgroundColor: colorButtonFirst,
-    borderRadius: 15,
-    padding: 15,
-    alignItems: 'center',
-  },
-  submitText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 18,
   },
 });
 
