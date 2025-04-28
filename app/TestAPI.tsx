@@ -15,6 +15,7 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
 import { useLocation } from '@/context/locate';
 import addFavorite from '@/api/fetchAddFavorite';
+import deleteFavorite from '@/api/fetchDeleteFavorite';
 
 export default function PlaceScreen() {
   // favoris
@@ -40,34 +41,6 @@ export default function PlaceScreen() {
   // Chargement
   const [loading, setLoading] = useState(false);
 
-
-  async function handleFetchPlace() {
-    setLoading(true);
-    setError(false);
-    const result = await fetchPlace(77);
-    if (result === null) {
-      setError(true);
-    } else {
-      setPlace(result.data);
-      setNearbyPlaces([]);
-      setComments([]);
-    }
-    setLoading(false);
-  }
-
-  async function handleFetchNearbyPlaces() {
-    setLoading(true);
-    setError(false);
-    const result = await fetchNearbyPlaces(48.843, 2.358);
-    if (result === null) {
-      setError(true);
-    } else {
-      setNearbyPlaces(result.data);
-      setPlace(null);
-      setComments([]);
-    }
-    setLoading(false);
-  }
 
   async function handleFetchComments() {
     setLoading(true);
@@ -101,7 +74,7 @@ export default function PlaceScreen() {
     
   }
 
-  async function handleAddToFavorites(lieuId: number) {
+  async function handleDeleteToFavorites(lieuId: number) {
     try {
       // Récupérer le token depuis votre système d'authentification (localStorage, contexte, etc.)
 
@@ -114,16 +87,16 @@ export default function PlaceScreen() {
       
 
       // Appel de votre fonction
-      const response = await addFavorite(lieuId, token);
+      const response = await deleteFavorite(lieuId, token);
 
       // Traiter la réponse
-      console.log('Lieu ajouté aux favoris:', response);
+      console.log('Lieu supprimé des favoris:', response);
 
       // Afficher un message de succès à l'utilisateur
-      alert('Lieu ajouté aux favoris avec succès !');
+      alert('Lieu supprimé des favoris avec succès !');
     } catch (error) {
-      console.error('Erreur lors de l\'ajout aux favoris:', error);
-      alert('Erreur lors de l\'ajout aux favoris');
+      console.error('Erreur lors de la suppréssion  des favoris:', error);
+      alert('Erreur lors de la suppression des favoris');
     }
   }
 
@@ -155,17 +128,9 @@ export default function PlaceScreen() {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => handleAddToFavorites(2)} // Utilisez l'ID du lieu actuel
+            onPress={() => handleDeleteToFavorites(2)} // Utilisez l'ID du lieu actuel
           >
-            <Text style={styles.buttonText}>Ajouter aux favoris</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleFetchPlace}>
-            <Text style={styles.buttonText}>Charger un lieu</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleFetchNearbyPlaces}>
-            <Text style={styles.buttonText}>Lieux proches</Text>
+            <Text style={styles.buttonText}>supprime des favoris</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={handleFetchComments}>
