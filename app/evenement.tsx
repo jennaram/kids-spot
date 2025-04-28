@@ -17,6 +17,7 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import {ExitButton} from './components/ExitButton';
+import { useLocation } from '@/context/locate';
 
 const Evenement = () => {
   // État pour stocker la liste des lieux
@@ -29,6 +30,7 @@ const Evenement = () => {
   const [currentDescription, setCurrentDescription] = useState('');
   // État pour stocker le nom du lieu de la description
   const [currentNom, setCurrentNom] = useState('');
+  const { userLocation, nearbyPlaces, error, refreshLocation } = useLocation();
   
   // Référence pour les animations
   const flipAnimations = useRef<{[key: number]: Animated.Value}>({}).current;
@@ -36,28 +38,23 @@ const Evenement = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://seb-prod.alwaysdata.net/kidsspot/lieux/autour/12/12');
-        const data = await response.json();
-        
-        // Filtrer pour ne garder que les événements et initialiser les animations
-        const events = data.data.filter((l: Lieu) => l.est_evenement);
-        events.forEach((event: Lieu) => {
-          if (!flipAnimations[event.id]) {
-            flipAnimations[event.id] = new Animated.Value(0);
-          } else {
-            flipAnimations[event.id].setValue(0); // Réinitialise la valeur d'animation
-          }
-        });
-        setLieux(events);
-      } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+    // Utiliser les lieux à proximité récupérés via useLocation
+    if (nearbyPlaces) {
+      // Filtrer pour ne garder que les événements
+      const events = nearbyPlaces.filter((l) => l.est_evenement);
+      
+      // Initialiser les animations pour chaque événement
+      events.forEach((event) => {
+        if (!flipAnimations[event.id]) {
+          flipAnimations[event.id] = new Animated.Value(0);
+        } else {
+          flipAnimations[event.id].setValue(0); // Réinitialise la valeur d'animation
+        }
+      });
+      
+      setLieux(events);
+    }
+  }, [nearbyPlaces]); // La dépendance est maintenant nearbyPlaces au lieu de []
 
   const flipCard = (id: number) => {
     if (flippedCardId !== null && flippedCardId !== id) {
