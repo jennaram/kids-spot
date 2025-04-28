@@ -13,8 +13,13 @@ import { PlaceDetail } from '@/Types/placeDetail';
 import { Comment } from '@/Types/comments';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
+import { useLocation } from '@/context/locate';
+import addFavorite from '@/api/fetchAddFavorite';
 
 export default function PlaceScreen() {
+  // favoris
+  const { favorites } = useLocation();
+
   // Un lieu en détaille
   const [place, setPlace] = useState<PlaceDetail | null>(null);
 
@@ -34,7 +39,7 @@ export default function PlaceScreen() {
 
   // Chargement
   const [loading, setLoading] = useState(false);
-  
+
 
   async function handleFetchPlace() {
     setLoading(true);
@@ -91,6 +96,38 @@ export default function PlaceScreen() {
     }
   }
 
+  async function handleFavotites() {
+    console.log(favorites);
+  }
+
+  async function handleAddToFavorites(lieuId: number) {
+    try {
+      // Récupérer le token depuis votre système d'authentification (localStorage, contexte, etc.)
+
+      if (!token) {
+        Alert.alert('Erreur', 'Vous devez être connecté pour ajouter un favori');
+        return;
+      }
+
+      // ID du lieu à ajouter aux favoris
+      
+
+      // Appel de votre fonction
+      const response = await addFavorite(lieuId, token);
+
+      // Traiter la réponse
+      console.log('Lieu ajouté aux favoris:', response);
+
+      // Afficher un message de succès à l'utilisateur
+      alert('Lieu ajouté aux favoris avec succès !');
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout aux favoris:', error);
+      alert('Erreur lors de l\'ajout aux favoris');
+    }
+  }
+
+
+
   if (loading) return <ActivityIndicator />;
 
   if (error) return <ErrorScreen message="Erreur lors du chargement des données." />;
@@ -109,6 +146,17 @@ export default function PlaceScreen() {
         >
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={handleFavotites}>
+            <Text style={styles.buttonText}>Favoris</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleAddToFavorites(2)} // Utilisez l'ID du lieu actuel
+          >
+            <Text style={styles.buttonText}>Ajouter aux favoris</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={handleFetchPlace}>
