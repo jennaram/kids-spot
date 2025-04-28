@@ -151,7 +151,7 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Nom du lieu *</Text>
+          <Text style={styles.label}>Nom du lieu</Text>
           <FormInput
             label=""
             value={placeName}
@@ -186,7 +186,7 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Adresse *</Text>
+          <Text style={styles.label}>Adresse</Text>
           <View style={styles.inputWithIcon}>
             <TextInput
               style={styles.inputWithIconField}

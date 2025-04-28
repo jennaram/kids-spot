@@ -13,8 +13,12 @@ import { PlaceDetail } from '@/Types/placeDetail';
 import { Comment } from '@/Types/comments';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
+import { useLocation } from '@/context/locate';
 
 export default function PlaceScreen() {
+  // favoris
+  const { favorites } = useLocation();
+
   // Un lieu en détaille
   const [place, setPlace] = useState<PlaceDetail | null>(null);
 
@@ -34,7 +38,7 @@ export default function PlaceScreen() {
 
   // Chargement
   const [loading, setLoading] = useState(false);
-  
+
 
   async function handleFetchPlace() {
     setLoading(true);
@@ -91,6 +95,10 @@ export default function PlaceScreen() {
     }
   }
 
+  async function handleFavotites(){
+    console.log(favorites);
+  }
+
   if (loading) return <ActivityIndicator />;
 
   if (error) return <ErrorScreen message="Erreur lors du chargement des données." />;
@@ -109,6 +117,10 @@ export default function PlaceScreen() {
         >
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={handleFavotites}>
+            <Text style={styles.buttonText}>Favoris</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={handleFetchPlace}>

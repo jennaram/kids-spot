@@ -1,4 +1,5 @@
 
+// Ajoutez d'abord l'import de votre composant BottomModal
 import React, { useEffect, useState } from "react";
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -7,7 +8,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
   SafeAreaView
@@ -15,10 +15,9 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
-import Layout from "./components/LayoutNav";
 import { Share } from 'react-native';
 import { Alert, Platform, Linking } from 'react-native';
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
+import { colorButtonFirst } from './style/styles';
 import { IconesLieux } from '@/components/IconesLieux';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
@@ -29,68 +28,44 @@ import ShareButton from "../components/Lieux/ShareButton";
 import FavoriteButton from "@/components/Lieux/FavoriteButton";
 import AgeBadges from "@/components/Lieux/AgeBadges";
 import styles from "./style/DetailLieuxStyles";
+import fetchPlace from "@/api/fetchPlace";
+import { useAuth } from "@/context/auth";
+import BottomModal from "../components/ModalRedirection"; // Importez votre composant BottomModal
+
 // Interface pour les données récupérées de l'APi
 // Interface pour la réponse de l'API
 interface ApiResponse {
   status: string;
   data: Lieu;
 }
+
 const DetailsLieu = () => {
-  const router = useRouter();
   const params = useLocalSearchParams() as {id:string};
   const lieuId = params.id?.toString() || "2";
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [lieu, setLieu] = useState<Lieu | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  useEffect(() => {
-    const fetchLieuDetails = async () => {
-      try {
-        setLoading(true);
-        console.log(`Récupération des données pour l'ID: ${lieuId}`);
-        
-        const response = await fetch(`https://seb-prod.alwaysdata.net/kidsspot/lieux/${lieuId}`);
-        
-        if (!response.ok) {
-          throw new Error(`Erreur lors de la récupération des données: ${response.status}`);
-        }
-        
-        const result: ApiResponse = await response.json();
-        console.log('Données reçues:', JSON.stringify(result, null, 2));
-        
-        if (!result.data) {
-          throw new Error('Données non trouvées dans la réponse API');
-        }
-        
-        // Vérifier que les champs obligatoires sont présents
-        if (!result.data.nom || !result.data.description) {
-          throw new Error('Les données du lieu sont incomplètes');
-        }
-        
-        setLieu({
-          ...result.data,
-          // Fournir des valeurs par défaut pour les propriétés potentiellement manquantes
-          equipements: result.data.equipements || [],
-          ages: result.data.ages || [],
-          note_moyenne: result.data.note_moyenne || 0,
-          nombre_commentaires: result.data.nombre_commentaires || 0,
-          adresse: {
-            ...result.data.adresse,
-            telephone: result.data.adresse?.telephone || '',
-            site_web: result.data.adresse?.site_web || '',
-          }
-        });
-      } catch (err) {
-        console.error("Erreur lors de la récupération des détails du lieu:", err);
-        setError(`Impossible de charger les détails du lieu (ID: ${lieuId})`);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [lieu, setPlace] = useState<Lieu | null>(null);
+  const {token, setToken} = useAuth();
+  // État pour contrôler la visibilité de la modal de redirection
+  const [modalVisible, setModalVisible] = useState(false);
 
-    fetchLieuDetails();
-  }, [lieuId]);
+  async function handleFetchPlace() {
+    setLoading(true);
+    //setError(false);
+    const result = await fetchPlace(Number(lieuId));
+    if (result === null) {
+     // setError(true);
+    } else {
+      setPlace(result.data);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {handleFetchPlace()}
+  , [lieuId]);
+
+  console.log("token,", token);
 
   // Fonction de partage
   const handleShare = async () => {
@@ -112,8 +87,17 @@ const DetailsLieu = () => {
     }
   };
 
+  // Fonction modifiée pour gérer le clic sur favori en vérifiant la connexion
   function handleFavoriteToggle() {
-    console.log("Favori cliqué");
+    // Vérifier si l'utilisateur est connecté (token existe)
+    if (!token) {
+      // Si non connecté, afficher la modal de redirection
+      setModalVisible(true);
+    } else {
+      // Si connecté, effectuer l'action de favori normal
+      console.log("Favori ajouté/retiré");
+      // Ici, ajoutez votre logique pour ajouter/retirer des favoris
+    }
   }
 
   // Fonction pour gérer la navigation GPS
@@ -260,8 +244,17 @@ const DetailsLieu = () => {
           </View>
         </ScrollView>
       </View>
+      
+      {/* Modal de redirection qui s'affiche quand l'utilisateur n'est pas connecté */}
+      <BottomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title="Connectez-vous pour ajouter aux favoris"
+      />
+      
       <Navigation/>
     </SafeAreaView>
   );
 };
+
 export default DetailsLieu;
