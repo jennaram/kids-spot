@@ -51,6 +51,7 @@ const DetailsLieu = () => {
   // État pour contrôler la visibilité de la modal de redirection
   const [modalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState("Connectez-vous pour continuer");
+  
   const {isFavorite} = useIsFavorite();
   const EstFavori = isFavorite(Number(lieuId));
 

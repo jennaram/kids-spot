@@ -1,4 +1,3 @@
-// context/location/LocationContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import getUserLocation from '@/services/localisation';
 import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
@@ -23,7 +22,7 @@ const LocationContext = createContext<LocationContextType>({
   nearbyPlaces: null,
   favorites: null,
   error: null,
-  refreshLocation: () => { },
+  refreshLocation: () => {},
 });
 
 export const useLocation = () => useContext(LocationContext);
@@ -31,40 +30,54 @@ export const useLocation = () => useContext(LocationContext);
 export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [nearbyPlaces, setNearbyPlaces] = useState<any[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<any[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
-  const loadNearbyPlaces = async (lat: number, lng: number) => {
-    const placesData = await fetchNearbyPlaces(lat, lng);
-    if (placesData && placesData.status === 'success') {
-      setNearbyPlaces(placesData.data);
-    } else {
-      console.error('Erreur lors de la récupération des lieux');
+  const loadNearbyPlaces = async (latitude: number, longitude: number) => {
+    try {
+      const placesData = await fetchNearbyPlaces(latitude, longitude);
+      if (placesData?.status === 'success') {
+        setNearbyPlaces(placesData.data);
+        setError(null);
+      } else {
+        throw new Error('Échec du chargement des lieux');
+      }
+    } catch (err) {
+      console.error(err);
       setError('Erreur lors de la récupération des lieux.');
     }
   };
 
-  const fetchLocationAndPlaces = async () => {
-    const location = await getUserLocation();
-    if (location) {
-      setUserLocation(location);
-      setError(null);
-      loadNearbyPlaces(location.latitude, location.longitude);
-      if (token) {
-        loadFavorites(location.latitude, location.longitude, token); // <<< charge les favoris si connecté
+  const loadFavorites = async (latitude: number, longitude: number, token: string) => {
+    try {
+      const { statusCode, data } = await fetchNearbyFavorites(latitude, longitude, token);
+      if (statusCode >= 200 && statusCode < 300) {
+        setFavorites(data.data);
+      } else {
+        throw new Error('Erreur lors du chargement des favoris');
       }
-    } else {
-      setError("Impossible d'obtenir la localisation.");
+    } catch (err) {
+      console.error(err);
+      setFavorites(null); // Optionnel : reset si erreur
     }
   };
 
-  const loadFavorites = async (latitude :number , longitude:number, token: string) => {
-    const {statusCode, data} = await fetchNearbyFavorites(latitude, longitude, token);
-    if (statusCode) {
-      setFavorites(data);
-    } else {
-      console.error('Erreur lors de la récupération des favoris');
+  const fetchLocationAndPlaces = async () => {
+    try {
+      const location = await getUserLocation();
+      if (location) {
+        setUserLocation(location);
+        await loadNearbyPlaces(location.latitude, location.longitude);
+        if (token) {
+          await loadFavorites(location.latitude, location.longitude, token);
+        }
+      } else {
+        throw new Error("Localisation indisponible.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Impossible d'obtenir la localisation.");
     }
   };
 
@@ -72,14 +85,12 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     fetchLocationAndPlaces();
   }, []);
 
-  // Si il y a un token et la localisation
   useEffect(() => {
     if (token && userLocation) {
       loadFavorites(userLocation.latitude, userLocation.longitude, token);
     }
   }, [token, userLocation]);
 
-  // S'il n'y pas de token
   useEffect(() => {
     if (!token) {
       setFavorites(null);
