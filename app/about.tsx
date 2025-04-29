@@ -86,9 +86,9 @@ const About = () => {
             <View style={styles.buttonContainer}>
               <SubmitButton
                 title="Nous contacter"
-                onPress={() =>
-                  navigation.navigate("Contact" as keyof RootStackParamList)
-                }
+                onPress={() => navigation.navigate("contact")}
+
+
               />
             </View>
           </View>
