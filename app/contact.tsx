@@ -6,26 +6,22 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  SafeAreaView
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "./types/navigation"; 
+import { RootStackParamList } from "./types/navigation";
 import Layout from "./components/LayoutNav";
-// import MenuBurger from "./components/menuburger";
 import { Title } from '@/components/Title';
 import { 
-  colorButtonFirst, 
-  colorButtonSecondary, 
   colorButtonThird, 
-  colorFourth, 
-  fontSubtitle,
-  fontTitle 
+  colorFourth
 } from './style/styles';
 import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-const teamMembers = [
+// Données de l'équipe
+const TEAM_MEMBERS = [
   {
     name: "Jenna Ramiaramanantsoa",
     github: "https://github.com/jennaram",
@@ -53,8 +49,53 @@ const teamMembers = [
   },
 ];
 
-export default function ContactScreen() {
+// Constantes pour les icônes
+const ICONS = {
+  github: {
+    name: "github",
+    color: "black"
+  },
+  linkedin: {
+    name: "linkedin",
+    color: "#0077B5"
+  }
+};
+
+const ContactScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  // Composant pour un membre de l'équipe
+  const TeamMember = ({ member }: { member: typeof TEAM_MEMBERS[0] }) => (
+    <View style={styles.member}>
+      <Text style={styles.name}>{member.name}</Text>
+      <View style={styles.iconsContainer}>
+        <SocialIcon 
+          type="github" 
+          url={member.github} 
+        />
+        <SocialIcon 
+          type="linkedin" 
+          url={member.linkedin} 
+        />
+      </View>
+    </View>
+  );
+
+  // Composant pour une icône sociale
+  const SocialIcon = ({ type, url }: { type: keyof typeof ICONS, url: string }) => (
+    <TouchableOpacity 
+      onPress={() => Linking.openURL(url)}
+      style={styles.iconButton}
+      activeOpacity={0.7}
+    >
+      <FontAwesome
+        name={ICONS[type].name}
+        size={24}
+        color={ICONS[type].color}
+        style={styles.icon}
+      />
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -70,44 +111,17 @@ export default function ContactScreen() {
           <Title text="Contactez-nous" />
           
           <View style={styles.content}>
-            
-            
-            {teamMembers.map((member) => (
-              <View key={member.name} style={styles.member}>
-                <Text style={styles.name}>{member.name}</Text>
-                <View style={styles.iconsContainer}>
-                  <TouchableOpacity 
-                    onPress={() => Linking.openURL(member.github)}
-                    style={styles.iconButton}
-                  >
-                    <FontAwesome
-                      name="github"
-                      size={24}
-                      color="black"
-                      style={styles.icon}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    onPress={() => Linking.openURL(member.linkedin)}
-                    style={styles.iconButton}
-                  >
-                    <FontAwesome
-                      name="linkedin"
-                      size={24}
-                      color="#0077B5"
-                      style={styles.icon}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
+            {TEAM_MEMBERS.map((member) => (
+              <TeamMember key={member.name} member={member} />
             ))}
           </View>
         </ScrollView>
       </Layout>
     </SafeAreaView>
   );
-}
+};
 
+// Styles
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -120,13 +134,6 @@ const styles = StyleSheet.create({
   },
   content: {
     marginTop: 20,
-  },
-  subtitle: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: "center",
-    color: "black",
-    fontWeight: 'bold',
   },
   member: {
     flexDirection: "row",
@@ -143,6 +150,7 @@ const styles = StyleSheet.create({
   },
   iconsContainer: {
     flexDirection: "row",
+    gap: 8,
   },
   iconButton: {
     padding: 8,
@@ -151,3 +159,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
 });
+
+export default ContactScreen;
