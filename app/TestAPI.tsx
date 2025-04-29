@@ -14,8 +14,8 @@ import { Comment } from '@/Types/comments';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
 import { useLocation } from '@/context/locate';
-import addFavorite from '@/api/fetchAddFavorite';
-import deleteFavorite from '@/api/fetchDeleteFavorite';
+import { useIsFavorite } from '@/hooks/useIsFavorite';
+import { deleteFavorite } from '@/api/favoritesServices';
 
 export default function PlaceScreen() {
   // favoris
@@ -75,29 +75,43 @@ export default function PlaceScreen() {
   }
 
   async function handleDeleteToFavorites(lieuId: number) {
-    try {
-      // Récupérer le token depuis votre système d'authentification (localStorage, contexte, etc.)
-
-      if (!token) {
-        Alert.alert('Erreur', 'Vous devez être connecté pour ajouter un favori');
-        return;
-      }
-      
-      // ID du lieu à ajouter aux favoris
-      
-
-      // Appel de votre fonction
-      const response = await deleteFavorite(lieuId, token);
-
-      // Traiter la réponse
-      console.log('Lieu supprimé des favoris:', response);
-
-      // Afficher un message de succès à l'utilisateur
-      alert('Lieu supprimé des favoris avec succès !');
-    } catch (error) {
-      console.error('Erreur lors de la suppréssion  des favoris:', error);
-      alert('Erreur lors de la suppression des favoris');
+    if (!token) {
+      Alert.alert("Erreur", "Vous devez être connecté.");
+      return;
     }
+  
+    try {
+      const { statusCode, data } = await deleteFavorite(lieuId, token);
+  
+      if (statusCode === 204 && data?.status === "success") {
+        Alert.alert("Succès", data.message || "Favori supprimé !");
+      } else {
+        Alert.alert("Erreur", data?.message || `Erreur ${statusCode}`);
+      }
+    } catch (error) {
+      console.error("Erreur suppression favori:", error);
+      Alert.alert("Erreur", "Une erreur réseau est survenue.");
+    }
+
+
+    const MonComposant = () => {
+      const { isFavorite } = useIsFavorite();
+    
+      const lieuId = 1; // l'id que tu veux tester
+    
+      const favori = isFavorite(lieuId);
+    
+      console.log(favori); // true ou false
+      return (
+        <Text>{favori ? "Ce lieu est en favori" : "Ce lieu n'est pas en favori"}</Text>
+      );
+    };
+
+
+
+
+
+
   }
 
 
