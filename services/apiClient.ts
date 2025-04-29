@@ -70,3 +70,22 @@ export async function apiDelete(endpoint: string, body: object, token?: string):
     throw error;
   }
 }
+
+// --- PUT ---
+export async function apiPut(endpoint: string, body: object, token?: string): Promise<ApiResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+      method: 'PUT',
+      headers: getHeaders(token),
+      body: JSON.stringify(body),
+    });
+
+    const statusCode = response.status;
+    const data = await response.json();
+
+    return { statusCode, data };
+  } catch (error) {
+    console.error('Erreur API PUT:', error);
+    throw error;
+  }
+}
