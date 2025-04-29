@@ -32,19 +32,18 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingVertical: 10,
+    position: 'relative', // Pour permettre le positionnement absolu de l'icône
   },
   headerContainer: {
-    flexDirection: 'row',
+    position: 'relative', // Pour le positionnement des éléments à l'intérieur
     alignItems: 'center',
     marginBottom: 15,
-    justifyContent: 'center', // Centre l'ensemble du contenu dans le header
-  },
-  iconTitleContainer: {
-    flexDirection: 'row',   // Aligne l'icône et le titre sur la même ligne
-    justifyContent: 'center', // Centre l'icône et le titre
-    alignItems: 'center',   // Centre verticalement l'icône et le titre
+    paddingTop: 10, // Espace en haut pour l'icône
   },
   popupIcon: {
+    position: 'absolute',
+    top: -30,
+    right: -5,
     width: 40,
     height: 40,
     borderRadius: 25, // Cercle autour de l'icône
@@ -56,6 +55,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+    width: '80%', // Évite que le titre n'aille jusqu'à l'icône
   },
   cultureBackground: {
     backgroundColor: '#ff9770', // Culture : couleur orange

@@ -110,17 +110,19 @@ const PlacePopUp: React.FC<PlacePopUpProps> = ({
           <View style={styles.handle} />
           <View style={styles.content}>
             <View style={styles.headerContainer}>
-              <Row style={[
+              <Text style={styles.popupTitle}>{place.nom}</Text>
+              
+              {/* L'icône est maintenant positionnée à droite grâce au style */}
+              <View style={[
                 styles.popupIcon,
                 getIconBackgroundStyle(place.type[0].nom)
               ]}>
                 <Image
                   source={iconByType[place.type[0].nom]}
-                  style={styles.popupIcon}
+                  style={{ width: 24, height: 24 }}
                   resizeMode="contain"
                 />
-              </Row>
-              <Text style={styles.popupTitle}>{place.nom}</Text>
+              </View>
             </View>
 
             <View style={styles.infoContainer}>
