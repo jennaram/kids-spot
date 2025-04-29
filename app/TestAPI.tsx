@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, ScrollView, Button, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import fetchPlace from '../api/fetchPlace';
-import fetchNearbyPlaces from '../api/fetchNearbyPlaces';
-import fetchComments from '../api/fetchComments';
+
+import { View, Text, ActivityIndicator, ScrollView, Button, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react-native';
 import ErrorScreen from '@/components/ErrorScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
@@ -10,12 +7,12 @@ import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { Place } from '@/Types/place';
 import { PlaceDetail } from '@/Types/placeDetail';
-import { Comment } from '@/Types/comments';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
 import { useLocation } from '@/context/locate';
-import { useIsFavorite } from '@/hooks/useIsFavorite';
-import { deleteFavorite } from '@/api/favoritesServices';
+import { useState } from 'react';
+import { fetchAllComments } from '@/api/commentsServices';
+import { useReadAllComments } from '@/hooks/comments/useAllComments';
 
 export default function PlaceScreen() {
   // favoris
@@ -28,34 +25,21 @@ export default function PlaceScreen() {
   const [nearbyPlaces, setNearbyPlaces] = useState<Place[]>([]);
 
   // Commentaire d'un lieu
-  const [comments, setComments] = useState<Comment[]>([]);
+
   // Note du lieux
   const [averageNote, setAverageNote] = useState<string | null>(null);
 
   // Erreurs
-  const [error, setError] = useState(false);
+
 
   // Token lors du login
   const { token, setToken } = useAuth();
 
   // Chargement
-  const [loading, setLoading] = useState(false);
 
 
-  async function handleFetchComments() {
-    setLoading(true);
-    setError(false);
-    const result = await fetchComments(2);
-    if (result === null) {
-      setError(true);
-    } else {
-      setComments(result.data.commentaires);
-      setAverageNote(result.data.moyenne_notes);
-      setPlace(null);
-      setNearbyPlaces([]);
-    }
-    setLoading(false);
-  }
+
+
 
   async function handleLogin() {
     const email = 'seb.prod@gmail.com';  // Utilisateur d'exemple
@@ -69,50 +53,20 @@ export default function PlaceScreen() {
     }
   }
 
-  async function handleFavorites() {
-    console.log(favorites);
-    
-  }
+  const { comments, loading, error } = useReadAllComments(1); // par exemple
 
-  async function handleDeleteToFavorites(lieuId: number) {
-    if (!token) {
-      Alert.alert("Erreur", "Vous devez être connecté.");
-      return;
-    }
-  
-    try {
-      const { statusCode, data } = await deleteFavorite(lieuId, token);
-  
-      if (statusCode === 204 && data?.status === "success") {
-        Alert.alert("Succès", data.message || "Favori supprimé !");
-      } else {
-        Alert.alert("Erreur", data?.message || `Erreur ${statusCode}`);
-      }
-    } catch (error) {
-      console.error("Erreur suppression favori:", error);
-      Alert.alert("Erreur", "Une erreur réseau est survenue.");
-    }
+  if (loading) return <Text>Chargement...</Text>;
+  if (error) return <Text>{error}</Text>;
 
-
-    const MonComposant = () => {
-      const { isFavorite } = useIsFavorite();
-    
-      const lieuId = 1; // l'id que tu veux tester
-    
-      const favori = isFavorite(lieuId);
-    
-      console.log(favori); // true ou false
-      return (
-        <Text>{favori ? "Ce lieu est en favori" : "Ce lieu n'est pas en favori"}</Text>
-      );
-    };
-
-
+  async function handleGetComment() {
 
 
 
 
   }
+
+
+
 
 
 
@@ -136,65 +90,26 @@ export default function PlaceScreen() {
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={handleFavorites}>
-            <Text style={styles.buttonText}>Favoris</Text>
+          <TouchableOpacity style={styles.button} onPress={handleGetComment}>
+            <Text style={styles.buttonText}>lire commentaire</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => handleDeleteToFavorites(2)} // Utilisez l'ID du lieu actuel
-          >
-            <Text style={styles.buttonText}>supprime des favoris</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={handleFetchComments}>
-            <Text style={styles.buttonText}>Commentaires</Text>
-          </TouchableOpacity>
         </ScrollView>
       </View>
+      <FlatList
+        data={comments}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.commentaire}</Text>
+            <Text>{item.note}/5</Text>
+            <Text>{item.user.pseudo}</Text>
+            <Text>{item.date.ajout}</Text>
+          </View>
+        )}
+      />
 
-      {/* Contenu principal qui prend l'espace restant */}
-      <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ padding: 16 }}>
-          {place && (
-            <View style={{ marginBottom: 20 }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{place.nom}</Text>
-              <Text>Description: {place.description}</Text>
-              <Text>Adresse: {place.adresse?.adresse}, {place.adresse?.ville}</Text>
-            </View>
-          )}
-
-          {nearbyPlaces.length > 0 && nearbyPlaces.map((p) => (
-            <View key={p.id} style={{ marginBottom: 20 }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{p.nom}</Text>
-              <Text>Description: {p.description}</Text>
-              <Text>Adresse: {p.adresse?.adresse}, {p.adresse?.ville}</Text>
-            </View>
-          ))}
-
-          {comments.length > 0 && (
-            <View style={{ marginTop: 20 }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Commentaires :</Text>
-
-              {averageNote && (
-                <Text style={{ fontSize: 16, color: 'orange', marginBottom: 10 }}>
-                  Note moyenne : {parseFloat(averageNote).toFixed(1)}/5
-                </Text>
-              )}
-
-              {comments.map((commentaire) => (
-                <View key={commentaire.id} style={{ marginBottom: 10 }}>
-                  <Text style={{ fontStyle: 'italic' }}>"{commentaire.commentaire}"</Text>
-                  <Text>Note : {commentaire.note}/5</Text>
-                  <Text style={{ fontSize: 12, color: 'gray' }}>
-                    Par {commentaire.user.pseudo} le {commentaire.date.ajout}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </ScrollView>
-      </View>
 
       <Navigation />
     </SafeAreaView>
