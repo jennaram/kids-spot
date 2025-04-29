@@ -13,7 +13,9 @@ import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from '@/components/Title';
 import AgeBadges from '@/components/Lieux/AgeBadges';
 import InputField from '@/app/components/Form/InputField'; // Import du composant InputField
-import SubmitButton from '@/app/components/Form/SubmitButton'; // Import du composant SubmitButton
+import SubmitButton from '@/app/components/Form/SubmitButton';
+import { styles } from '@/app/style/profil.styles';
+ 
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({
@@ -124,61 +126,4 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colorButtonThird, 
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: 40,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 25,
-    paddingTop: 30,
-  },
-  formContainer: {
-    width: '100%',
-    backgroundColor: 'white',
-    //borderRadius: 12,
-    padding: 20,
-    //shadowColor: '#000',
-    //shadowOffset: { width: 0, height: 1 },
-    //shadowOpacity: 0.1,
-    //shadowRadius: 3,
-    //elevation: 2,
-  },
-  label: {
-    fontSize: 14,
-    color: 'black',
-    marginBottom: 5,
-    fontWeight: '500',
-  },
-  submitButton: {
-    height: 50,
-    backgroundColor: colorButtonFirst,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: colorButtonThird,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  ageContainerStyle: {
-    marginBottom: 25,
-  },
-  ageBadgeStyle: {
-    backgroundColor: '#007BFF', // couleur bleue pour les badges d'âge
-  },
-  ageBadgeTextStyle: {
-    color: 'white',
-  },
 
-  inputGroup: {
-    marginBottom: 15,
-  },
-});
