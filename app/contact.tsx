@@ -6,19 +6,17 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
-import Layout from "./components/LayoutNav";
-import { Title } from '@/components/Title';
-import { 
-  colorButtonThird, 
-  colorFourth
-} from './style/styles';
+import { Title } from "@/components/Title";
+import { colorButtonThird, colorFourth } from "./style/styles";
 import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
+import { Navigation } from "@/components/NavBar/Navigation";
+import { styles } from '@/app/style/contact.styles'; 
 
 // Données de l'équipe
 const TEAM_MEMBERS = [
@@ -50,114 +48,74 @@ const TEAM_MEMBERS = [
 ];
 
 // Constantes pour les icônes
-const ICONS = {
-  github: {
-    name: "github",
-    color: "black"
-  },
-  linkedin: {
-    name: "linkedin",
-    color: "#0077B5"
-  }
+const ICONS: {
+  github: { name: 'github'; color: string };
+  linkedin: { name: 'linkedin'; color: string };
+} = {
+  github: { name: 'github', color: 'black' },
+  linkedin: { name: 'linkedin', color: '#0077B5' },
 };
 
 const ContactScreen = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   // Composant pour un membre de l'équipe
-  const TeamMember = ({ member }: { member: typeof TEAM_MEMBERS[0] }) => (
+  const TeamMember = ({ member }: { member: (typeof TEAM_MEMBERS)[0] }) => (
     <View style={styles.member}>
       <Text style={styles.name}>{member.name}</Text>
       <View style={styles.iconsContainer}>
-        <SocialIcon 
-          type="github" 
-          url={member.github} 
-        />
-        <SocialIcon 
-          type="linkedin" 
-          url={member.linkedin} 
-        />
+        <SocialIcon type="github" url={member.github} />
+        <SocialIcon type="linkedin" url={member.linkedin} />
       </View>
     </View>
   );
 
   // Composant pour une icône sociale
-  const SocialIcon = ({ type, url }: { type: keyof typeof ICONS, url: string }) => (
-    <TouchableOpacity 
-      onPress={() => Linking.openURL(url)}
-      style={styles.iconButton}
-      activeOpacity={0.7}
-    >
-      <FontAwesome
-        name={ICONS[type].name}
-        size={24}
-        color={ICONS[type].color}
-        style={styles.icon}
-      />
-    </TouchableOpacity>
-  );
+  const SocialIcon = ({
+    type,
+    url,
+  }: {
+    type: keyof typeof ICONS;
+    url: string;
+  }) => {
+    const iconName = ICONS[type].name;
+    if (!['github', 'linkedin'].includes(iconName)) {
+      throw new Error(`Nom d'icône invalide : ${iconName}`);
+    }
+  
+    return (
+      <TouchableOpacity
+        onPress={() => Linking.openURL(url)}
+        style={styles.iconButton}
+        activeOpacity={0.7}
+      >
+        <FontAwesome
+          name={iconName}
+          size={24}
+          color={ICONS[type].color}
+          style={styles.icon}
+        />
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BurgerMenu/>
-      <Layout
-        activeTab="undefined"
-        onMapPress={() => navigation.navigate("Map")}
-        onCalendarPress={() => navigation.navigate("Calendar")}
-        onAddPress={() => navigation.navigate("Add")}
-        onFavoritePress={() => navigation.navigate("Favorites")}
-      >
-        <ScrollView contentContainerStyle={styles.container}>
-          <Title text="Contactez-nous" />
-          
-          <View style={styles.content}>
-            {TEAM_MEMBERS.map((member) => (
-              <TeamMember key={member.name} member={member} />
-            ))}
-          </View>
-        </ScrollView>
-      </Layout>
+      <BurgerMenu />
+      <ScrollView contentContainerStyle={styles.container}>
+        <Title text="Contactez-nous" />
+        <View style={styles.content}>
+          {TEAM_MEMBERS.map((member) => (
+            <TeamMember key={member.name} member={member} />
+          ))}
+        </View>
+      </ScrollView>
+      <Navigation />
     </SafeAreaView>
   );
 };
 
-// Styles
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colorButtonThird,
-  },
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: colorButtonThird,
-  },
-  content: {
-    marginTop: 20,
-  },
-  member: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 15,
-    padding: 15,
-    backgroundColor: colorFourth,
-    borderRadius: 10,
-  },
-  name: {
-    fontSize: 16,
-    flex: 1,
-  },
-  iconsContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  iconButton: {
-    padding: 8,
-  },
-  icon: {
-    marginHorizontal: 5,
-  },
-});
+
 
 export default ContactScreen;
