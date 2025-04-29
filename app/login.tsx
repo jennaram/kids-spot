@@ -66,9 +66,9 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
-    androidClientId: "VOTRE_CLIENT_ID_ANDROID",
-    iosClientId: "VOTRE_CLIENT_ID_IOS",
-    webClientId: "VOTRE_CLIENT_ID_WEB",
+    androidClientId: "1073460181573-2v9257m6kj3qmhbh4s76257257257257.apps.googleusercontent.com",
+    iosClientId: "1073460181573-2v9257m6kj3qmhbh4s76257257257257.apps.googleusercontent.com",
+    webClientId: "1073460181573-2v9257m6kj3qmhbh4s76257257257257.apps.googleusercontent.com"
   });
 
   useEffect(() => {
@@ -181,7 +181,6 @@ export default function LoginScreen() {
               onChangeText={(text) => handleInputChange('email', text)}
               placeholder="email@exemple.com"
               keyboardType="email-address"
-              autoCapitalize="none"
             />
 
             <InputField
@@ -201,7 +200,7 @@ export default function LoginScreen() {
             <InLineLink
               text="Mot de passe oublié ?"
               onPress={() => router.push('/forgotpassword')}
-              style={styles.forgotPasswordLink}
+              centered={true}
             />
 
             <FormSeparator />

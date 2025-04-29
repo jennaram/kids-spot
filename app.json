@@ -50,7 +50,7 @@
     },
     "runtimeVersion": "1.0.0",
     "cli": {
-      "appVersionSource": "remote"
+      "appVersionSource": "local"
     },
     "updates": {
       "url": "https://u.expo.dev/c5b48353-099a-4910-8ccf-d4a7060bfbd9",
