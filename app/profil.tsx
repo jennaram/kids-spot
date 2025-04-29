@@ -2,17 +2,16 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   ScrollView,
 } from 'react-native';
 import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
-import { fontTitle } from './style/styles';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from '@/components/Title';
+import InputField from '@/app/components/Form/InputField'; // Import de InputField
+import SubmitButton from '@/app/components/Form/SubmitButton'; // Import de SubmitButton
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({
@@ -31,89 +30,60 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Menu burger */}
-      
-      <BurgerMenu/>
-      <Title text={'Mon Profil'}/>
-
+      <BurgerMenu />
+      <Title text={'Mon Profil'} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          
-
           <View style={styles.formContainer}>
+            {/* Pseudonyme */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Pseudonyme</Text>
-              <TextInput
-                style={styles.input}
-                value={userData.pseudo}
-                editable={false}
-              />
+              <InputField value={userData.pseudo} editable={false} />
             </View>
 
+            {/* Mot de passe */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Mot de passe</Text>
-              <TextInput
-                style={styles.input}
-                value={userData.password}
-                editable={false}
-                secureTextEntry
-              />
+              <InputField value={userData.password} editable={false} secureTextEntry />
             </View>
 
+            {/* Email */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Adresse e-mail</Text>
-              <TextInput
-                style={styles.input}
-                value={userData.email}
-                editable={false}
-              />
+              <InputField value={userData.email} editable={false} />
             </View>
 
+            {/* Téléphone */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Téléphone</Text>
-              <TextInput
-                style={styles.input}
-                value={userData.phone}
-                editable={false}
-              />
+              <InputField value={userData.phone} editable={false} />
             </View>
 
+            {/* Nombre d'enfants */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Nombre d'enfants</Text>
-              <TextInput
-                style={styles.input}
-                value={userData.childrenCount.toString()}
-                editable={false}
-              />
+              <InputField value={userData.childrenCount.toString()} editable={false} />
             </View>
 
+            {/* Âge des enfants */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Âge des enfants</Text>
-              <Text style={styles.sliderValue}>
-                {userData.childrenAges} ans
-              </Text>
+              <Text style={styles.sliderValue}>{userData.childrenAges} ans</Text>
             </View>
 
+            {/* Nombre d'avis */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Nombre d'avis rédigés</Text>
-              <TextInput
-                style={styles.input}
-                value={userData.reviewsCount.toString()}
-                editable={false}
-              />
+              <InputField value={userData.reviewsCount.toString()} editable={false} />
             </View>
 
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={handlePasswordChange}
-            >
-              <Text style={styles.submitButtonText}>Changer de mot de passe</Text>
-            </TouchableOpacity>
+            {/* Bouton pour changer le mot de passe */}
+            <SubmitButton onPress={handlePasswordChange} title="Changer de mot de passe" />
           </View>
         </View>
       </ScrollView>
-      <Navigation></Navigation>
+      <Navigation />
     </SafeAreaView>
   );
 }
@@ -121,11 +91,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colorButtonThird,
-  },
-  header: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
     backgroundColor: colorButtonThird,
   },
   scrollContent: {
@@ -136,13 +101,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 25,
     paddingTop: 30,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#333',
   },
   formContainer: {
     width: '100%',
@@ -164,32 +122,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontWeight: '500',
   },
-  input: {
-    height: 50,
-    backgroundColor: colorButtonThird,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    fontSize: 16,
-  },
   sliderValue: {
     textAlign: 'center',
     marginTop: 5,
     fontSize: 16,
     color: '#333',
-  },
-  submitButton: {
-    height: 50,
-    backgroundColor: colorButtonFirst,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: colorButtonThird,
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
