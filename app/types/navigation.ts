@@ -3,6 +3,7 @@ export type RootStackParamList = {
     Calendar: undefined;
     Add: undefined;
     Favorites: undefined;
+    contact: undefined;
     // Ajoutez d'autres écrans ici au besoin
   };
   
