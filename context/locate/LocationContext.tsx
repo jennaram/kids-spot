@@ -2,8 +2,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import getUserLocation from '@/services/localisation';
 import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
-import fetchFavorites from '@/api/fetchFavorites';
 import { useAuth } from '@/context/auth/AuthContext';
+import { fetchNearbyFavorites } from '@/api/favoritesServices';
 
 type Location = {
   latitude: number;
@@ -60,9 +60,9 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const loadFavorites = async (latitude :number , longitude:number, token: string) => {
-    const favoritesData = await fetchFavorites(latitude, longitude, token);
-    if (favoritesData && favoritesData.status === 'success') {
-      setFavorites(favoritesData.data);
+    const {statusCode, data} = await fetchNearbyFavorites(latitude, longitude, token);
+    if (statusCode) {
+      setFavorites(data);
     } else {
       console.error('Erreur lors de la récupération des favoris');
     }

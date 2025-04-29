@@ -98,11 +98,7 @@ const DetailsLieu = () => {
       // Si non connecté, afficher la modal de redirection
       setModalTitle("Connectez-vous pour ajouter aux favoris");
       setModalVisible(true);
-    } else {
-      // Si connecté, effectuer l'action de favori normal
-      console.log("Favori ajouté/retiré");
-      // Ici, ajoutez votre logique pour ajouter/retirer des favoris
-    }
+    } 
   }
   function handleDonnerAvis() {
     if (!token) {
