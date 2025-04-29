@@ -31,6 +31,7 @@ import styles from "./style/DetailLieuxStyles";
 import fetchPlace from "@/api/fetchPlace";
 import { useAuth } from "@/context/auth";
 import BottomModal from "../components/ModalRedirection"; // Importez votre composant BottomModal
+import { useIsFavorite } from "@/hooks/useIsFavorite";
 
 // Interface pour les données récupérées de l'APi
 // Interface pour la réponse de l'API
@@ -50,6 +51,8 @@ const DetailsLieu = () => {
   // État pour contrôler la visibilité de la modal de redirection
   const [modalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState("Connectez-vous pour continuer");
+  const {isFavorite} = useIsFavorite();
+  const EstFavori = isFavorite(Number(lieuId));
 
   async function handleFetchPlace() {
     setLoading(true);
@@ -208,7 +211,7 @@ const DetailsLieu = () => {
             />
             {/* Bouton favori positionné directement dans le conteneur d'image */}
             <FavoriteButton
-              onToggle={handleFavoriteToggle} idPlace={Number(lieuId)}/>
+              onToggle={handleFavoriteToggle} idPlace={Number(lieuId)} initialState={EstFavori}/>
           </View>
 
           {/* Contenu principal */}

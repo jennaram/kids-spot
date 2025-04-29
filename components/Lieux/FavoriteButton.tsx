@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from "@/context/auth"; // Importez votre contexte d'authentification
-import addFavorite  from '@/api/fetchAddFavorite'; // Assurez-vous que le chemin est correct
 import { Alert } from 'react-native';
 import { useLocation } from '@/context/locate';
+import { addFavorite, deleteFavorite } from '@/api/favoritesServices';
 type FavoriteButtonProps = {
   idPlace: number;
-  initialState?: boolean;
+  initialState: boolean;
   onToggle?: (newState: boolean) => void;
   position?: { top: number; right: number };
   iconSize?: number;
@@ -38,16 +38,18 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
       }
       return;
     }
-    const response = await addFavorite(idPlace, token);
-    console.log('response', response);
+  
 
-    console.log('id', idPlace);
-    Alert.alert('Succès', 'Lieu ajouté aux favoris avec succès !');
-    // Si l'utilisateur est connecté, changer l'état normalement
-    const newState = !isFavorite;
-    setIsFavorite(newState);
+    if (!isFavorite) {
+      const reponse = await addFavorite(idPlace, token);
+    setIsFavorite(true);
+    } else {
+      const reponse = await deleteFavorite(idPlace, token);
+      setIsFavorite(false);
+    }
+
     if (onToggle) {
-      onToggle(newState);
+      onToggle(isFavorite);
     }
   } catch (error) {
     console.error('Erreur lors de l\'ajout aux favoris:', error);
