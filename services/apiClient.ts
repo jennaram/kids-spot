@@ -1,29 +1,72 @@
 import { API_BASE_URL } from '@/api/apiConfig';
 
-export async function apiGet(endpoint: string, token?: string): Promise<any | null> {
+type ApiResponse = {
+  statusCode: number;
+  data: any; // Tu peux remplacer `any` par une interface plus précise si tu veux
+};
+
+const getHeaders = (token?: string) => ({
+  'Content-Type': 'application/json',
+  ...(token && { Authorization: `Bearer ${token}` }),
+});
+
+// --- GET ---
+export async function apiGet(endpoint: string, token?: string): Promise<ApiResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { 'Authorization': `Bearer ${token}` }),
-      },
+      headers: getHeaders(token),
     });
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.warn(`404: ${endpoint} introuvable.`);
-      } else {
-        console.error(`Erreur HTTP ${response.status}: ${endpoint}`);
-      }
-      return null;
+    const statusCode = response.status;
+    const data = await response.json();
+
+    return { statusCode, data };
+  } catch (error) {
+    console.error('Erreur API GET:', error);
+    throw error;
+  }
+}
+
+// --- POST ---
+export async function apiPost(endpoint: string, body: object, token?: string): Promise<ApiResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(body),
+    });
+
+    const statusCode = response.status;
+    const data = await response.json();
+
+    return { statusCode, data };
+  } catch (error) {
+    console.error('Erreur API POST:', error);
+    throw error;
+  }
+}
+
+// --- DELETE ---
+export async function apiDelete(endpoint: string, body: object, token?: string): Promise<ApiResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+      method: 'DELETE',
+      headers: getHeaders(token),
+      body: JSON.stringify(body),
+    });
+
+    const statusCode = response.status;
+
+    if (statusCode === 204) {
+      return { statusCode, data: null };
     }
 
     const data = await response.json();
-    return data;
 
+    return { statusCode, data };
   } catch (error) {
-    console.error("Erreur réseau:", error);
-    return null;
+    console.error('Erreur API DELETE:', error);
+    throw error;
   }
 }
