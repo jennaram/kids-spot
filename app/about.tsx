@@ -15,8 +15,9 @@ import { RootStackParamList } from "./types/navigation";
 import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
 import { Title } from "@/components/Title";
 import { SubmitButton } from "@/app/components/Form/SubmitButton";
-import { colorButtonFirst, colorButtonThird } from "./style/styles";
 import { Navigation } from "@/components/NavBar/Navigation";
+import { styles } from "@/app/style/about.styles"; // adapte le chemin si besoin
+
 
 const About = () => {
   const navigation =
@@ -101,63 +102,6 @@ const About = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colorButtonThird,
-  },
-  outerContainer: {
-    flex: 1,
-    position: "relative",
-  },
-  scrollContent: {
-    paddingBottom: 60, // correspond à la hauteur de la navbar
-  },
-  container: {
-    padding: 20,
-    backgroundColor: colorButtonThird,
-  },
-  textContainer: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 15,
-    marginTop: 10,
-    marginBottom: 15,
-  },
-  description: {
-    fontSize: 15,
-    lineHeight: 22,
-    marginBottom: 8,
-    color: "#555",
-    textAlign: "center",
-  },
-  bold: {
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: colorButtonFirst,
-    textAlign: "center",
-  },
-  bulletPoint: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 8,
-  },
-  bulletText: {
-    fontSize: 15,
-    lineHeight: 20,
-    marginLeft: 10,
-    color: "#555",
-    flex: 1,
-    flexWrap: "wrap",
-    maxWidth: "100%",
-  },
-  buttonContainer: {
-    marginBottom: 0, // évite l’espace sous le bouton
-  },
-});
+
 
 export default About;
