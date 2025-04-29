@@ -50,7 +50,6 @@ export function BackButton({ navigateTo, onPress, style, imageStyle }: BackButto
 
 const styles = StyleSheet.create({
     backButton: {
-        position: 'absolute',
         top: Platform.OS === 'ios' ? 50 : 30,
         left: 20,
         zIndex: 10,

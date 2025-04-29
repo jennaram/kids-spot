@@ -138,6 +138,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
+  backButton:{
+    top: 0,
+    left: 15,
+  }
 });
 
 export default styles;

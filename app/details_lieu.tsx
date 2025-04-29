@@ -32,6 +32,7 @@ import fetchPlace from "@/api/fetchPlace";
 import { useAuth } from "@/context/auth";
 import BottomModal from "../components/ModalRedirection"; // Importez votre composant BottomModal
 import { useIsFavorite } from "@/hooks/useIsFavorite";
+import BackButton from "./components/BackButton";
 
 // Interface pour les données récupérées de l'APi
 // Interface pour la réponse de l'API
@@ -195,7 +196,7 @@ const DetailsLieu = () => {
   const imageUrl = lieu.image_url || require("../assets/images/parc_montsouris.jpg");
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BurgerMenu/>
+      <BackButton style={styles.backButton}/>
       <View style={styles.mainContainer}>
         {/* Contenu scrollable */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
