@@ -1,6 +1,6 @@
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
@@ -20,7 +20,7 @@ const About = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
-    <View style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
       <BurgerMenu/>
       <Layout
         activeTab="undefined"
@@ -86,7 +86,7 @@ const About = () => {
           </TouchableOpacity>
         </ScrollView>
       </Layout>
-    </View>
+    </SafeAreaView>
   );
 };
 
