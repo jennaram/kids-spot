@@ -43,13 +43,13 @@ const styles = StyleSheet.create({
   popupIcon: {
     position: 'absolute',
     top: -30,
-    right: -5,
+    left: 0, // Modifiez cette ligne
     width: 40,
     height: 40,
-    borderRadius: 25, // Cercle autour de l'icône
-    justifyContent: 'center', // Centre l'icône dans le cercle
-    alignItems: 'center', // Centre l'icône dans le cercle
-    elevation: 10, // Ajoute de l'ombre pour l'effet de profondeur
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 10,
   },
   popupTitle: {
     fontSize: 18,
