@@ -28,7 +28,7 @@ export const AvisButton: React.FC<AvisButtonProps> = ({ type, nomLieu, lieuId, o
       return; // Arrêter si onBeforeAction retourne false
     }
     
-    const path = type === 'donner' ? '/avis' : '/ReadReviews';
+    const path = type === 'donner' ? '/avis' : '/ReadComments';
     router.push({
       pathname: path,
       params: { nomLieu, lieuId },
