@@ -1,7 +1,7 @@
 
 // Ajoutez d'abord l'import de votre composant BottomModal
 import React, { useEffect, useState } from "react";
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -20,7 +20,6 @@ import { Alert, Platform, Linking } from 'react-native';
 import { colorButtonFirst } from './style/styles';
 import { IconesLieux } from '@/components/IconesLieux';
 import { Navigation } from "@/components/NavBar/Navigation";
-import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Lieu } from "./types/lieu";
 import { AvisButton } from "../components/Lieux/AvisButton";
 import LieuActionButtons from "../components/Lieux/LieuActionButtons";
@@ -34,12 +33,6 @@ import BottomModal from "../components/ModalRedirection"; // Importez votre comp
 import { useIsFavorite } from "@/hooks/useIsFavorite";
 import BackButton from "./components/BackButton";
 
-// Interface pour les données récupérées de l'APi
-// Interface pour la réponse de l'API
-interface ApiResponse {
-  status: string;
-  data: Lieu;
-}
 
 const DetailsLieu = () => {
   const params = useLocalSearchParams() as {id:string};
