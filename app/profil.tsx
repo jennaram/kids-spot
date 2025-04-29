@@ -6,12 +6,14 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
+import { colorButtonFirst, colorButtonThird, colorFourth, colorButtonSecondary } from './style/styles';
+import { fontTitle } from './style/styles';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from '@/components/Title';
-import InputField from '@/app/components/Form/InputField'; // Import de InputField
-import SubmitButton from '@/app/components/Form/SubmitButton'; // Import de SubmitButton
+import AgeBadges from '@/components/Lieux/AgeBadges';
+import InputField from '@/app/components/Form/InputField'; // Import du composant InputField
+import SubmitButton from '@/app/components/Form/SubmitButton'; // Import du composant SubmitButton
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({
@@ -20,12 +22,18 @@ export default function ProfileScreen() {
     phone: '06 12 34 56 78',
     password: '••••••••',
     childrenCount: 2,
-    childrenAges: 5,
+    childrenAges: '5,7,10', // Exemple d'âge des enfants sous forme de chaîne
     reviewsCount: 10,
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handlePasswordChange = () => {
-    alert('Redirection vers la page de changement de mot de passe');
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      alert('Redirection vers la page de changement de mot de passe');
+    }, 2000);
   };
 
   return (
@@ -36,50 +44,78 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <View style={styles.formContainer}>
-            {/* Pseudonyme */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Pseudonyme</Text>
-              <InputField value={userData.pseudo} editable={false} />
-            </View>
+            {/* Remplacement des TextInput par InputField */}
+            <InputField
+              label="Pseudonyme"
+              value={userData.pseudo}
+              onChangeText={(text) => setUserData({ ...userData, pseudo: text })}
+              placeholder="Entrez votre pseudonyme"
+              
+            />
 
-            {/* Mot de passe */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Mot de passe</Text>
-              <InputField value={userData.password} editable={false} secureTextEntry />
-            </View>
+            <InputField
+              label="Mot de passe"
+              value={userData.password}
+              onChangeText={(text) => setUserData({ ...userData, password: text })}
+              placeholder="••••••••"
+              secureTextEntry
+              
+            />
 
-            {/* Email */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Adresse e-mail</Text>
-              <InputField value={userData.email} editable={false} />
-            </View>
+            <InputField
+              label="Adresse e-mail"
+              value={userData.email}
+              onChangeText={(text) => setUserData({ ...userData, email: text })}
+              placeholder="email@exemple.com"
+              keyboardType="email-address"
+              
+            />
 
-            {/* Téléphone */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Téléphone</Text>
-              <InputField value={userData.phone} editable={false} />
-            </View>
+            <InputField
+              label="Téléphone"
+              value={userData.phone}
+              onChangeText={(text) => setUserData({ ...userData, phone: text })}
+              placeholder="06 12 34 56 78"
+              keyboardType="phone-pad"
+              
+            />
 
-            {/* Nombre d'enfants */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Nombre d'enfants</Text>
-              <InputField value={userData.childrenCount.toString()} editable={false} />
-            </View>
+            <InputField
+              label="Nombre d'enfants"
+              value={userData.childrenCount.toString()}
+              onChangeText={(text) => setUserData({ ...userData, childrenCount: parseInt(text) })}
+              placeholder="Nombre d'enfants"
+              keyboardType="numeric"
+              
+            />
 
-            {/* Âge des enfants */}
+            {/* Remplacement de l'affichage de l'âge des enfants par AgeBadges */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Âge des enfants</Text>
-              <Text style={styles.sliderValue}>{userData.childrenAges} ans</Text>
+              <AgeBadges 
+                tranchesAge={userData.childrenAges ? userData.childrenAges.split(',') : []}
+                badgeColor={colorButtonThird}
+                containerStyle={styles.ageContainerStyle}
+                badgeStyle={styles.ageBadgeStyle}
+                textStyle={styles.ageBadgeTextStyle}
+              />
             </View>
 
-            {/* Nombre d'avis */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Nombre d'avis rédigés</Text>
-              <InputField value={userData.reviewsCount.toString()} editable={false} />
-            </View>
+            <InputField
+              label="Nombre d'avis rédigés"
+              value={userData.reviewsCount.toString()}
+              onChangeText={(text) => setUserData({ ...userData, reviewsCount: parseInt(text) })}
+              placeholder="Nombre d'avis"
+              keyboardType="numeric"
+              
+            />
 
-            {/* Bouton pour changer le mot de passe */}
-            <SubmitButton onPress={handlePasswordChange} title="Changer de mot de passe" />
+            {/* Bouton "Changer de mot de passe" */}
+            <SubmitButton
+              title="Changer de mot de passe"
+              onPress={handlePasswordChange}
+              loading={loading}
+            />
           </View>
         </View>
       </ScrollView>
@@ -91,7 +127,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colorButtonThird,
+    backgroundColor: colorButtonThird, 
   },
   scrollContent: {
     flexGrow: 1,
@@ -113,19 +149,36 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  inputGroup: {
-    marginBottom: 15,
-  },
   label: {
     fontSize: 14,
-    color: '#555',
+    color: 'black',
     marginBottom: 5,
     fontWeight: '500',
   },
-  sliderValue: {
-    textAlign: 'center',
-    marginTop: 5,
+  submitButton: {
+    height: 50,
+    backgroundColor: colorButtonFirst,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: colorButtonThird,
     fontSize: 16,
-    color: '#333',
+    fontWeight: '600',
+  },
+  ageContainerStyle: {
+    marginBottom: 25,
+  },
+  ageBadgeStyle: {
+    backgroundColor: '#007BFF', // couleur bleue pour les badges d'âge
+  },
+  ageBadgeTextStyle: {
+    color: 'white',
+  },
+
+  inputGroup: {
+    marginBottom: 15,
   },
 });
