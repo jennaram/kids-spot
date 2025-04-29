@@ -1,43 +1,72 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image, SafeAreaView } from "react-native";
+import { 
+  Text, 
+  View, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Image, 
+  SafeAreaView 
+} from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
-import { fontTitle, loadFonts } from './style/styles';
+import { 
+  colorButtonFirst, 
+  colorButtonSecondary, 
+  colorButtonThird, 
+  fontTitle,
+  fontSubtitle
+} from './style/styles';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from "@/components/Title";
 
-export default function Index() {
-  const { nomLieu } = useLocalSearchParams();
+// Constantes pour les valeurs réutilisables
+const USER = {
+  name: "Jean Dupont",
+  email: "jean.dupont@example.com"
+};
 
+const STAR_IMAGES = {
+  active: require('../assets/images/Etoilejaune.png'),
+  inactive: require('../assets/images/Etoilegrise.png')
+};
+
+const ReviewPage = () => {
+  // Hooks
+  const { nomLieu } = useLocalSearchParams();
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
 
-  const nomUtilisateur = "Jean Dupont";
-  const emailUtilisateur = "jean.dupont@example.com";
-
-  const handleStarClick = (starNumber: number) => {
+  // Handlers
+  const handleStarPress = (starNumber: number) => {
     setRating(starNumber);
   };
 
-  const handleCommentChange = (event: React.ChangeEvent<any>) => {
-    setComment(event.target.value);
+  const handleCommentChange = (text: string) => {
+    setComment(text);
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+    await submitReview();
+  };
+
+  // Fonctions de logique métier
+  const validateForm = () => {
     if (!rating) {
       toast.error('Veuillez sélectionner une note.');
-      return;
+      return false;
     }
+    return true;
+  };
 
+  const submitReview = async () => {
     try {
       const response = await fetch('/api/avis', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           lieuId: nomLieu,
           rating,
@@ -47,81 +76,97 @@ export default function Index() {
 
       if (response.ok) {
         toast.success('Votre avis a été enregistré avec succès !');
+        resetForm();
       } else {
-        toast.error('Une erreur est survenue lors de l\'enregistrement de votre avis.');
+        throw new Error('Erreur serveur');
       }
     } catch (error) {
-      toast.error('Une erreur s\'est produite lors de la communication avec le serveur.');
+      toast.error("Une erreur s'est produite");
     }
   };
+
+  const resetForm = () => {
+    setRating(null);
+    setComment('');
+  };
+
+  // Composants internes
+  const StarRating = () => (
+    <View style={styles.starsContainer}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <TouchableOpacity 
+          key={star} 
+          onPress={() => handleStarPress(star)}
+          activeOpacity={0.7}
+        >
+          <Image
+            source={star <= (rating || 0) ? STAR_IMAGES.active : STAR_IMAGES.inactive}
+            style={styles.starImage}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
+  const UserInfoSection = () => (
+    <View style={styles.userInfoContainer}>
+      <Text style={styles.staticText}>Nom : {USER.name}</Text>
+      <Text style={styles.staticText}>Email : {USER.email}</Text>
+    </View>
+  );
+
+  const CommentInput = () => (
+    <TextInput
+      style={styles.textArea}
+      placeholder="Écris ton avis ici..."
+      placeholderTextColor="#999"
+      multiline
+      numberOfLines={8}
+      value={comment}
+      onChangeText={handleCommentChange}
+    />
+  );
+
+  const SubmitButton = () => (
+    <TouchableOpacity 
+      style={styles.submitButton} 
+      onPress={handleSubmit}
+      activeOpacity={0.8}
+    >
+      <Text style={styles.submitButtonText}>Valider votre avis !</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <BurgerMenu/>
       <Title text={"Avis"}/>
-     
-
-      {/* Contenu principal */}
+      
       <View style={styles.cardContainer}>
-        <Text style={[fontTitle, styles.lieuTitre]}>{nomLieu || "Nom du lieu"}</Text>
-        <Text style={styles.staticText}>Nom : {nomUtilisateur}</Text>
-        <Text style={styles.staticText}>Email : {emailUtilisateur}</Text>
-
-        <View style={styles.starsContainer}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <TouchableOpacity key={star} onPress={() => handleStarClick(star)}>
-              <Image
-                source={star <= (rating || 0) ? require('../assets/images/Etoilejaune.png') : require('../assets/images/Etoilegrise.png')}
-                style={styles.starImage}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <TextInput
-          style={styles.textArea}
-          placeholder="Écris ton avis ici..."
-          placeholderTextColor="#999"
-          multiline
-          numberOfLines={8}
-          value={comment}
-          onChange={handleCommentChange}
-        />
+        <Text style={[fontTitle, styles.lieuTitre]}>
+          {nomLieu || "Nom du lieu"}
+        </Text>
+        
+        <UserInfoSection />
+        <StarRating />
+        <CommentInput />
       </View>
 
-      {/* Bouton de validation */}
-      <View style={{ alignItems: 'center', padding: 20 }}>
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Valider votre avis !</Text>
-        </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <SubmitButton />
       </View>
-      <Navigation></Navigation>
+
+      <Navigation />
+      <ToastContainer />
     </SafeAreaView>
   );
-}
+};
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  header: {
-    position: 'absolute', // Fixe le menu en haut
-    top: 0, // Positionne le menu tout en haut
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#fff', // Assure un fond blanc
-    borderBottomWidth: 0, // Supprime la ligne de démarcation
-    zIndex: 10, // Assure que le menu est au-dessus des autres éléments
-  },
-  title: {
-    textAlign: 'center',
-    color: '#000', // Titre "Votre avis" en noir
   },
   cardContainer: {
     backgroundColor: '#f0f0f0',
@@ -139,6 +184,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
     color: colorButtonSecondary,
+  },
+  userInfoContainer: {
+    marginBottom: 15,
   },
   staticText: {
     fontSize: 16,
@@ -166,6 +214,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     minHeight: 120,
   },
+  buttonContainer: {
+    alignItems: 'center', 
+    padding: 20
+  },
   submitButton: {
     height: 40,
     width: '80%',
@@ -181,3 +233,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default ReviewPage;
