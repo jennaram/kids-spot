@@ -9,7 +9,7 @@ import { useLocation } from '@/context/locate';
 import { SwitchButton } from '@/components/switchButtonMapList';
 import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { useFadeInOut } from '@/hooks/Animation';
-import { Place } from '@/Types/place';
+import { Place } from '@/types/place';
 import { Row } from '@/components/Row';
 import LoadingView from '@/components/Messages/LocationLoading';
 import SearchBar from '@/components/Filtres/SearchBar';

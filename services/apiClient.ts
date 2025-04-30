@@ -1,26 +1,41 @@
+/**
+ * Utilitaires pour les appels d'API
+ * Créé le: 30/04/2025
+ */
+
 import { API_BASE_URL } from '@/api/apiConfig';
 
-type ApiResponse = {
+/**
+ * Type générique pour les réponses d'API
+ */
+type ApiResponse<T> = {
   statusCode: number;
-  data: any; // Tu peux remplacer `any` par une interface plus précise si tu veux
+  data: T | null;
 };
 
+/**
+ * Crée les en-têtes HTTP avec authentification optionnelle
+ */
 const getHeaders = (token?: string) => ({
   'Content-Type': 'application/json',
   ...(token && { Authorization: `Bearer ${token}` }),
 });
 
-// --- GET ---
-export async function apiGet(endpoint: string, token?: string): Promise<ApiResponse> {
+/**
+ * Effectue une requête GET vers l'API
+ * @param endpoint - Point d'accès de l'API
+ * @param token - Token d'authentification (optionnel)
+ */
+export async function apiGet<T>(endpoint: string, token?: string): Promise<ApiResponse<T>> {
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'GET',
       headers: getHeaders(token),
     });
-
+    
     const statusCode = response.status;
     const data = await response.json();
-
+    
     return { statusCode, data };
   } catch (error) {
     console.error('Erreur API GET:', error);
@@ -28,18 +43,23 @@ export async function apiGet(endpoint: string, token?: string): Promise<ApiRespo
   }
 }
 
-// --- POST ---
-export async function apiPost(endpoint: string, body: object, token?: string): Promise<ApiResponse> {
+/**
+ * Effectue une requête POST vers l'API
+ * @param endpoint - Point d'accès de l'API
+ * @param body - Corps de la requête
+ * @param token - Token d'authentification (optionnel)
+ */
+export async function apiPost<T>(endpoint: string, body: object, token?: string): Promise<ApiResponse<T>> {
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(body),
     });
-
+    
     const statusCode = response.status;
     const data = await response.json();
-
+    
     return { statusCode, data };
   } catch (error) {
     console.error('Erreur API POST:', error);
@@ -47,23 +67,28 @@ export async function apiPost(endpoint: string, body: object, token?: string): P
   }
 }
 
-// --- DELETE ---
-export async function apiDelete(endpoint: string, body: object, token?: string): Promise<ApiResponse> {
+/**
+ * Effectue une requête DELETE vers l'API
+ * @param endpoint - Point d'accès de l'API
+ * @param body - Corps de la requête
+ * @param token - Token d'authentification (optionnel)
+ */
+export async function apiDelete<T>(endpoint: string, body: object, token?: string): Promise<ApiResponse<T>> {
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'DELETE',
       headers: getHeaders(token),
       body: JSON.stringify(body),
     });
-
+    
     const statusCode = response.status;
-
+    
     if (statusCode === 204) {
       return { statusCode, data: null };
     }
-
+    
     const data = await response.json();
-
+    
     return { statusCode, data };
   } catch (error) {
     console.error('Erreur API DELETE:', error);
@@ -71,18 +96,23 @@ export async function apiDelete(endpoint: string, body: object, token?: string):
   }
 }
 
-// --- PUT ---
-export async function apiPut(endpoint: string, body: object, token?: string): Promise<ApiResponse> {
+/**
+ * Effectue une requête PUT vers l'API
+ * @param endpoint - Point d'accès de l'API
+ * @param body - Corps de la requête
+ * @param token - Token d'authentification (optionnel)
+ */
+export async function apiPut<T>(endpoint: string, body: object, token?: string): Promise<ApiResponse<T>> {
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'PUT',
       headers: getHeaders(token),
       body: JSON.stringify(body),
     });
-
+    
     const statusCode = response.status;
     const data = await response.json();
-
+    
     return { statusCode, data };
   } catch (error) {
     console.error('Erreur API PUT:', error);
