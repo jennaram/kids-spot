@@ -1,12 +1,12 @@
 
-import { View, Text, ActivityIndicator, ScrollView, Button, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
-import { useAddLocationOrEvent } from '@/hooks/locate/useAddLocation';
+import { useDeleteLocationOrEvent } from '@/hooks/locate/useDeleteLocation';
 
 export default function PlaceScreen() {
 
@@ -27,49 +27,30 @@ export default function PlaceScreen() {
     }
   }
 
-  const { submitLocationOrEvent, loading, error, success, fieldErrors } = useAddLocationOrEvent();
+
+
+
+  const { removeLocationOrEvent, loading, error, success } = useDeleteLocationOrEvent();
   async function handleSubmit() {
     if (!token) {
       console.error("Token manquant : authentification requise");
       return;
     }
-  
-    await submitLocationOrEvent({
-      nom: "Nom du lieu",
-      description: "Description du lieu",
-      horaires: "Les horaires",
-      adresse: "L'adresse",
-      ville: "La ville",
-      code_postal: "Le code postal",
-      longitude: 2,
-      latitude: 2,
-      telephone: "Numéro de téléphone",
-      site_web: "https://adresse.fr",
-      id_type: 1,
-      equipements: [1],
-      tranches_age: [2]
-    }, token);
+
+    await removeLocationOrEvent(78, token);
   }
 
-  if(error){
+  if (error) {
     console.log("Erreur générale :", error);
-    console.log(fieldErrors)
   }
 
-  if(loading){
+  if (loading) {
     console.log("Chargment...")
   }
 
-  if(success){
+  if (success) {
     console.log("Tout est ok")
   }
-
- 
-
-
-
-
-
 
 
 

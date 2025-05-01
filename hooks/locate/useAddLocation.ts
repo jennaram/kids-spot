@@ -33,20 +33,20 @@ import { useState } from "react";
  *        date_debut: "date de début de l'évenememt" // optionnel
  *        date_fin: "date de fin de l'événement" // optionnel
  *      }, token);
- *    }
+ * }
  * 
- *    if(error){
- *      console.log("Erreur générale :", error);
- *      console.log(fieldErrors)
- *    }
+ * if(error){
+ *    console.log("Erreur générale :", error);
+ *    console.log(fieldErrors)
+ * }
  * 
- *    if(loading){
- *      console.log("Chargment...")
- *    }
+ * if(loading){
+ *    console.log("Chargment...")
+ * }
  * 
- *    if(success){
- *      console.log("Tout est ok")
- *    }
+ * if(success){
+ *    console.log("Tout est ok")
+ * }
  * ```
  */
 export function useAddLocationOrEvent() {
