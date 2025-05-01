@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { addComment } from "@/services/commentsServices";
 import { isApiSuccess, isApiError, getApiMessage } from "@/utils/apiResponseHelpers";
+import { AddComment } from "@/types/comment";
 
 /**
  * Hook pour gérer l'état et la logique d'ajout d'un commentaire
@@ -19,18 +20,13 @@ export function useAddComment() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const submitComment = async (
-    id_lieu: number,
-    commentaire: string,
-    note: number,
-    token: string
-  ) => {
+  const submitComment = async (data: AddComment, token: string) => {
     try {
       setLoading(true);
       setSuccess(false);
       setError(null);
 
-      const response = await addComment(id_lieu, commentaire, note, token);
+      const response = await addComment(data, token);
 
       if (response.statusCode === 201) {
         if (isApiSuccess(response)) {

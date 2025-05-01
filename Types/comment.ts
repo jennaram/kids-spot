@@ -5,6 +5,16 @@
  */
 
 /**
+ * Représente les informations a envoyer
+ */
+export interface AddComment{
+  id_lieu: number,
+  commentaire: string,
+  note: number,
+  token: string
+}
+
+/**
  * Représente les informations sommaires d'un utilisateur
  */
 export interface UserSummary {
@@ -38,30 +48,6 @@ export interface Comment {
   date: CommentDate;
   user: UserSummary;
   lieu: LieuSummary;
-}
-
-/**
- * Réponse d'API pour les opérations réussies sans données
- */
-export interface ApiResponseSuccessOnly {
-  status: "success";
-  message: string;
-}
-
-/**
- * Réponse d'API en cas d'erreur
- */
-export interface ApiResponseError {
-  status: "error";
-  message: string;
-}
-
-/**
- * Réponse générique enveloppant n'importe quel type de données
- */
-export interface ApiResponse<T> {
-  statusCode: number;
-  data: T | null;
 }
 
 /**

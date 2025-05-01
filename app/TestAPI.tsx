@@ -4,14 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
-import { Place } from '@/types/place';
-import { PlaceDetail } from '@/types/placeDetail';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
-import { useLocation } from '@/context/locate';
-import { useState } from 'react';
-import { useReadAllComments } from '@/hooks/comments/useReadAllComments';
-import { useAddComment } from '@/hooks/comments/useAddComment';
+import { useAddLocationOrEvent } from '@/hooks/locate/useAddLocation';
 
 export default function PlaceScreen() {
 
@@ -19,12 +14,6 @@ export default function PlaceScreen() {
 
   // Token lors du login
   const { token, setToken } = useAuth();
-
-
-
-
-
-
 
   async function handleLogin() {
     const email = 'seb.prod@gmail.com';  // Utilisateur d'exemple
@@ -37,20 +26,54 @@ export default function PlaceScreen() {
       Alert.alert('Erreur de connexion', 'Impossible de se connecter avec ces identifiants.');
     }
   }
-  
-  const { submitComment, loading, error, success } = useAddComment();
 
-  const handleSubmit = () => {
-    submitComment(4, "Très sympa", 5, "userToken");
-  };
+  const { submitLocationOrEvent, loading, error, success, fieldErrors } = useAddLocationOrEvent();
+  async function handleSubmit() {
+    if (!token) {
+      console.error("Token manquant : authentification requise");
+      return; // Ou afficher une erreur dans l’interface
+    }
+  
+    await submitLocationOrEvent({
+      nom: "",
+      description: "seb",
+      horaires: "ZZZ",
+      adresse: "ZZZ",
+      ville: "ZZZ",
+      code_postal: "89100",
+      longitude: 2,
+      latitude: 2,
+      telephone: "0666666666",
+      site_web: "https://bibliotheques.paris.fr",
+      id_type: 1,
+      equipements: [1, 2],
+      tranches_age: [2, 1]
+    }, token);
+  }
 
   if(error){
-    console.log(error);
+    console.log("Erreur générale :", error);
+     console.log(fieldErrors)
+
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const responseData = (error as any).response.data;
+
+    if (responseData?.errors) {
+      for (const [champ, message] of Object.entries(responseData.errors)) {
+        console.log(`Champ : ${champ} => Message : ${message}`);
+      }
+    }
   }
+  }
+
  
 
 
-  
+
+
+
+
+
 
   return (
     <SafeAreaView style={{ flex: 1, paddingBottom: 70 }}>
@@ -75,7 +98,7 @@ export default function PlaceScreen() {
 
         </ScrollView>
       </View>
-      
+
 
 
       <Navigation />
