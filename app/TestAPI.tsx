@@ -31,39 +31,37 @@ export default function PlaceScreen() {
   async function handleSubmit() {
     if (!token) {
       console.error("Token manquant : authentification requise");
-      return; // Ou afficher une erreur dans l’interface
+      return;
     }
   
     await submitLocationOrEvent({
-      nom: "",
-      description: "seb",
-      horaires: "ZZZ",
-      adresse: "ZZZ",
-      ville: "ZZZ",
-      code_postal: "89100",
+      nom: "Nom du lieu",
+      description: "Description du lieu",
+      horaires: "Les horaires",
+      adresse: "L'adresse",
+      ville: "La ville",
+      code_postal: "Le code postal",
       longitude: 2,
       latitude: 2,
-      telephone: "0666666666",
-      site_web: "https://bibliotheques.paris.fr",
+      telephone: "Numéro de téléphone",
+      site_web: "https://adresse.fr",
       id_type: 1,
-      equipements: [1, 2],
-      tranches_age: [2, 1]
+      equipements: [1],
+      tranches_age: [2]
     }, token);
   }
 
   if(error){
     console.log("Erreur générale :", error);
-     console.log(fieldErrors)
-
-  if (typeof error === "object" && error !== null && "response" in error) {
-    const responseData = (error as any).response.data;
-
-    if (responseData?.errors) {
-      for (const [champ, message] of Object.entries(responseData.errors)) {
-        console.log(`Champ : ${champ} => Message : ${message}`);
-      }
-    }
+    console.log(fieldErrors)
   }
+
+  if(loading){
+    console.log("Chargment...")
+  }
+
+  if(success){
+    console.log("Tout est ok")
   }
 
  
