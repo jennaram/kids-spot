@@ -6,7 +6,7 @@ import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
-import { useDeleteLocationOrEvent } from '@/hooks/locate/useDeleteLocation';
+import { useEditLocationOrEvent } from '@/hooks/locate/useEditLocation';
 
 export default function PlaceScreen() {
 
@@ -30,18 +30,36 @@ export default function PlaceScreen() {
 
 
 
-  const { removeLocationOrEvent, loading, error, success } = useDeleteLocationOrEvent();
-  async function handleSubmit() {
+ const { updateLocationOrEvent, loading, error, success, fieldErrors } = useEditLocationOrEvent();
+ async function handleSubmit() {
     if (!token) {
       console.error("Token manquant : authentification requise");
       return;
     }
-
-    await removeLocationOrEvent(78, token);
-  }
+    await updateLocationOrEvent(
+      {
+        id: 54,
+        nom: "Nom du lieu",
+        description: "Description du lieu",
+        horaires: "Les horaires",
+        adresse: "L'adresse",
+        ville: "La ville",
+        code_postal: "89100",
+        longitude: 2,
+        latitude: 2,
+        telephone: "0666666666",
+        site_web: "https://adresse.fr",
+        id_type: 1,
+        equipements: [1],
+        tranches_age: [2],
+        date_debut: "15/04/2025",
+        date_fin: "17/04/2025"
+      }, token);
+ }
 
   if (error) {
     console.log("Erreur générale :", error);
+    console.log(fieldErrors)
   }
 
   if (loading) {
@@ -71,7 +89,7 @@ export default function PlaceScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Ajouter</Text>
+            <Text style={styles.buttonText}>Test</Text>
           </TouchableOpacity>
 
 

@@ -71,7 +71,7 @@ export async function deleteLocation(id: number, token: string): Promise<ApiResp
  * @param token - Le token d'authentification.
  * @returns {Promise<ApiResponse<ApiResponseSuccessOnly>>} Une promesse qui résoudra avec la réponse de l'API.
  */
-export async function editLocation(data: UpdateLocationOrEventPayload, token:string): Promise<ApiResponse<ApiResponseSuccessOnly>>{
+export async function editLocationOrEvent(data: UpdateLocationOrEventPayload, token:string): Promise<ApiResponse<ApiResponseSuccessOnly>>{
     checkToken(token);
     return apiPut<ApiResponseSuccessOnly>('lieux/modifier', data, token);
 }
