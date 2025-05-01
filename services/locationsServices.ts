@@ -1,15 +1,35 @@
 /**
  * Services API pour la gestion des lieux
- * Créé le: 01/05/2025
+ * @date 2025-05-01
  */
 
 import { ApiResponse, ApiResponseSuccessOnly } from "@/types/api-response";
 import { checkToken } from "@/utils/auth";
-import { apiDelete, apiPost } from "./apiClient";
-import { AddLocationOrEventPayload } from "@/types/location";
+import { apiDelete, apiPost, apiPut } from "./apiClient";
+import { AddLocationOrEventPayload, UpdateLocationOrEventPayload } from "@/types/location";
 
 /**
- * Ajoute un nouveau lieu ou événement
+ * Soumet les données du lieu ou de l'événement a ajouter à l'API.
+ *
+ * @param data - L'objet contenant les informations du lieu ou de l'événement à ajouter.
+ * Les propriétés attendues sont :
+ * - `nom`: `string` - Le nom du lieu ou de l'événement.
+ * - `description`: `string` - Une description du lieu ou de l'événement.
+ * - `horaires`: `string` - Les horaires d'ouverture ou l'heure de l'événement.
+ * - `adresse`: `string` - L'adresse du lieu.
+ * - `ville`: `string` - La ville du lieu.
+ * - `code_postal`: `string` - Le code postal du lieu.
+ * - `longitude`: `number` - La longitude du lieu.
+ * - `latitude`: `number` - La latitude du lieu.
+ * - `telephone`: `string` - Le numéro de téléphone du lieu.
+ * - `site_web`: `string` - L'URL du site web du lieu.
+ * - `id_type`: `number` - L'identifiant du type de lieu ou d'événement.
+ * - `equipements`: `number[]` - Un tableau d'identifiants des équipements disponibles.
+ * - `tranches_age`: `number[]` - Un tableau d'identifiants des tranches d'âge concernées.
+ * - `date_debut`: `string` - (optionnel) - La date de début de l'événement
+ * - `date_fin`: `string` - (optionnel) - La date de fin de l'événement
+ * @param token - Le token d'authentification.
+ * @returns {Promise<ApiResponse<ApiResponseSuccessOnly>>} Une promesse qui résoudra avec la réponse de l'API.
  */
 export async function addLocationOrEvent(data: AddLocationOrEventPayload, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
     checkToken(token);
@@ -18,8 +38,40 @@ export async function addLocationOrEvent(data: AddLocationOrEventPayload, token:
 
 /**
  * Supprime un lieu ou un événement
+ * @param id `number` - L'identifiant du lieu ou de l'événement à supprimer.
+ * @param token `string` - Le token d'authentification.
+ * @returns {Promise<ApiResponse<ApiResponseSuccessOnly>>} Une promesse qui résoudra avec la réponse de l'API.
  */
 export async function deleteLocation(id: number, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
-    checkToken(token)
-    return apiDelete<ApiResponseSuccessOnly>('lieux/supprime', { id }, token)
+    checkToken(token);
+    return apiDelete<ApiResponseSuccessOnly>('lieux/supprime', { id }, token);
+}
+
+/**
+ * Soumet les données du lieu ou de l'événement a éditer à l'API.
+ *
+ * @param data - L'objet contenant les informations du lieu ou de l'événement à ajouter.
+ * Les propriétés attendues sont :
+ * - `id`: `number` - L'identifiant du lieu ou de l'événement à modifier
+ * - `nom`: `string` - Le nom du lieu ou de l'événement.
+ * - `description`: `string` - Une description du lieu ou de l'événement.
+ * - `horaires`: `string` - Les horaires d'ouverture ou l'heure de l'événement.
+ * - `adresse`: `string` - L'adresse du lieu.
+ * - `ville`: `string` - La ville du lieu.
+ * - `code_postal`: `string` - Le code postal du lieu.
+ * - `longitude`: `number` - La longitude du lieu.
+ * - `latitude`: `number` - La latitude du lieu.
+ * - `telephone`: `string` - Le numéro de téléphone du lieu.
+ * - `site_web`: `string` - L'URL du site web du lieu.
+ * - `id_type`: `number` - L'identifiant du type de lieu ou d'événement.
+ * - `equipements`: `number[]` - Un tableau d'identifiants des équipements disponibles.
+ * - `tranches_age`: `number[]` - Un tableau d'identifiants des tranches d'âge concernées.
+ * - `date_debut`: `string` - (optionnel) - La date de début de l'événement
+ * - `date_fin`: `string` - (optionnel) - La date de fin de l'événement
+ * @param token - Le token d'authentification.
+ * @returns {Promise<ApiResponse<ApiResponseSuccessOnly>>} Une promesse qui résoudra avec la réponse de l'API.
+ */
+export async function editLocation(data: UpdateLocationOrEventPayload, token:string): Promise<ApiResponse<ApiResponseSuccessOnly>>{
+    checkToken(token);
+    return apiPut<ApiResponseSuccessOnly>('lieux/modifier', data, token);
 }

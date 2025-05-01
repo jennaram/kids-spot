@@ -6,6 +6,8 @@ import { useState } from "react";
 
 /**
  * Hook pour gérer l'ajout d'un lieu ou événement avec gestion des erreurs globales et par champ
+ * @version 1.0
+ * @date 2025-05-01
  * 
  * @example
  * ```jsx

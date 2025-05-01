@@ -4,6 +4,8 @@ import { useState } from "react";
 
 /**
  * Hook pour gérer la suppression d'un lieu ou événement avec gestion des erreurs.
+ * @version 1.0
+ * @date 2025-05-01
  * 
  * @example
  * ```jsx
