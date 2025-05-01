@@ -1,6 +1,6 @@
 import { Row } from "@/components/Row";
 import { Title } from "@/components/Title";
-import { useReadAllComments } from "@/hooks/comments/useAllComments";
+import { useReadAllComments } from "@/hooks/comments/useReadAllComments";
 import { useLocalSearchParams } from "expo-router";
 
 import { View, SafeAreaView, FlatList, StyleSheet, Text } from "react-native";
