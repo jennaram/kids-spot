@@ -1,3 +1,8 @@
+/**
+ * Définition des interfaces pour le système de lieux
+ * Créé le: 30/04/2025
+ */
+
 // 🔹 Payloads (création/modification)
 export interface BaseLocationPayload {
     nom: string;
@@ -45,7 +50,7 @@ export interface Type {
 export interface Position {
     latitude: number;
     longitude: number;
-    distance_km?: number;
+    distance_km: number;
 }
 
 export interface Equipement {
@@ -71,7 +76,7 @@ export interface Commentaire {
 }
 
 // 🔹 Lieu complet (lecture)
-export interface Lieu {
+export interface Location {
     id: number;
     nom: string;
     description: string;
@@ -83,8 +88,13 @@ export interface Lieu {
     position: Position;
     equipements: Equipement[];
     ages: TrancheAge[];
-    commentaires: Commentaire[];
-    note_moyenne: number;
-    nombre_commentaires: number;
+    commentaires?: Commentaire[];
+    note_moyenne?: number;
+    nombre_commentaires?: number;
     image_url?: string;
 }
+
+export type FetchAllLocation =  ({status: "success"} & {data: Location[]});
+
+export type FetchLocation =  ({status: "success"} & {data: Location});
+

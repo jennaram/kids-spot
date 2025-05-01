@@ -7,6 +7,8 @@ import { Navigation } from '@/components/NavBar/Navigation';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
 import { useEditLocationOrEvent } from '@/hooks/locate/useEditLocation';
+import { useReadAllLocations } from '@/hooks/locate/useReadAllLocations';
+import { useReadLocations } from '@/hooks/locate/useReadLocations';
 
 export default function PlaceScreen() {
 
@@ -30,46 +32,21 @@ export default function PlaceScreen() {
 
 
 
- const { updateLocationOrEvent, loading, error, success, fieldErrors } = useEditLocationOrEvent();
- async function handleSubmit() {
-    if (!token) {
-      console.error("Token manquant : authentification requise");
-      return;
-    }
-    await updateLocationOrEvent(
-      {
-        id: 54,
-        nom: "Nom du lieu",
-        description: "Description du lieu",
-        horaires: "Les horaires",
-        adresse: "L'adresse",
-        ville: "La ville",
-        code_postal: "89100",
-        longitude: 2,
-        latitude: 2,
-        telephone: "0666666666",
-        site_web: "https://adresse.fr",
-        id_type: 1,
-        equipements: [1],
-        tranches_age: [2],
-        date_debut: "15/04/2025",
-        date_fin: "17/04/2025"
-      }, token);
- }
+  const { location, loading, error } = useReadLocations(2);
 
   if (error) {
     console.log("Erreur générale :", error);
-    console.log(fieldErrors)
+    //console.log(fieldErrors)
   }
 
   if (loading) {
     console.log("Chargment...")
   }
 
-  if (success) {
-    console.log("Tout est ok")
-  }
-
+  // if (success) {
+  //   console.log("Tout est ok")
+  // }
+console.log(location)
 
 
   return (
@@ -88,9 +65,9 @@ export default function PlaceScreen() {
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          {/* <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Test</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
 
         </ScrollView>
