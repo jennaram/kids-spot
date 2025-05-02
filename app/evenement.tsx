@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Animated, SafeAreaView, ScrollView, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 // Import du composant de layout et styles
 import { eventCardStyles as styles } from './style/EventCardStyles';
@@ -28,9 +26,9 @@ const Evenement = () => {
   const [currentDescription, setCurrentDescription] = useState('');
   // État pour stocker le nom du lieu de la description
   const [currentNom, setCurrentNom] = useState('');
-  
+
   // Référence pour les animations
-  const flipAnimations = useRef<{[key: number]: Animated.Value}>({}).current;
+  const flipAnimations = useRef<{ [key: number]: Animated.Value }>({}).current;
 
 
 
@@ -38,7 +36,7 @@ const Evenement = () => {
     if (nearbyPlaces) {
       // Filtrer pour ne garder que les événements
       const events = nearbyPlaces.filter((l) => l.est_evenement);
-      
+
       // Initialiser les animations pour chaque événement
       events.forEach((event) => {
         if (!flipAnimations[event.id]) {
@@ -47,7 +45,7 @@ const Evenement = () => {
           flipAnimations[event.id].setValue(0); // Réinitialise la valeur d'animation
         }
       });
-      
+
       setLieux(events);
     }
   }, [nearbyPlaces]); // Dépendance à nearbyPlaces
@@ -104,13 +102,11 @@ const Evenement = () => {
     );
   }
 
-  console.log(lieux)
-
   return (
     <SafeAreaView style={styles.container}>
       <BurgerMenu />
       <Title text={'Événements'} />
-      
+
       <ScrollView>
         {lieux.map((lieu) => (
           <EventCard
@@ -123,7 +119,7 @@ const Evenement = () => {
           />
         ))}
       </ScrollView>
-      
+
       {/* Barre de nav */}
       <Navigation />
 
