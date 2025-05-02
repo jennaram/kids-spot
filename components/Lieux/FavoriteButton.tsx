@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // Icônes Material Design
 import { useAuth } from "@/context/auth"; // Hook pour récupérer le token de l'utilisateur connecté
-import { addFavorite, deleteFavorite } from '@/api/favoritesServices'; // Appels API pour ajouter ou supprimer un favori
+import { addFavorite, deleteFavorite } from '@/services/favoritesServices'; // Appels API pour ajouter ou supprimer un favori
 
 // Définition des props attendues par le composant
 type FavoriteButtonProps = {

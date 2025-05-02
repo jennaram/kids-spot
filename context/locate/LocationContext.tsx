@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import getUserLocation from '@/services/localisation';
 import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
 import { useAuth } from '@/context/auth/AuthContext';
-import { fetchNearbyFavorites } from '@/api/favoritesServices';
+import { fetchNearbyFavorites } from '@/services/favoritesServices';
 
 type Location = {
   latitude: number;

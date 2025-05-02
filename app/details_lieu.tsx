@@ -30,7 +30,7 @@ import styles from "./style/DetailLieuxStyles";
 import fetchPlace from "@/api/fetchPlace";
 import { useAuth } from "@/context/auth";
 import BottomModal from "../components/ModalRedirection"; // Importez votre composant BottomModal
-import { useIsFavorite } from "@/hooks/useIsFavorite";
+import { useIsFavorite } from "@/hooks/favorite/useIsFavorite";
 import BackButton from "./components/BackButton";
 
 
