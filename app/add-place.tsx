@@ -1,9 +1,12 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, Alert, SafeAreaView } from 'react-native';
+import {
+  View, Text, TextInput, ScrollView, TouchableOpacity,
+  Image, Alert, SafeAreaView
+} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
+
 
 // Composants
 import { Navigation } from '@/components/NavBar/Navigation';
@@ -16,6 +19,7 @@ import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 import AgeBadges from '@/components/Lieux/AgeBadges';
 import StarRating from '@/components/Notation/StarRating';
 import { AvailableEquipments, EquipmentKeys, EquipmentType } from '@/components/Lieux/AvailableEquipments';
+import GeoLocationInput from '@/components/Lieux/GeoLocationInput';
 
 // Styles
 import { colorButtonFirst } from './style/styles';
@@ -28,7 +32,6 @@ type LocationType = { latitude: number; longitude: number } | null;
 const AddPlaceScreen = () => {
   const router = useRouter();
 
-  // États du formulaire
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [placeName, setPlaceName] = useState('');
   const [address, setAddress] = useState('');
@@ -115,7 +118,7 @@ const AddPlaceScreen = () => {
     setEquipments(prev => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  const getTranslatedLabel = (key: string, type: 'ageRange') => {
+  const getTranslatedLabel = (key: string) => {
     return key === '0-2' ? '0-2 ans' :
            key === '3-6' ? '3-6 ans' :
            '7 ans et plus';
@@ -155,20 +158,11 @@ const AddPlaceScreen = () => {
 
         <View style={styles.section}>
           <Text style={styles.label}>Adresse</Text>
-          <View style={styles.inputWithIcon}>
-            <TextInput
-              style={styles.inputWithIconField}
-              placeholder="Entrez l'adresse complète"
-              value={address}
-              onChangeText={setAddress}
-            />
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={handleGetCurrentLocation}
-            >
-              <MaterialIcons name="my-location" size={24} color={colorButtonFirst} />
-            </TouchableOpacity>
-          </View>
+          <GeoLocationInput
+            address={address}
+            onAddressChange={setAddress}
+            onGetLocation={handleGetCurrentLocation}
+          />
         </View>
 
         <View style={styles.section}>
@@ -198,7 +192,7 @@ const AddPlaceScreen = () => {
                 onPress={() => toggleAgeRange(age)}
               >
                 <AgeBadges
-                  tranchesAge={[getTranslatedLabel(age, 'ageRange')]}
+                  tranchesAge={[getTranslatedLabel(age)]}
                   badgeColor={ageRanges.includes(age) ? colorButtonFirst : '#ddd'}
                   containerStyle={styles.ageBadgeContainer}
                   badgeStyle={styles.ageBadge}
@@ -242,11 +236,7 @@ const AddPlaceScreen = () => {
           />
         </View>
 
-        <SubmitButton
-          title="Ajouter le lieu"
-          onPress={handleSubmit}
-        />
-
+        <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
