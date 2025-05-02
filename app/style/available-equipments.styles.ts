@@ -1,40 +1,43 @@
 import { StyleSheet } from 'react-native';
-import { colorButtonFirst } from '@/app/style/styles';
 
 export default StyleSheet.create({
   container: {
-    marginVertical: 10,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
     marginBottom: 8,
+    fontWeight: '600',
+    textAlign: 'left',
   },
   checkbox: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    
   },
   checkboxBox: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ddd',
+    borderRadius: 4,
     marginRight: 10,
-    alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 5,
+    alignItems: 'center',
   },
   checkboxSelected: {
-    backgroundColor: colorButtonFirst,
-    borderColor: colorButtonFirst,
+    backgroundColor: '#000',
+    borderColor: '#000',
   },
   checkmark: {
     color: '#fff',
-    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  icon: {
+    marginRight: 10,
   },
   checkboxLabel: {
-    fontSize: 14,
+    fontSize: 16,
+    flex: 1,
   },
 });
