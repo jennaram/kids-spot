@@ -11,10 +11,11 @@ import { Title } from '@/components/Title';
 import { FormInput } from './components/Form/InputField';
 import SubmitButton from './components/Form/SubmitButton';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
+import FiltreButtons from '@/components/Filtres/FiltreButtons';
+import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 
 // Styles
 import { colorButtonFirst, colorButtonThird } from './style/styles';
-import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
@@ -49,7 +50,6 @@ const AddPlaceScreen = () => {
   }), []);
 
   const ageRangeOptions = useMemo(() => ['0-2', '3-6', '7+'], []);
-  const placeTypeOptions = useMemo(() => ['restaurant', 'culture', 'leisure'], []);
   const ratingOptions = useMemo(() => [1, 2, 3, 4, 5], []);
 
   // Gestion de la localisation
@@ -119,12 +119,7 @@ const AddPlaceScreen = () => {
   }, []);
 
   // Traduction des labels
-  const getTranslatedLabel = (key: string, type: 'placeType' | 'equipment' | 'ageRange') => {
-    if (type === 'placeType') {
-      return key === 'restaurant' ? 'Restaurant' : 
-             key === 'culture' ? 'Culturel' : 'Loisir';
-    }
-    
+  const getTranslatedLabel = (key: string, type: 'equipment' | 'ageRange') => {
     if (type === 'equipment') {
       return key === 'strollerAccess' ? 'Accès poussette' :
              key === 'playArea' ? 'Aire de jeux' :
@@ -157,28 +152,16 @@ const AddPlaceScreen = () => {
             <PhotoPickerButton onPhotoSelected={(uri) => setPhotoUri(uri)} />
         </View>
 
-        {/* Type de lieu - aligné à gauche */}
+        {/* Type de lieu - utilisant FiltreButtons */}
         <View style={styles.section}>
           <Text style={styles.label}>Type de lieu</Text>
-          <View style={styles.radioGroup}>
-            {placeTypeOptions.map((type) => (
-              <TouchableOpacity
-                key={type}
-                style={[
-                  styles.radioButton, 
-                  placeType === type && styles.radioSelected
-                ]}
-                onPress={() => setPlaceType(type as PlaceType)}
-              >
-                <Text style={[
-                  styles.radioText, 
-                  placeType === type && styles.radioTextSelected
-                ]}>
-                  {getTranslatedLabel(type, 'placeType')}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <FiltreButtons 
+            selectedTypeId={placeType === 'restaurant' ? 1 : placeType === 'leisure' ? 2 : 3}
+            onPress={(id) => {
+              const newType = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
+              setPlaceType(newType);
+            }}
+          />
         </View>
 
         <View style={styles.section}>
@@ -228,7 +211,7 @@ const AddPlaceScreen = () => {
           ))}
         </View>
 
-        {/* Tranche d'âge - aligné à gauche */}
+        {/* Tranche d'âge */}
         <View style={styles.section}>
           <Text style={styles.label}>Tranche d'âge</Text>
           <View style={styles.radioGroup}>
@@ -276,7 +259,7 @@ const AddPlaceScreen = () => {
           </View>
         )}
 
-        {/* Note - aligné à gauche */}
+        {/* Note */}
         <View style={styles.section}>
           <Text style={styles.label}>Note (sur 5)</Text>
           <View style={styles.ratingGroup}>
@@ -326,15 +309,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'left', 
   },
-  // Groupes de boutons radio alignés à gauche
   radioGroup: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-start', // Alignement à gauche
+    justifyContent: 'flex-start',
   },
   ratingGroup: {
     flexDirection: 'row',
-    justifyContent: 'flex-start', // Alignement à gauche
+    justifyContent: 'flex-start',
   },
   radioButton: {
     padding: 10,
@@ -354,7 +336,6 @@ const styles = StyleSheet.create({
   radioTextSelected: {
     color: 'white',
   },
-  // ... (autres styles inchangés)
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
