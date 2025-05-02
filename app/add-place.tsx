@@ -39,6 +39,8 @@ const AddPlaceScreen = () => {
   const [description, setDescription] = useState('');
   const [ageRanges, setAgeRanges] = useState<string[]>(['0-2']);
   const [rating, setRating] = useState(3);
+  const [website, setWebsite] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
@@ -102,12 +104,14 @@ const AddPlaceScreen = () => {
       ageRanges,
       rating,
       equipments,
+      website: website.trim(), // Ajout du site web
+      phoneNumber: phoneNumber.trim(), // Ajout du numéro de téléphone
     };
 
     console.log('Nouveau lieu:', newPlace);
     Alert.alert('Succès', 'Lieu ajouté avec succès!');
     router.push('/home');
-  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, router]);
+  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router]);
 
   const toggleAgeRange = useCallback((age: string) => {
     setAgeRanges((prev) =>
@@ -163,6 +167,27 @@ const AddPlaceScreen = () => {
             address={address}
             onAddressChange={setAddress}
             onGetLocation={handleGetCurrentLocation}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Site web (optionnel)</Text>
+          <FormInput
+            label=""
+            value={website}
+            onChangeText={setWebsite}
+            placeholder="https://www.exemple.com"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Téléphone (optionnel)</Text>
+          <FormInput
+            label=""
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            placeholder="01 23 45 67 89"
+            keyboardType="phone-pad"
           />
         </View>
 
