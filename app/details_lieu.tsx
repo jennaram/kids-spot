@@ -64,8 +64,6 @@ const DetailsLieu = () => {
   useEffect(() => {handleFetchPlace()}
   , [lieuId]);
 
-  console.log("token,", token);
-
   // Fonction de partage
   const handleShare = async () => {
     if (!lieu) return;

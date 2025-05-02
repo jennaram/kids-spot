@@ -6,14 +6,15 @@ import { useEffect, useState } from "react";
  * Hook pour gérer l'état et la logique de la lecture de tous les favoris
  * @param lat - number - Latitude
  * @param lgt - number - longitude
- * @returns Objet contenant la fonction de soumission et les états associés
+ * @param token - string - Jeton d'authentification
+ * @param trigger - number - Clé pour forcer le rafraîchissement
  * 
  * @example
  * ```jsx
- * const { favoris, loading, error } = useReadAllFavoris(48.85, 2.35, token);
+ * const { favoris, loading, error } = useReadAllFavorites(48.85, 2.35, token, refreshKey);
  * ```
  */
-export function useReadAllFavorites(lat: number, lgt: number, token: string) {
+export function useReadAllFavorites(lat: number, lgt: number, token: string, trigger: number) {
     const [favoris, setFavoris] = useState<Location[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -47,7 +48,7 @@ export function useReadAllFavorites(lat: number, lgt: number, token: string) {
         };
 
         load();
-    }, [lat, lgt]);
+    }, [lat, lgt, token, trigger]); // 👈 ajout du trigger ici
 
     return { favoris, loading, error };
 }
