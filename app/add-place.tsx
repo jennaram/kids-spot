@@ -14,6 +14,7 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 import AgeBadges from '@/components/Lieux/AgeBadges';
+import StarRating from '@/components/Notation/StarRating'; // Import du nouveau composant
 
 // Styles
 import { colorButtonFirst, colorButtonThird } from './style/styles';
@@ -257,23 +258,14 @@ const AddPlaceScreen = () => {
           </View>
         )}
 
-        {/* Note */}
+        {/* Note - utilisant StarRating */}
         <View style={styles.section}>
-          <Text style={styles.label}>Note (sur 5)</Text>
-          <View style={styles.ratingGroup}>
-            {ratingOptions.map((star) => (
-              <TouchableOpacity 
-                key={star} 
-                onPress={() => setRating(star)}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Text style={[
-                  styles.star, 
-                  star <= rating && styles.starSelected
-                ]}>★</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <StarRating
+            rating={rating}
+            setRating={setRating}
+            label="Note (sur 5)"
+            containerStyle={styles.ratingContainer}
+          />
         </View>
 
         <SubmitButton 
@@ -326,6 +318,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  ratingContainer: {
+    marginBottom: 10,
   },
   ratingGroup: {
     flexDirection: 'row',
