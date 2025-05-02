@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet, Alert, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, Alert, SafeAreaView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
@@ -14,10 +14,11 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 import AgeBadges from '@/components/Lieux/AgeBadges';
-import StarRating from '@/components/Notation/StarRating'; // Import du nouveau composant
+import StarRating from '@/components/Notation/StarRating';
 
 // Styles
-import { colorButtonFirst, colorButtonThird } from './style/styles';
+import { colorButtonFirst } from './style/styles';
+import styles from '@/app/style/add-place.styles';
 
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
@@ -280,136 +281,5 @@ const AddPlaceScreen = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colorButtonThird,
-  },
-  scrollView: {
-    flex: 1,
-    padding: 20,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-    fontWeight: '600',
-    textAlign: 'left', 
-  },
-  ageBadgesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    gap: 10,
-  },
-  ageBadgeContainer: {
-    margin: 0,
-    marginBottom: 0,
-  },
-  ageBadge: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-  },
-  ageBadgeText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  ratingContainer: {
-    marginBottom: 10,
-  },
-  ratingGroup: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-  },
-  multilineInput: {
-    height: 100,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    textAlignVertical: 'top',
-  },
-  inputWithIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  inputWithIconField: {
-    flex: 1,
-    padding: 12,
-    fontSize: 16,
-  },
-  iconContainer: {
-    padding: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  mapContainer: {
-    height: 200,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginVertical: 10,
-  },
-  map: {
-    flex: 1,
-  },
-  markerImage: {
-    width: 40, 
-    height: 40
-  },
-  checkbox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  checkboxBox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 4,
-    marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxSelected: {
-    backgroundColor: colorButtonFirst,
-    borderColor: colorButtonFirst,
-  },
-  checkmark: {
-    color: colorButtonThird,
-    fontSize: 12,
-  },
-  checkboxLabel: {
-    fontSize: 16,
-  },
-  star: {
-    fontSize: 30,
-    color: '#ddd',
-    marginRight: 10,
-  },
-  starSelected: {
-    color: '#f1c40f',
-  },
-  bottomSpacer: {
-    height: 60,
-  }
-});
 
 export default AddPlaceScreen;
