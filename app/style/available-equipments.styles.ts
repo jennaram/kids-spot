@@ -35,6 +35,7 @@ export default StyleSheet.create({
   },
   icon: {
     marginRight: 10,
+    color: '#000',
   },
   checkboxLabel: {
     fontSize: 16,
