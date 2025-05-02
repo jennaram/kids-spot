@@ -1,14 +1,12 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import React, {  } from 'react';
+import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { eventCardStyles as styles } from '../style/EventCardStyles';
 import { fontSubtitle } from '../style/styles';
 import { ButtonStyle } from '../style/styles';
-import { colorButtonFirst } from '../style/styles';
-import { Lieu } from '../types/lieu';
-
+import { Location } from '@/types/location';
 // Interface pour les propriétés du composant EventCard
 interface EventCardProps {
-  lieu: Lieu;
+  lieu: Location;
   onOpenFullDescription: (description: string, nom: string) => void;
   flipAnimations: { [key: number]: Animated.Value };
   flippedCardId: number | null;
@@ -17,12 +15,12 @@ interface EventCardProps {
 
 // Interface Lieu importée du fichier principal (ou vous pouvez la déplacer ici)
 
-const EventCard: React.FC<EventCardProps> = ({ 
-  lieu, 
-  onOpenFullDescription, 
-  flipAnimations, 
-  flippedCardId, 
-  onFlipCard 
+const EventCard: React.FC<EventCardProps> = ({
+  lieu,
+  onOpenFullDescription,
+  flipAnimations,
+  flippedCardId,
+  onFlipCard
 }) => {
   const frontInterpolate = flipAnimations[lieu.id]?.interpolate({
     inputRange: [0, 180],
@@ -60,8 +58,8 @@ const EventCard: React.FC<EventCardProps> = ({
                 {lieu.date_evenement.debut} - {lieu.date_evenement.fin}
               </Text>
             </View>
-            <TouchableOpacity 
-              style={[styles.infoButton, ButtonStyle]} 
+            <TouchableOpacity
+              style={[styles.infoButton, ButtonStyle]}
               onPress={() => onFlipCard(lieu.id)}
             >
               <Text style={styles.infoText}>Infos</Text>
@@ -86,21 +84,21 @@ const EventCard: React.FC<EventCardProps> = ({
           </Text>
           <Text style={styles.modalText}>Type : {lieu.type.map(t => t.nom).join(', ')}</Text>
           <Text style={styles.modalText}>
-            Équipements : {lieu.equipements?.join(', ') || 'Non spécifiés'}
+            Équipements : {lieu.equipements?.map(equipement => equipement.nom).join(', ') || 'Non spécifiés'}
           </Text>
-          
+
           {/* Description avec "Lire plus..." */}
           <View style={styles.descriptionContainer}>
-            <Text 
+            <Text
               numberOfLines={2}
               ellipsizeMode="tail"
               style={styles.modalText}
             >
               {lieu.description}
             </Text>
-            
+
             {lieu.description && lieu.description.length > 100 && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => onOpenFullDescription(lieu.description, lieu.nom)}
                 style={styles.readMoreButton}
               >
@@ -108,9 +106,9 @@ const EventCard: React.FC<EventCardProps> = ({
               </TouchableOpacity>
             )}
           </View>
-          
-          <TouchableOpacity 
-            style={[styles.boutonRetour, ButtonStyle]} 
+
+          <TouchableOpacity
+            style={[styles.boutonRetour, ButtonStyle]}
             onPress={() => onFlipCard(lieu.id)}
           >
             <Text style={{ color: '#FFFFFF' }}>Retour</Text>

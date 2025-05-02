@@ -6,9 +6,9 @@ import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { useAuth } from '@/context/auth/AuthContext';
 import { authService } from '@/services/authService';
-import { useEditLocationOrEvent } from '@/hooks/locate/useEditLocation';
-import { useReadAllLocations } from '@/hooks/locate/useReadAllLocations';
-import { useReadLocations } from '@/hooks/locate/useReadLocations';
+import { useAddFavorite } from '@/hooks/favorite/useAddFavorite';
+import { useDeleteFavorite } from '@/hooks/favorite/useDeleteFavorite';
+import { useReadAllFavorites } from '@/hooks/favorite/useReadAllFavorites';
 
 export default function PlaceScreen() {
 
@@ -32,21 +32,23 @@ export default function PlaceScreen() {
 
 
 
-  const { location, loading, error } = useReadLocations(2);
+  const { favoris, loading, error } = useReadAllFavorites(48.85, 2.35, token);
+console.log(favoris)
 
-  if (error) {
-    console.log("Erreur générale :", error);
-    //console.log(fieldErrors)
-  }
 
-  if (loading) {
-    console.log("Chargment...")
-  }
+  // if (error) {
+  //   console.log("Erreur générale :", error);
+  //   //console.log(fieldErrors)
+  // }
+
+  // if (loading) {
+  //   console.log("Chargment...")
+  // }
 
   // if (success) {
   //   console.log("Tout est ok")
   // }
-console.log(location)
+
 
 
   return (
@@ -64,12 +66,12 @@ console.log(location)
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
-
-          {/* <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+{/* : 
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Test</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
 
-
+*/}
         </ScrollView>
       </View>
 
@@ -102,3 +104,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
+

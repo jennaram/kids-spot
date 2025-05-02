@@ -89,7 +89,7 @@ export interface Location {
     equipements: Equipement[];
     ages: TrancheAge[];
     commentaires?: Commentaire[];
-    note_moyenne?: number;
+    note_moyenne: number;
     nombre_commentaires?: number;
     image_url?: string;
 }

@@ -22,7 +22,6 @@ export function useReadLocations(id:number) {
           try {
             setLoading(true);
             const response = await getLocation(id);
-            console.log(response)
             if (
               response.statusCode === 200 &&
               response.data
