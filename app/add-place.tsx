@@ -13,6 +13,7 @@ import SubmitButton from './components/Form/SubmitButton';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { PhotoPickerButton } from '@/components/PhotoPickerButton';
+import AgeBadges from '@/components/Lieux/AgeBadges';
 
 // Styles
 import { colorButtonFirst, colorButtonThird } from './style/styles';
@@ -211,25 +212,22 @@ const AddPlaceScreen = () => {
           ))}
         </View>
 
-        {/* Tranche d'âge */}
+        {/* Tranche d'âge - utilisant AgeBadges */}
         <View style={styles.section}>
           <Text style={styles.label}>Tranche d'âge</Text>
-          <View style={styles.radioGroup}>
+          <View style={styles.ageBadgesContainer}>
             {ageRangeOptions.map((age) => (
               <TouchableOpacity
                 key={age}
-                style={[
-                  styles.radioButton, 
-                  ageRanges.includes(age) && styles.radioSelected
-                ]}
                 onPress={() => toggleAgeRange(age)}
               >
-                <Text style={[
-                  styles.radioText, 
-                  ageRanges.includes(age) && styles.radioTextSelected
-                ]}>
-                  {getTranslatedLabel(age, 'ageRange')}
-                </Text>
+                <AgeBadges
+                  tranchesAge={[getTranslatedLabel(age, 'ageRange')]}
+                  badgeColor={ageRanges.includes(age) ? colorButtonFirst : '#ddd'}
+                  containerStyle={styles.ageBadgeContainer}
+                  badgeStyle={styles.ageBadge}
+                  textStyle={styles.ageBadgeText}
+                />
               </TouchableOpacity>
             ))}
           </View>
@@ -309,32 +307,29 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'left', 
   },
-  radioGroup: {
+  ageBadgesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
+    gap: 10,
+  },
+  ageBadgeContainer: {
+    margin: 0,
+    marginBottom: 0,
+  },
+  ageBadge: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+  },
+  ageBadgeText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   ratingGroup: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-  },
-  radioButton: {
-    padding: 10,
-    marginRight: 10,
-    marginBottom: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  radioSelected: {
-    backgroundColor: colorButtonFirst,
-    borderColor: colorButtonFirst,
-  },
-  radioText: {
-    color: '#333',
-  },
-  radioTextSelected: {
-    color: 'white',
   },
   input: {
     borderWidth: 1,

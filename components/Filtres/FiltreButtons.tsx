@@ -24,7 +24,7 @@ const FiltreButtons: React.FC<FilterProps> = ({ selectedTypeId, onPress }) => {
 
             {/* Bouton pour filtrer sur les Loisirs */}
             <FiltreButton
-                type="Loisir"
+                type="Loisirs"
                 typeId={2}
                 onPress={onPress}
                 selectedTypeId={selectedTypeId}
