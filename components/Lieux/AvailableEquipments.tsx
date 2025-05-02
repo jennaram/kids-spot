@@ -1,8 +1,15 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import styles from '@/app/style//available-equipments.styles';
+import styles from '@/app/style/available-equipments.styles';
 
-export type EquipmentKeys = 'strollerAccess' | 'playArea' | 'microwave' | 'highChair' | 'changingTable';
+export type EquipmentKeys =
+  | 'strollerAccess'
+  | 'playArea'
+  | 'microwave'
+  | 'highChair'
+  | 'changingTable'
+  | 'parking'; // Ajout de "parking"
+
 export type EquipmentType = Record<EquipmentKeys, boolean>;
 
 type Props = {
@@ -16,6 +23,7 @@ const equipmentLabels: Record<EquipmentKeys, string> = {
   microwave: 'Micro-onde',
   highChair: 'Chaise haute',
   changingTable: 'Table à langer',
+  parking: 'Parking', //  Ajout du label "Parking"
 };
 
 export const AvailableEquipments: React.FC<Props> = ({ equipments, toggleEquipment }) => {

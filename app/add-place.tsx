@@ -45,6 +45,7 @@ const AddPlaceScreen = () => {
     microwave: false,
     highChair: false,
     changingTable: false,
+    parking: false,
   });
 
   const placeIcons = useMemo(() => ({

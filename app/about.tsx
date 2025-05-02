@@ -46,7 +46,7 @@ const About = () => {
                 imparable :
               </Text>
               <Text style={[styles.description, styles.bold]}>
-                " Est-ce qu'on y emmènerait nos propres enfants ? "
+                " Est-ce accessible pour nos propres enfants ? "
               </Text>
 
               <Text style={styles.subtitle}>Pourquoi utiliser cette app ?</Text>
@@ -79,7 +79,7 @@ const About = () => {
                 <MaterialIcons name="filter-list" size={20} color="#555" />
                 <Text style={styles.bulletText}>
                   <Text style={styles.bold}>Filtres intelligents</Text> : Par âge,
-                  type de lieu et accessibilité.
+                  type de lieu et équipements disponibles.
                 </Text>
               </View>
             </View>
