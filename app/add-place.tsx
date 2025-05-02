@@ -15,6 +15,7 @@ import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 import AgeBadges from '@/components/Lieux/AgeBadges';
 import StarRating from '@/components/Notation/StarRating';
+import { AvailableEquipments, EquipmentKeys, EquipmentType } from '@/components/Lieux/AvailableEquipments';
 
 // Styles
 import { colorButtonFirst } from './style/styles';
@@ -23,8 +24,6 @@ import styles from '@/app/style/add-place.styles';
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
 type LocationType = { latitude: number; longitude: number } | null;
-type EquipmentKeys = 'strollerAccess' | 'playArea' | 'microwave' | 'highChair' | 'changingTable';
-type EquipmentType = Record<EquipmentKeys, boolean>;
 
 const AddPlaceScreen = () => {
   const router = useRouter();
@@ -45,7 +44,6 @@ const AddPlaceScreen = () => {
     changingTable: false,
   });
 
-  // Mémoïsation des données constantes
   const placeIcons = useMemo(() => ({
     restaurant: require('@/assets/images/user-location-restaurant.png'),
     culture: require('@/assets/images/user-location-culture.png'),
@@ -55,7 +53,6 @@ const AddPlaceScreen = () => {
   const ageRangeOptions = useMemo(() => ['0-2', '3-6', '7+'], []);
   const ratingOptions = useMemo(() => [1, 2, 3, 4, 5], []);
 
-  // Gestion de la localisation
   const handleGetCurrentLocation = useCallback(async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -74,7 +71,7 @@ const AddPlaceScreen = () => {
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
       });
-      
+
       if (addressResult) {
         const street = addressResult.street || '';
         const city = addressResult.city || '';
@@ -86,7 +83,6 @@ const AddPlaceScreen = () => {
     }
   }, []);
 
-  // Gestion de la soumission
   const handleSubmit = useCallback(() => {
     if (!placeName || !address) {
       Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
@@ -101,7 +97,7 @@ const AddPlaceScreen = () => {
       description,
       ageRanges,
       rating,
-      equipments
+      equipments,
     };
 
     console.log('Nouveau lieu:', newPlace);
@@ -109,40 +105,31 @@ const AddPlaceScreen = () => {
     router.push('/home');
   }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, router]);
 
-  // Gestion des tranches d'âge
   const toggleAgeRange = useCallback((age: string) => {
-    setAgeRanges((prev) => 
+    setAgeRanges((prev) =>
       prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]
     );
   }, []);
 
-  // Gestion des équipements
   const toggleEquipment = useCallback((key: EquipmentKeys) => {
     setEquipments(prev => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  // Traduction des labels
-  const getTranslatedLabel = (key: string, type: 'equipment' | 'ageRange') => {
-    if (type === 'equipment') {
-      return key === 'strollerAccess' ? 'Accès poussette' :
-             key === 'playArea' ? 'Aire de jeux' :
-             key === 'microwave' ? 'Micro-onde' :
-             key === 'highChair' ? 'Chaise haute' : 'Table à langer';
-    }
-    
-    return key === '0-2' ? '0-2 ans' : 
-           key === '3-6' ? '3-6 ans' : '7 ans et plus';
+  const getTranslatedLabel = (key: string, type: 'ageRange') => {
+    return key === '0-2' ? '0-2 ans' :
+           key === '3-6' ? '3-6 ans' :
+           '7 ans et plus';
   };
 
   function setPhotoUri(uri: string): void {
-    throw new Error('Function not implemented.');
+    // Gérer la sélection de photo ici si nécessaire
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <BurgerMenu/>
-      <Title text={'Ajouter un lieu'}/>
-      
+      <BurgerMenu />
+      <Title text={'Ajouter un lieu'} />
+
       <ScrollView style={styles.scrollView}>
         <View style={styles.section}>
           <Text style={styles.label}>Nom du lieu</Text>
@@ -152,13 +139,12 @@ const AddPlaceScreen = () => {
             onChangeText={setPlaceName}
             placeholder="Entrez le nom du lieu"
           />
-            <PhotoPickerButton onPhotoSelected={(uri) => setPhotoUri(uri)} />
+          <PhotoPickerButton onPhotoSelected={(uri) => setPhotoUri(uri)} />
         </View>
 
-        {/* Type de lieu - utilisant FiltreButtons */}
         <View style={styles.section}>
           <Text style={styles.label}>Type de lieu</Text>
-          <FiltreButtons 
+          <FiltreButtons
             selectedTypeId={placeType === 'restaurant' ? 1 : placeType === 'leisure' ? 2 : 3}
             onPress={(id) => {
               const newType = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
@@ -176,8 +162,8 @@ const AddPlaceScreen = () => {
               value={address}
               onChangeText={setAddress}
             />
-            <TouchableOpacity 
-              style={styles.iconContainer} 
+            <TouchableOpacity
+              style={styles.iconContainer}
               onPress={handleGetCurrentLocation}
             >
               <MaterialIcons name="my-location" size={24} color={colorButtonFirst} />
@@ -197,24 +183,12 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Équipements disponibles</Text>
-          {Object.entries(equipments).map(([key, value]) => (
-            <TouchableOpacity
-              key={key}
-              style={styles.checkbox}
-              onPress={() => toggleEquipment(key as EquipmentKeys)}
-            >
-              <View style={[styles.checkboxBox, value && styles.checkboxSelected]}>
-                {value && <Text style={styles.checkmark}>✓</Text>}
-              </View>
-              <Text style={styles.checkboxLabel}>
-                {getTranslatedLabel(key, 'equipment')}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          <AvailableEquipments
+            equipments={equipments}
+            toggleEquipment={toggleEquipment}
+          />
         </View>
 
-        {/* Tranche d'âge - utilisant AgeBadges */}
         <View style={styles.section}>
           <Text style={styles.label}>Tranche d'âge</Text>
           <View style={styles.ageBadgesContainer}>
@@ -259,7 +233,6 @@ const AddPlaceScreen = () => {
           </View>
         )}
 
-        {/* Note - utilisant StarRating */}
         <View style={styles.section}>
           <StarRating
             rating={rating}
@@ -269,14 +242,14 @@ const AddPlaceScreen = () => {
           />
         </View>
 
-        <SubmitButton 
-          title="Ajouter le lieu" 
-          onPress={handleSubmit} 
+        <SubmitButton
+          title="Ajouter le lieu"
+          onPress={handleSubmit}
         />
-        
+
         <View style={styles.bottomSpacer} />
       </ScrollView>
-      
+
       <Navigation />
     </SafeAreaView>
   );
