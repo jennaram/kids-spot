@@ -14,6 +14,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+    
   },
   checkboxBox: {
     width: 24,
@@ -23,6 +24,7 @@ export default StyleSheet.create({
     marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 5,
   },
   checkboxSelected: {
     backgroundColor: colorButtonFirst,
