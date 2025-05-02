@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Image,
@@ -10,14 +10,11 @@ import {
   Button,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
 import { router, useFocusEffect } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
-import fetchNearbyPlaces from '@/api/fetchNearbyPlaces';
-import getUserLocation from '@/services/localisation';
 import { Navigation } from '@/components/NavBar/Navigation';
 import PlacePopUp from '@/components/MainMap/PlacePopUp';
-import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu'; // <-- Importe ton BurgerMenu
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
+import { useLocation } from '@/context/locate'; // Import du contexte
 import styles from '@/app/style/MapScreen.style'; // Ton style actuel
 
 // Icônes personnalisées
@@ -30,43 +27,15 @@ const iconByType = {
 };
 
 export default function MapScreen() {
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [nearbyPlaces, setNearbyPlaces] = useState<any[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Utilisation du contexte Location
+  const { userLocation, nearbyPlaces, error, refreshLocation } = useLocation();
   const [selectedPlace, setSelectedPlace] = useState<any | null>(null);
   const [showPopup, setShowPopup] = useState(false);
-
-  // Fonction pour charger les lieux à proximité
-  const loadNearbyPlaces = async (lat: number, lng: number) => {
-    const placesData = await fetchNearbyPlaces(lat, lng);
-    if (placesData && placesData.status === 'success' && placesData.data) {
-      setNearbyPlaces(placesData.data);
-    } else {
-      console.error('Erreur lors de la récupération des lieux à proximité');
-    }
-  };
-
-  // Récupère la localisation et les lieux
-  const fetchLocationAndPlaces = async () => {
-    const location = await getUserLocation();
-    if (location) {
-      setUserLocation(location);
-      setError(null);
-      loadNearbyPlaces(location.latitude, location.longitude);
-    } else {
-      setError('Impossible d\'obtenir la localisation.');
-    }
-  };
-
-  // Chargement initial des données de localisation
-  useEffect(() => {
-    fetchLocationAndPlaces();
-  }, []);
 
   // Mise à jour lorsque le composant reprend le focus
   useFocusEffect(
     React.useCallback(() => {
-      fetchLocationAndPlaces();
+      refreshLocation(); // Recharge la localisation et les lieux à partir du contexte
       return () => {};
     }, [])
   );

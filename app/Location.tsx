@@ -9,11 +9,11 @@ import { useLocation } from '@/context/locate';
 import { SwitchButton } from '@/components/switchButtonMapList';
 import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { useFadeInOut } from '@/hooks/Animation';
-import { Place } from '@/types/place';
 import { Row } from '@/components/Row';
 import LoadingView from '@/components/Messages/LocationLoading';
 import SearchBar from '@/components/Filtres/SearchBar';
 import ErrorScreen from '@/components/ErrorScreen';
+import { Location } from '@/types/location';
 
 export default function NearbyPlacesScreen() {
     // Récupération des données de localisation
@@ -28,7 +28,7 @@ export default function NearbyPlacesScreen() {
     };
 
     // Applique les filtres type et recherche
-    const filteredPlaces = (nearbyPlaces ?? []).filter((place: Place) => {
+    const filteredPlaces = (nearbyPlaces ?? []).filter((place: Location) => {
         const matchType = selectedTypeId
             ? place.type?.some((t) => t.id === selectedTypeId)
             : true;

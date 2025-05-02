@@ -20,7 +20,6 @@ import { Alert, Platform, Linking } from 'react-native';
 import { colorButtonFirst } from './style/styles';
 import { IconesLieux } from '@/components/IconesLieux';
 import { Navigation } from "@/components/NavBar/Navigation";
-import { Lieu } from "./types/lieu";
 import { AvisButton } from "../components/Lieux/AvisButton";
 import LieuActionButtons from "../components/Lieux/LieuActionButtons";
 import ShareButton from "../components/Lieux/ShareButton";
@@ -32,6 +31,7 @@ import { useAuth } from "@/context/auth";
 import BottomModal from "../components/ModalRedirection"; // Importez votre composant BottomModal
 import { useIsFavorite } from "@/hooks/favorite/useIsFavorite";
 import BackButton from "./components/BackButton";
+import { Location } from "@/types/location";
 
 
 const DetailsLieu = () => {
@@ -40,7 +40,7 @@ const DetailsLieu = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lieu, setPlace] = useState<Lieu | null>(null);
+  const [lieu, setPlace] = useState<Location | null>(null);
   const {token, setToken} = useAuth();
   // État pour contrôler la visibilité de la modal de redirection
   const [modalVisible, setModalVisible] = useState(false);

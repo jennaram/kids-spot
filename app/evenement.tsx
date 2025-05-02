@@ -1,27 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, SafeAreaView, ScrollView, Modal } from 'react-native';
+import { View, Text, Animated, SafeAreaView, ScrollView, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from './types/navigation';
 
 // Import du composant de layout et styles
-import Layout from './components/LayoutNav';
 import { eventCardStyles as styles } from './style/EventCardStyles';
 import { fontTitle } from './style/styles';
-import { ButtonStyle } from './style/styles';
-import { colorButtonThird } from './style/styles';
-import { Lieu } from './types/lieu';
 // Import du composant Card
 import EventCard from './components/EventCard';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
-import {ExitButton} from './components/ExitButton';
-import { useLocation } from '@/context/locate';
+import { ExitButton } from './components/ExitButton';
+import { useLocation } from '@/context/locate'; // Import du contexte
+import { Location } from '@/types/location';
 
 const Evenement = () => {
-  // État pour stocker la liste des lieux
-  const [lieux, setLieux] = useState<Lieu[]>([]);
+  // Récupérer la liste des lieux à partir du contexte
+  const { nearbyPlaces, error, refreshLocation } = useLocation();
+  // État pour stocker la liste des lieux filtrés pour les événements
+  const [lieux, setLieux] = useState<Location[]>([]);
   // État pour gérer quel lieu est actuellement "flippé"
   const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
   // État pour gérer la modal de description complète
@@ -30,15 +28,13 @@ const Evenement = () => {
   const [currentDescription, setCurrentDescription] = useState('');
   // État pour stocker le nom du lieu de la description
   const [currentNom, setCurrentNom] = useState('');
-  const { userLocation, nearbyPlaces, error, refreshLocation } = useLocation();
   
   // Référence pour les animations
   const flipAnimations = useRef<{[key: number]: Animated.Value}>({}).current;
-  
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+
 
   useEffect(() => {
-    // Utiliser les lieux à proximité récupérés via useLocation
     if (nearbyPlaces) {
       // Filtrer pour ne garder que les événements
       const events = nearbyPlaces.filter((l) => l.est_evenement);
@@ -54,7 +50,7 @@ const Evenement = () => {
       
       setLieux(events);
     }
-  }, [nearbyPlaces]); // La dépendance est maintenant nearbyPlaces au lieu de []
+  }, [nearbyPlaces]); // Dépendance à nearbyPlaces
 
   const flipCard = (id: number) => {
     if (flippedCardId !== null && flippedCardId !== id) {
@@ -85,16 +81,13 @@ const Evenement = () => {
       // Première ouverture d'une carte
       Animated.timing(flipAnimations[id], {
         toValue: 180,
-        duration:200,
+        duration: 200,
         useNativeDriver: true,
       }).start(() => {
         setFlippedCardId(id);
       });
     }
   };
-  
-  
-  
 
   // Fonction pour ouvrir la modal avec la description complète
   const openFullDescription = (description: string, nom: string) => {
@@ -105,19 +98,20 @@ const Evenement = () => {
 
   if (lieux.length === 0) {
     return (
-        <View style={styles.centered}>
-          <Text>Chargement...</Text>
-        </View>
-      
+      <View style={styles.centered}>
+        <Text>Chargement...</Text>
+      </View>
     );
   }
 
+  console.log(lieux)
+
   return (
     <SafeAreaView style={styles.container}>
-      <BurgerMenu/>
-      <Title text={'Événements'}/>
+      <BurgerMenu />
+      <Title text={'Événements'} />
       
-      <ScrollView >
+      <ScrollView>
         {lieux.map((lieu) => (
           <EventCard
             key={lieu.id}
@@ -129,8 +123,10 @@ const Evenement = () => {
           />
         ))}
       </ScrollView>
-     {/* barre de nav*/}
-      <Navigation></Navigation>
+      
+      {/* Barre de nav */}
+      <Navigation />
+
       {/* Modal pour la description complète */}
       <Modal
         animationType="slide"
@@ -141,15 +137,13 @@ const Evenement = () => {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={[fontTitle, styles.modalHeaderTitle]}>{currentNom}</Text>
-            <ExitButton onPress={() => setModalVisible(false)} 
-            style={styles.exitButtonCustom}/>
+            <ExitButton onPress={() => setModalVisible(false)} style={styles.exitButtonCustom} />
           </View>
           <ScrollView style={styles.modalBody}>
             <Text style={styles.fullDescriptionText}>{currentDescription}</Text>
           </ScrollView>
         </SafeAreaView>
       </Modal>
-     
     </SafeAreaView>
   );
 };

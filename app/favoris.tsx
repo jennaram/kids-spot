@@ -11,7 +11,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
-import Layout from './components/LayoutNav';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import {
@@ -97,13 +96,6 @@ const Favoris = () => {
   return (
     <View style={styles.safeArea}>
       <BurgerMenu/>
-      <Layout
-        activeTab="favorite"
-        onMapPress={() => navigation.navigate('Map')}
-        onCalendarPress={() => navigation.navigate('Calendar')}
-        onAddPress={() => navigation.navigate('Add')}
-        onFavoritePress={() => navigation.navigate('Favorites')}
-      >
         <View style={styles.container}>
           <Title text="Favoris" />
 
@@ -161,7 +153,6 @@ const Favoris = () => {
             <Text style={styles.noFavorisText}>Aucun favori trouvé.</Text>
           )}
         </View>
-      </Layout>
     </View>
   );
 };
