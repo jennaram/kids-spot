@@ -32,7 +32,8 @@ export default function LoginScreen() {
   // Effet pour gérer la connexion réussie
   useEffect(() => {
     if (data?.token) {
-      setToken(data.token, data.expiresIn * 1000); // Convertir expiresIn en ms
+      //setToken(data.token, data.expiresIn * 1000);
+      setToken(data.token, 60000);
       Alert.alert('Succès', 'Connexion réussie');
       router.replace('/main'); // Redirection après succès
     }

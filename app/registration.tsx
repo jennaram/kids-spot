@@ -7,21 +7,23 @@ import {
   Alert,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
-import { colorButtonFirst, colorButtonThird, colorFourth } from './style/styles';
+import { colorButtonThird, colorFourth } from './style/styles';
 import { fontTitle } from './style/styles';
 
-// Composants optimisés
+// Composants
 import { BackButton } from './components/BackButton';
 import { GoogleAuthButton } from './components/Form/GoogleLoginButton';
 import { FormInput } from './components/Form/InputField';
 import { SubmitButton } from './components/Form/SubmitButton';
 import { AuthSeparator } from './components/Form/SeparatorWithText ';
 import { AuthFooterLink } from './components/InlineLink';
+
+import { useRegisterUser } from '@/hooks/user/useRegisterUser';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -33,8 +35,15 @@ export default function RegistrationScreen() {
     confirmPassword: '',
     phone: '',
   });
-  const [loading, setLoading] = useState(false);
-  
+
+  const {
+    submit,
+    loading,
+    data,
+    error,
+    fieldErrors,
+  } = useRegisterUser();
+
   const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
     androidClientId: "VOTRE_CLIENT_ID_ANDROID",
     iosClientId: "VOTRE_CLIENT_ID_IOS",
@@ -47,21 +56,27 @@ export default function RegistrationScreen() {
     }
   }, [googleResponse]);
 
+  useEffect(() => {
+    if (data) {
+      Alert.alert('Succès', 'Inscription réussie !');
+      router.replace('/main');
+    } else if (error) {
+      Alert.alert('Erreur', error);
+    }
+  }, [data, error]);
+
   const handleGoogleSignIn = async (token?: string) => {
     if (!token) return;
-    
+
     try {
-      setLoading(true);
       const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       const userData = await response.json();
       if (userData) router.replace('/points');
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion avec Google');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -69,39 +84,39 @@ export default function RegistrationScreen() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (formData.password !== formData.confirmPassword) {
       Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
-    
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      Alert.alert('Succès', 'Inscription réussie!');
-      router.replace('/main');
-    }, 1500);
+
+    await submit({
+      pseudo: formData.pseudo,
+      mail: formData.email,
+      mot_de_passe: formData.password,
+      telephone: formData.phone,
+    });
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <BackButton navigateTo="/login" />
-      
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.content}>
             <Text style={[fontTitle, styles.titleText]}>Inscription</Text>
-            
-            <GoogleAuthButton 
-              onPress={() => googlePromptAsync()} 
+
+            <GoogleAuthButton
+              onPress={() => googlePromptAsync()}
               loading={loading}
               disabled={!googleRequest || loading}
             />
@@ -122,7 +137,6 @@ export default function RegistrationScreen() {
                 onChangeText={(text) => handleInputChange('email', text)}
                 placeholder="email@exemple.com"
                 keyboardType="email-address"
-                autoCapitalize="none"
               />
 
               <FormInput
@@ -159,7 +173,6 @@ export default function RegistrationScreen() {
                 text="Déjà un compte ?"
                 linkText="Connectez-vous"
                 onPress={() => router.push('/login')}
-                style={styles.loginLink}
               />
             </View>
           </View>
@@ -200,9 +213,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
-  },
-  loginLink: {
-    marginTop: 15,
-    alignSelf: 'center',
   },
 });

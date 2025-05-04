@@ -15,11 +15,13 @@ export function useRegisterUser() {
     setFieldErrors(null);
     try {
       const response = await registerUser(userData);
-      if (response.statusCode === 200 && response.data) {
+      console.log(response)
+      if (response.statusCode === 201 && response.data) {
         setData(response.data);
       } else {
         setError('Une erreur est survenue lors de l’inscription');
       }
+      
     } catch (err: any) {
       setError(err.message || 'Erreur inconnue');
       if (err.errors) {

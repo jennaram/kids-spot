@@ -15,7 +15,7 @@ import { RegisterUser, AuthResult } from '@/types/user';
  */
 export async function registerUser(user: RegisterUser): 
   Promise<ApiResponse<ApiResponseSuccessOnly>> {
-  return apiPost<ApiResponseSuccessOnly>('users/register.php', user);
+  return apiPost<ApiResponseSuccessOnly>('users/create.php', user);
 }
 
 /**
