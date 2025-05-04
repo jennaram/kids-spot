@@ -30,14 +30,14 @@ import { useAuth } from "@/context/auth";
 import BottomModal from "../components/ModalRedirection";
 import { useIsFavorite } from "@/hooks/favorite/useIsFavorite";
 import BackButton from "./components/BackButton";
-import { useReadLocations } from "@/hooks/locate/useReadLocations";
+import { useReadPlace } from "@/hooks/place/useReadPlace";
 
 const DetailsLieu = () => {
   const params = useLocalSearchParams() as { id: string };
   const lieuId = Number(params.id?.toString() || "2");
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const { location: lieu, loading, error } = useReadLocations(lieuId);
+  const { place, loading, error } = useReadPlace(lieuId);
 
   const { token } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,10 +47,10 @@ const DetailsLieu = () => {
   const EstFavori = isFavorite(lieuId);
 
   const handleShare = async () => {
-    if (!lieu) return;
+    if (!place) return;
     try {
       const result = await Share.share({
-        message: `Viens découvrir ${lieu.nom} sur KidsPot ! 🎉 https://kidspot.app/lieu/${lieu.id}`,
+        message: `Viens découvrir ${place.nom} sur KidsPot ! 🎉 https://kidspot.app/lieu/${place.id}`,
         title: "KidsPot - Sorties pour les enfants",
       });
     } catch (error: any) {
@@ -75,9 +75,9 @@ const DetailsLieu = () => {
   }
 
   const handleGpsPress = () => {
-    if (!lieu) return;
+    if (!place) return;
 
-    const { latitude, longitude } = lieu.position;
+    const { latitude, longitude } = place.position;
 
     Alert.alert(
       "Choisissez une application",
@@ -114,14 +114,14 @@ const DetailsLieu = () => {
   };
 
   const handleCall = () => {
-    if (!lieu || !lieu.adresse.telephone) return;
-    const phoneNumber = lieu.adresse.telephone.replace(/\s/g, '');
+    if (!place || !place.adresse.telephone) return;
+    const phoneNumber = place.adresse.telephone.replace(/\s/g, '');
     Linking.openURL(`tel:${phoneNumber}`);
   };
 
   const handleWebsite = () => {
-    if (!lieu || !lieu.adresse.site_web) return;
-    Linking.openURL(lieu.adresse.site_web);
+    if (!place || !place.adresse.site_web) return;
+    Linking.openURL(place.adresse.site_web);
   };
 
   if (loading) {
@@ -133,7 +133,7 @@ const DetailsLieu = () => {
     );
   }
 
-  if (error || !lieu) {
+  if (error || !place) {
     return (
       <View style={[styles.mainContainer, styles.errorContainer]}>
         <MaterialIcons name="error-outline" size={48} color="red" />
@@ -148,8 +148,8 @@ const DetailsLieu = () => {
     );
   }
 
-  const tranchesAge = lieu.ages.map(age => age.nom);
-  const imageUrl = lieu.image_url || require("../assets/images/parc_montsouris.jpg");
+  const tranchesAge = place.ages.map(age => age.nom);
+  const imageUrl = place.image_url || require("../assets/images/parc_montsouris.jpg");
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -173,39 +173,39 @@ const DetailsLieu = () => {
             <View style={styles.ratingShareContainer}>
               <View style={styles.ratingWrapper}>
                 <View style={styles.ratingContainer}>
-                  <Text style={styles.note}>{lieu.note_moyenne.toFixed(1)}</Text>
+                  <Text style={styles.note}>{place.note_moyenne.toFixed(1)}</Text>
                   <MaterialIcons
                     name="star"
                     size={18}
                     color="black"
                     style={styles.starIcon}
                   />
-                  <Text style={styles.avis}>{lieu.nombre_commentaires} avis membres</Text>
+                  <Text style={styles.avis}>{place.nombre_commentaires} avis membres</Text>
                 </View>
               </View>
               <ShareButton onPress={handleShare} />
             </View>
 
-            <Text style={styles.nom}>{lieu.nom}</Text>
-            <Text style={styles.description}>{lieu.description}</Text>
+            <Text style={styles.nom}>{place.nom}</Text>
+            <Text style={styles.description}>{place.description}</Text>
             <View style={styles.horairesContainer}>
-              <Text style={styles.horaires}>{lieu.horaires}</Text>
+              <Text style={styles.horaires}>{place.horaires}</Text>
             </View>
             <AgeBadges tranchesAge={tranchesAge} />
-            <IconesLieux equipements={lieu.equipements} />
+            <IconesLieux equipements={place.equipements} />
 
             <View style={styles.actionsContainer}>
               <View style={styles.rowButtons}>
                 <AvisButton
                   type="donner"
-                  nomLieu={lieu.nom}
-                  lieuId={lieu.id.toString()}
+                  nomLieu={place.nom}
+                  lieuId={place.id.toString()}
                   onBeforeAction={handleDonnerAvis}
                 />
                 <AvisButton
                   type="voir"
-                  nomLieu={lieu.nom}
-                  lieuId={lieu.id.toString()}
+                  nomLieu={place.nom}
+                  lieuId={place.id.toString()}
                 />
               </View>
 
@@ -213,8 +213,8 @@ const DetailsLieu = () => {
                 onCall={handleCall}
                 onWebsite={handleWebsite}
                 onGps={handleGpsPress}
-                telephone={lieu.adresse.telephone}
-                siteWeb={lieu.adresse.site_web}
+                telephone={place.adresse.telephone}
+                siteWeb={place.adresse.site_web}
               />
             </View>
           </View>

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import getUserLocation from '@/services/localisation';
 import { useAuth } from '@/context/auth/AuthContext';
-import { useReadAllLocations } from '@/hooks/locate/useReadAllLocations';
+import { useReadAllPlaces} from '@/hooks/place/useReadAllPlaces';
 import { useReadAllFavorites } from '@/hooks/favorite/useReadAllFavorites';
 
 type Location = {
@@ -65,7 +65,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     fetchLocation();
   }, []);
 
-  const { locations, loading: loadingPlaces, error: placesError } = useReadAllLocations(
+  const { places, loading: loadingPlaces, error: placesError } = useReadAllPlaces(
     userLocation?.latitude ?? 0,
     userLocation?.longitude ?? 0
   );
@@ -81,7 +81,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     <LocationContext.Provider
       value={{
         userLocation,
-        nearbyPlaces: locationReady ? locations : null,
+        nearbyPlaces: locationReady ? places : null,
         favorites: token && locationReady ? favoris : null,
         loading: !locationReady || loadingPlaces || (token ? loadingFavorites : false),
         error: localError || placesError || favError,

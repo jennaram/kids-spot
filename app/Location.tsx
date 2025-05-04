@@ -13,7 +13,7 @@ import { Row } from '@/components/Row';
 import LoadingView from '@/components/Messages/LocationLoading';
 import SearchBar from '@/components/Filtres/SearchBar';
 import ErrorScreen from '@/components/ErrorScreen';
-import { Location } from '@/types/location';
+import { Place } from '@/types/place';
 
 export default function NearbyPlacesScreen() {
     // Récupération des données de localisation
@@ -28,7 +28,7 @@ export default function NearbyPlacesScreen() {
     };
 
     // Applique les filtres type et recherche
-    const filteredPlaces = (nearbyPlaces ?? []).filter((place: Location) => {
+    const filteredPlaces = (nearbyPlaces ?? []).filter((place: Place) => {
         const matchType = selectedTypeId
             ? place.type?.some((t) => t.id === selectedTypeId)
             : true;

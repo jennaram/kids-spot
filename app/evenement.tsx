@@ -11,13 +11,13 @@ import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { ExitButton } from './components/ExitButton';
 import { useLocation } from '@/context/locate'; // Import du contexte
-import { Location } from '@/types/location';
+import { Place } from '@/types/place';
 
 const Evenement = () => {
   // Récupérer la liste des lieux à partir du contexte
   const { nearbyPlaces, error, refreshLocation } = useLocation();
   // État pour stocker la liste des lieux filtrés pour les événements
-  const [lieux, setLieux] = useState<Location[]>([]);
+  const [lieux, setLieux] = useState<Place[]>([]);
   // État pour gérer quel lieu est actuellement "flippé"
   const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
   // État pour gérer la modal de description complète

@@ -1,5 +1,5 @@
 import { fetchNearbyFavorites } from "@/services/favoritesServices";
-import { Location } from "@/types/location";
+import { Place } from "@/types/place";
 import { useEffect, useState } from "react";
 
 /**
@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
  * ```
  */
 export function useReadAllFavorites(lat: number, lgt: number, token: string, trigger: number) {
-    const [favoris, setFavoris] = useState<Location[]>([]);
+    const [favoris, setFavoris] = useState<Place[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 

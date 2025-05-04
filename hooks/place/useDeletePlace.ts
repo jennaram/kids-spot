@@ -1,4 +1,4 @@
-import { deleteLocation } from "@/services/locationsServices";
+import { deletePlace } from "@/services/placeServices";
 import { getApiMessage, isApiError } from "@/utils/apiResponseHelpers";
 import { useState } from "react";
 
@@ -28,7 +28,7 @@ import { useState } from "react";
  * }
  * ```
  */
-export function useDeleteLocationOrEvent() {
+export function useDeletePlaceOrEvent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null); // erreur globale
     const [success, setSuccess] = useState(false);
@@ -38,13 +38,13 @@ export function useDeleteLocationOrEvent() {
      * @param id `number` - L'identifiant du lieu ou de l'événement à supprimer.
      * @param token `string` - Le token d'authentification.
      */
-    const removeLocationOrEvent = async (id: number, token: string) => {
+    const removePlaceOrEvent = async (id: number, token: string) => {
         setLoading(true);
         setError(null);
         setSuccess(false);
 
         try {
-            const response = await deleteLocation(id, token);
+            const response = await deletePlace(id, token);
             if (response.statusCode === 204) {
                 setSuccess(true);
             } else if (isApiError(response)) {
@@ -62,5 +62,5 @@ export function useDeleteLocationOrEvent() {
         }
     }
 
-    return { removeLocationOrEvent, loading, error, success }
+    return { removePlaceOrEvent, loading, error, success }
 }

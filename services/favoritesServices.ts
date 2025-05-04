@@ -5,7 +5,7 @@
 
 import { apiDelete, apiGet, apiPost } from "@/services/apiClient";
 import { ApiResponse, ApiResponseSuccessOnly } from "@/types/api-response";
-import { FetchAllLocation } from "@/types/location";
+import { FetchAllLocation } from "@/types/place";
 import { checkToken } from "@/utils/auth";
 
 export async function addFavorite(id_lieu: number, token: string):Promise<ApiResponse<ApiResponseSuccessOnly>> {

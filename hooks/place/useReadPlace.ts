@@ -1,5 +1,5 @@
-import { getLocation } from "@/services/locationsServices";
-import { Location } from "@/types/location";
+import { getPlace } from "@/services/placeServices";
+import { Place } from "@/types/place";
 import { useEffect, useState } from "react";
 
 /**
@@ -12,8 +12,8 @@ import { useEffect, useState } from "react";
  * const { location, loading, error } = useReadLocations(1);
  * ```
  */
-export function useReadLocations(id:number) {
-    const [location, setLocation] = useState<Location | null>();
+export function useReadPlace(id:number) {
+    const [place, setPlace] = useState<Place | null>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -21,15 +21,15 @@ export function useReadLocations(id:number) {
         const load = async () => {
           try {
             setLoading(true);
-            const response = await getLocation(id);
+            const response = await getPlace(id);
             if (
               response.statusCode === 200 &&
               response.data
             ) {
-              setLocation(response.data.data);
+              setPlace(response.data.data);
               setError(null);
             } else if (response.statusCode === 404) {
-              setLocation(null);
+              setPlace(null);
               setError(null);
             } else {
               setError("Erreur lors du chargement du lieux.");
@@ -45,5 +45,5 @@ export function useReadLocations(id:number) {
         load();
       }, [id]);
     
-      return { location, loading, error };
+      return { place, loading, error };
 }

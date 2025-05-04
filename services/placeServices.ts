@@ -6,7 +6,7 @@
 import { ApiResponse, ApiResponseSuccessOnly } from "@/types/api-response";
 import { checkToken } from "@/utils/auth";
 import { apiDelete, apiGet, apiPost, apiPut } from "./apiClient";
-import { AddLocationOrEventPayload, FetchAllLocation, FetchLocation, UpdateLocationOrEventPayload } from "@/types/location";
+import { AddPlaceOrEventPayload, FetchAllPlaces, FetchPlace, UpdatePlaceOrEventPayload } from "@/types/place";
 
 /**
  * Soumet les données du lieu ou de l'événement a ajouter à l'API.
@@ -31,7 +31,7 @@ import { AddLocationOrEventPayload, FetchAllLocation, FetchLocation, UpdateLocat
  * @param token - Le token d'authentification.
  * @returns {Promise<ApiResponse<ApiResponseSuccessOnly>>} Une promesse qui résoudra avec la réponse de l'API.
  */
-export async function addLocationOrEvent(data: AddLocationOrEventPayload, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
+export async function addPlaceOrEvent(data: AddPlaceOrEventPayload, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
     checkToken(token);
     return apiPost<ApiResponseSuccessOnly>('lieux/ajout', data, token);
 }
@@ -42,7 +42,7 @@ export async function addLocationOrEvent(data: AddLocationOrEventPayload, token:
  * @param token `string` - Le token d'authentification.
  * @returns {Promise<ApiResponse<ApiResponseSuccessOnly>>} Une promesse qui résoudra avec la réponse de l'API.
  */
-export async function deleteLocation(id: number, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
+export async function deletePlace(id: number, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
     checkToken(token);
     return apiDelete<ApiResponseSuccessOnly>('lieux/supprime', { id }, token);
 }
@@ -71,7 +71,7 @@ export async function deleteLocation(id: number, token: string): Promise<ApiResp
  * @param token - Le token d'authentification.
  * @returns {Promise<ApiResponse<ApiResponseSuccessOnly>>} Une promesse qui résoudra avec la réponse de l'API.
  */
-export async function editLocationOrEvent(data: UpdateLocationOrEventPayload, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
+export async function editPlaceOrEvent(data: UpdatePlaceOrEventPayload, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
     checkToken(token);
     return apiPut<ApiResponseSuccessOnly>('lieux/modifier', data, token);
 }
@@ -83,8 +83,8 @@ export async function editLocationOrEvent(data: UpdateLocationOrEventPayload, to
  * @param lgt `number - La longitude
  * @returns {Promise<ApiResponse<FetchAllLocation>>} Une promesse qui résoudra avec la réponse de l'API.
  */
-export async function getAllLocation(lat: number, lgt: number): Promise<ApiResponse<FetchAllLocation>> {
-    return apiGet<FetchAllLocation>(`lieux/autour/${lat}/${lgt}`);
+export async function getAllPlaces(lat: number, lgt: number): Promise<ApiResponse<FetchAllPlaces>> {
+    return apiGet<FetchAllPlaces>(`lieux/autour/${lat}/${lgt}`);
 }
 
 /**
@@ -93,6 +93,6 @@ export async function getAllLocation(lat: number, lgt: number): Promise<ApiRespo
  * @param id `number`- Identifiant du lieu
  * @returns {Promise<ApiResponse<FetchLocation>>} Une promesse qui résoudra avec la réponse de l'API.
  */
-export async function getLocation(id: number): Promise<ApiResponse<FetchLocation>> {
-    return apiGet<FetchLocation>(`lieux/${id}`);
+export async function getPlace(id: number): Promise<ApiResponse<FetchPlace>> {
+    return apiGet<FetchPlace>(`lieux/${id}`);
 }

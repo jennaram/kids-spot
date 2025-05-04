@@ -1,5 +1,5 @@
-import { getAllLocation } from "@/services/locationsServices";
-import { Location } from "@/types/location";
+import { getAllPlaces } from "@/services/placeServices";
+import { Place } from "@/types/place";
 import { useEffect, useState } from "react";
 
 /**
@@ -13,8 +13,8 @@ import { useEffect, useState } from "react";
  * const { locations, loading, error } = useReadAllLocations(48.85, 2.35);
  * ```
  */
-export function useReadAllLocations(lat: number, lgt: number) {
-    const [locations, setLocations] = useState<Location[]>([]);
+export function useReadAllPlaces(lat: number, lgt: number) {
+    const [places, setPlaces] = useState<Place[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +22,7 @@ export function useReadAllLocations(lat: number, lgt: number) {
         const load = async () => {
           try {
             setLoading(true);
-            const response = await getAllLocation(lat, lgt);
+            const response = await getAllPlaces(lat, lgt);
     
             if (
               response.statusCode === 200 &&
@@ -30,10 +30,10 @@ export function useReadAllLocations(lat: number, lgt: number) {
               response.data.data &&
               Array.isArray(response.data.data)
             ) {
-              setLocations(response.data.data);
+              setPlaces(response.data.data);
               setError(null);
             } else if (response.statusCode === 404) {
-              setLocations([]);
+              setPlaces([]);
               setError(null);
             } else {
               setError("Erreur lors du chargement des lieux.");
@@ -49,5 +49,5 @@ export function useReadAllLocations(lat: number, lgt: number) {
         load();
       }, [lat, lgt]);
     
-      return { locations, loading, error };
+      return { places, loading, error };
 }

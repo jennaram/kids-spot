@@ -1,5 +1,5 @@
-import { addLocationOrEvent } from "@/services/locationsServices";
-import { AddLocationOrEventPayload } from "@/types/location";
+import { addPlaceOrEvent } from "@/services/placeServices";
+import { AddPlaceOrEventPayload } from "@/types/place";
 import { getApiMessage, isApiError } from "@/utils/apiResponseHelpers";
 import { handleApiError } from "@/utils/handleApiError";
 import { useState } from "react";
@@ -51,7 +51,7 @@ import { useState } from "react";
  * }
  * ```
  */
-export function useAddLocationOrEvent() {
+export function useAddPlaceOrEvent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null); // erreur globale
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}); // erreurs par champ
@@ -79,14 +79,14 @@ export function useAddLocationOrEvent() {
    * - `date_fin`: `string` - (optionnel) - La date de fin de l'événement
    * @param token - Le token d'authentification.
    */
-  const submitLocationOrEvent = async (data: AddLocationOrEventPayload, token: string) => {
+  const submitPlaceOrEvent = async (data: AddPlaceOrEventPayload, token: string) => {
     setLoading(true);
     setError(null);
     setFieldErrors({});
     setSuccess(false);
 
     try {
-      const response = await addLocationOrEvent(data, token);
+      const response = await addPlaceOrEvent(data, token);
 
       if (response.statusCode === 201 || response.statusCode === 200) {
         setSuccess(true);
@@ -108,5 +108,5 @@ export function useAddLocationOrEvent() {
     }
   };
 
-  return { submitLocationOrEvent, loading, error, fieldErrors, success };
+  return { submitPlaceOrEvent, loading, error, fieldErrors, success };
 }

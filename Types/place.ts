@@ -4,7 +4,7 @@
  */
 
 // 🔹 Payloads (création/modification)
-export interface BaseLocationPayload {
+export interface BasePlacePayload {
     nom: string;
     description: string;
     horaires: string;
@@ -25,13 +25,13 @@ export interface EventExtension {
     date_fin: string;
 }
 
-export type AddLocationOrEventPayload =
-    | BaseLocationPayload // Pour la création d'un lieu
-    | (BaseLocationPayload & EventExtension); // Pour la création d'un événement
+export type AddPlaceOrEventPayload =
+    | BasePlacePayload // Pour la création d'un lieu
+    | (BasePlacePayload & EventExtension); // Pour la création d'un événement
 
-export type UpdateLocationOrEventPayload =
-    | (BaseLocationPayload & { id: number }) // Mise à jour d'un lieu (l'ID est requis)
-    | (BaseLocationPayload & EventExtension & { id: number }); // Mise à jour d'un événement (l'ID est requis)
+export type UpdatePlaceOrEventPayload =
+    | (BasePlacePayload & { id: number }) // Mise à jour d'un lieu (l'ID est requis)
+    | (BasePlacePayload & EventExtension & { id: number }); // Mise à jour d'un événement (l'ID est requis)
 
 // 🔹 Structures partagées
 export interface Adresse {
@@ -76,7 +76,7 @@ export interface Commentaire {
 }
 
 // 🔹 Lieu complet (lecture)
-export interface Location {
+export interface Place {
     id: number;
     nom: string;
     description: string;
@@ -94,7 +94,7 @@ export interface Location {
     image_url?: string;
 }
 
-export type FetchAllLocation =  ({status: "success"} & {data: Location[]});
+export type FetchAllPlaces =  ({status: "success"} & {data: Place[]});
 
-export type FetchLocation =  ({status: "success"} & {data: Location});
+export type FetchPlace =  ({status: "success"} & {data: Place});
 

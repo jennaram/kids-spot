@@ -1,5 +1,5 @@
-import { editLocationOrEvent } from '@/services/locationsServices';
-import { UpdateLocationOrEventPayload } from '@/types/location';
+import { editPlaceOrEvent } from '@/services/placeServices';
+import { UpdatePlaceOrEventPayload } from '@/types/place';
 import { getApiMessage, isApiError } from '@/utils/apiResponseHelpers';
 import { handleApiError } from '@/utils/handleApiError';
 import { useState } from "react";
@@ -52,7 +52,7 @@ import { useState } from "react";
 * }
 * ```
 */
-export function useEditLocationOrEvent() {
+export function useEditPlaceOrEvent() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null); // erreur globale
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}); // erreurs par champ
@@ -81,14 +81,14 @@ export function useEditLocationOrEvent() {
     * - `date_fin`: `string` - (optionnel) - La date de fin de l'événement
     * @param token - Le token d'authentification.
     */
-    const updateLocationOrEvent = async (data: UpdateLocationOrEventPayload, token: string) => {
+    const updatePlaceOrEvent = async (data: UpdatePlaceOrEventPayload, token: string) => {
         setLoading(true);
         setError(null);
         setFieldErrors({});
         setSuccess(false);
 
         try {
-            const response = await editLocationOrEvent(data, token);
+            const response = await editPlaceOrEvent(data, token);
             if (response.statusCode === 201 || response.statusCode === 200) {
                 setSuccess(true);
             } else if (isApiError(response)) {
@@ -109,5 +109,5 @@ export function useEditLocationOrEvent() {
         }
     };
 
-    return { updateLocationOrEvent, loading, error, fieldErrors, success };
+    return { updatePlaceOrEvent, loading, error, fieldErrors, success };
 }

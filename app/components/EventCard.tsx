@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { eventCardStyles as styles } from '../style/EventCardStyles';
 import { fontSubtitle } from '../style/styles';
 import { ButtonStyle } from '../style/styles';
-import { Location } from '@/types/location';
+import { Location } from '@/types/place';
 // Interface pour les propriétés du composant EventCard
 interface EventCardProps {
   lieu: Location;
