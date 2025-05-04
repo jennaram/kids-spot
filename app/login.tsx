@@ -6,73 +6,52 @@ import {
   Platform,
   Alert,
   StyleSheet,
-  View
+  View,
 } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
+import { useAuth } from '@/context/auth/AuthContext'; // Import du context
+import { useLoginUser } from '@/hooks/user/useLoginUser'; // Import du hook
 
-// Composants
 import { BackButton } from './components/BackButton';
 import { AppLogo } from './components/AppLogo';
 import { FormInput } from './components/Form/InputField';
 import { AuthButton } from './components/Form/MainButton';
 import { AuthSeparator } from './components/Form/SeparatorWithText ';
-import { GoogleAuthButton } from './components/Form/GoogleLoginButton';
 import { AuthFooterLink } from './components/InlineLink';
-
-WebBrowser.maybeCompleteAuthSession();
+import GoogleAuthButton from './components/Form/GoogleLoginButton';
 
 export default function LoginScreen() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
 
-  const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
-    androidClientId: 'VOTRE_CLIENT_ID_ANDROID',
-    iosClientId: 'VOTRE_CLIENT_ID_IOS',
-    webClientId: 'VOTRE_CLIENT_ID_WEB',
-  });
+  const { setToken } = useAuth(); // Accès au setToken du contexte
 
+  // Utilisation du hook useLoginUser
+  const { submit, loading, data, error, fieldErrors } = useLoginUser();
+
+  // Effet pour gérer la connexion réussie
   useEffect(() => {
-    if (googleResponse?.type === 'success') {
-      const token = googleResponse.authentication?.accessToken;
-      handleGoogleSignIn(token);
+    if (data?.token) {
+      setToken(data.token, data.expiresIn * 1000); // Convertir expiresIn en ms
+      Alert.alert('Succès', 'Connexion réussie');
+      router.replace('/main'); // Redirection après succès
     }
-  }, [googleResponse]);
+  }, [data, setToken]);
 
   const handleInputChange = (field: string, value: string) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleEmailLogin = () => {
+  const handleEmailLogin = async () => {
     const { email, password } = credentials;
+
     if (!email || !password) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
       return;
     }
 
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      router.replace('/main');
-    }, 1500);
-  };
-
-  const handleGoogleSignIn = async (token?: string) => {
-    if (!token) return;
-
-    try {
-      setIsLoading(true);
-      const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const user = await res.json();
-      if (user) router.replace('/main');
-    } catch {
-      Alert.alert('Erreur', 'Échec de la connexion avec Google');
-    } finally {
-      setIsLoading(false);
-    }
+    // Appeler le hook submit pour se connecter
+    await submit(email, password);
   };
 
   return (
@@ -89,7 +68,7 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.logoContainer}>
-            <AppLogo size={120} style={styles.logo} />
+            <AppLogo size={120} />
           </View>
 
           <View style={styles.content}>
@@ -99,7 +78,6 @@ export default function LoginScreen() {
               onChangeText={text => handleInputChange('email', text)}
               placeholder="email@exemple.com"
               keyboardType="email-address"
-              autoCapitalize="none"
             />
 
             <FormInput
@@ -113,21 +91,22 @@ export default function LoginScreen() {
             <AuthButton
               title="Connexion"
               onPress={handleEmailLogin}
-              loading={isLoading}
+              loading={loading || isLoading} // Afficher loading si en cours
             />
+
+            
 
             <AuthFooterLink
               text="Mot de passe oublié ?"
               onPress={() => router.push('/forgotpassword')}
-              style={styles.forgotPasswordLink}
             />
 
             <AuthSeparator text="ou" />
 
             <GoogleAuthButton
-              onPress={() => googlePromptAsync()}
-              loading={isLoading}
-              disabled={!googleRequest || isLoading}
+              onPress={() => googlePromptAsync()} // Connexion Google
+              loading={loading || isLoading}
+              //disabled={!googleRequest || isLoading}
             />
 
             <View style={styles.signUpContainer}>
@@ -167,9 +146,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 20,
     alignItems: 'center',
-  },
-  logo: {
-    alignSelf: 'center',
   },
   content: {
     flex: 1,

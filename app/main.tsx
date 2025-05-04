@@ -142,7 +142,7 @@ export default function MapScreen() {
 
       {/* Bouton pour changer la carte */}
       <TouchableOpacity
-        onPress={() => router.push('/Location')}
+        onPress={() => router.push('/Places')}
         style={styles.switchButton}
       >
         <Image

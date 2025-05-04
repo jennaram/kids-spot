@@ -74,7 +74,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     userLocation?.latitude ?? 0,
     userLocation?.longitude ?? 0,
     token ?? '',
-    refreshFavoritesTrigger // ← clé de rafraîchissement
+    refreshFavoritesTrigger
   );
 
   return (

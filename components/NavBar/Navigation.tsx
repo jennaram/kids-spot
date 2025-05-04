@@ -28,7 +28,7 @@ export function Navigation() {
                     link={`/${link.toLowerCase()}`} 
                     active={
                         route.name.toLowerCase() === link.toLowerCase() ||
-                        (link.toLowerCase() === 'main' && route.name.toLowerCase() === 'location')
+                        (link.toLowerCase() === 'main' && route.name.toLowerCase() === 'places')
                     }
                 />
             ))}

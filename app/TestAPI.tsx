@@ -5,7 +5,6 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { useAuth } from '@/context/auth/AuthContext';
-import { authService } from '@/services/authService';
 import { useAddFavorite } from '@/hooks/favorite/useAddFavorite';
 import { useDeleteFavorite } from '@/hooks/favorite/useDeleteFavorite';
 import { useReadAllFavorites } from '@/hooks/favorite/useReadAllFavorites';
@@ -21,8 +20,8 @@ export default function PlaceScreen() {
     const email = 'seb.prod@gmail.com';  // Utilisateur d'exemple
     const password = 'sebT5656';  // Mot de passe d'exemple
     try {
-      const authResult = await authService.login(email, password);
-      setToken(authResult.token); // Sauvegarder le token dans le contexte
+      //const authResult = await authService.login(email, password);
+      //setToken(authResult.token); // Sauvegarder le token dans le contexte
       Alert.alert('Connexion réussie', 'Vous êtes connecté avec succès !');
     } catch (error) {
       Alert.alert('Erreur de connexion', 'Impossible de se connecter avec ces identifiants.');
@@ -32,8 +31,7 @@ export default function PlaceScreen() {
 
 
 
-  const { favoris, loading, error } = useReadAllFavorites(48.85, 2.35, token);
-console.log(favoris)
+  
 
 
   // if (error) {
