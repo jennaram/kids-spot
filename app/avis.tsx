@@ -12,7 +12,7 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
+import BackButton from "@/app/components/BackButton";
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from "@/components/Title";
 import { useAddComment } from "@/hooks/comments/useAddComment";
@@ -22,6 +22,7 @@ import StarRating from "@/components/Notation/StarRating";
 import FormInput from "@/app/components/Form/InputField";
 import SubmitButton from "@/app/components/Form/SubmitButton";
 
+
 const MAX_CHARACTERS = 500;
 
 const ReviewPage = () => {
@@ -30,7 +31,7 @@ const ReviewPage = () => {
 
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState("");
-  const [lieuName, setLieuName] = useState("Ce lieu");
+  const [lieuName, setLieuName] = useState(params.nomLieu || "Ce lieu");
 
   const { submitComment, loading, success, error } = useAddComment();
   const { token, loading: authLoading } = useContext(AuthContext);
@@ -109,7 +110,8 @@ const ReviewPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <BurgerMenu />
+      <BackButton style={styles.backButton} />
+      <View style={styles.container}>
       <Title text={`Avis sur ${lieuName}`} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -162,6 +164,8 @@ const ReviewPage = () => {
         </ScrollView>
       </KeyboardAvoidingView>
   
+      </View>
+      
       <Navigation />
     </SafeAreaView>
   );
@@ -231,6 +235,12 @@ const styles = StyleSheet.create({
   textAreaInput: {
     height: 150,
     textAlignVertical: "top",
+  },
+  backButton: {
+    
+    top: 0,
+    left: 15,
+    zIndex: 1,
   },
 });
 
