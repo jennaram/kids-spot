@@ -9,6 +9,7 @@ type FormInputProps = {
   placeholder: string;
   secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  multiline?: boolean;
 };
 
 export function FormInput({

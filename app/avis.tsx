@@ -1,41 +1,44 @@
 import React, { useState, useEffect, useContext } from "react";
-import { 
-  Text, 
-  View, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
   SafeAreaView,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
 } from "react-native";
-import { router, useLocalSearchParams } from 'expo-router';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
+import { router, useLocalSearchParams } from "expo-router";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from "@/components/Title";
 import { useAddComment } from "@/hooks/comments/useAddComment";
 import { AddComment } from "@/Types/comment";
 import { AuthContext } from "@/context/auth/AuthContext";
-import StarRating from "@/components/Notation/StarRating"; // <-- Importation du nouveau composant
+import StarRating from "@/components/Notation/StarRating";
+import FormInput from "@/app/components/Form/InputField"; // Mettez à jour le chemin selon votre projet
+
+const MAX_CHARACTERS = 500;
 
 const ReviewPage = () => {
   const params = useLocalSearchParams() as { id: string };
   const lieuId = Number(params.id?.toString() || "0");
 
   const [rating, setRating] = useState<number>(0);
-  const [comment, setComment] = useState('');
-  const [lieuName, setLieuName] = useState<string>("Ce lieu");
+  const [comment, setComment] = useState("");
+  const [lieuName, setLieuName] = useState("Ce lieu");
 
   const { submitComment, loading, success, error } = useAddComment();
   const { token, loading: authLoading } = useContext(AuthContext);
 
   useEffect(() => {
     if (success) {
-      toast.success('Votre avis a été enregistré avec succès !');
+      toast.success("Votre avis a été enregistré avec succès !");
       resetForm();
       setTimeout(() => router.back(), 2000);
     }
@@ -46,10 +49,6 @@ const ReviewPage = () => {
       toast.error(error);
     }
   }, [error]);
-
-  const handleCommentChange = (text: string) => {
-    setComment(text);
-  };
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
@@ -62,11 +61,11 @@ const ReviewPage = () => {
       return false;
     }
     if (!rating) {
-      toast.error('Veuillez sélectionner une note.');
+      toast.error("Veuillez sélectionner une note.");
       return false;
     }
     if (comment.trim().length < 10) {
-      toast.error('Votre commentaire doit contenir au moins 10 caractères.');
+      toast.error("Votre commentaire doit contenir au moins 10 caractères.");
       return false;
     }
     return true;
@@ -92,29 +91,16 @@ const ReviewPage = () => {
 
   const resetForm = () => {
     setRating(0);
-    setComment('');
+    setComment("");
   };
 
-  const CommentInput = () => (
-    <TextInput
-      style={styles.textArea}
-      placeholder={`Décrivez votre expérience à ${lieuName}...`}
-      placeholderTextColor="#999"
-      multiline
-      numberOfLines={8}
-      value={comment}
-      onChangeText={handleCommentChange}
-      editable={!loading && !!token}
-    />
-  );
-
   const SubmitButton = () => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[
-        styles.submitButton, 
+        styles.submitButton,
         loading && styles.disabledButton,
-        (!token || !rating || comment.length < 10) && styles.inactiveButton
-      ]} 
+        (!token || !rating || comment.length < 10) && styles.inactiveButton,
+      ]}
       onPress={handleSubmit}
       activeOpacity={0.8}
       disabled={loading || !token || !rating || comment.length < 10}
@@ -141,25 +127,36 @@ const ReviewPage = () => {
     <SafeAreaView style={styles.container}>
       <BurgerMenu />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Title text={`Avis sur ${lieuName}`} />
-          
-          <View style={styles.cardContainer}>
-            <Text style={styles.ratingTitle}>Notez ce lieu :</Text>
 
-            {/* ✅ Nouveau composant étoile */}
+          <View style={styles.cardContainer}>
+            
             <StarRating
               rating={rating}
               setRating={setRating}
               disabled={loading || !token}
-              showLabel={false}
             />
 
-            <Text style={styles.commentTitle}>Votre commentaire :</Text>
-            <CommentInput />
+<Text style={styles.commentTitle}>Votre commentaire :</Text>
+<FormInput
+  label=""
+  value={comment}
+  onChangeText={(text) => {
+    if (text.length <= MAX_CHARACTERS) {
+      setComment(text);
+    }
+  }}
+  placeholder={`Décrivez votre expérience à ${lieuName}...`}
+  keyboardType="default"
+  secureTextEntry={false}
+  multiline={true}
+/>
+<Text style={styles.charCount}>{comment.length} / {MAX_CHARACTERS}</Text>
+
           </View>
 
           <View style={styles.buttonContainer}>
@@ -176,12 +173,12 @@ const ReviewPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -191,12 +188,12 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   cardContainer: {
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#f8f8f8",
     marginHorizontal: 20,
     marginTop: 20,
     borderRadius: 12,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
@@ -204,58 +201,58 @@ const styles = StyleSheet.create({
   },
   ratingTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 10,
-    color: '#2c3e50',
-    textAlign: 'center',
+    color: "#2c3e50",
   },
   commentTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 20,
     marginBottom: 10,
-    color: '#2c3e50',
+    color: "#2c3e50",
   },
-  textArea: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 16,
-    textAlignVertical: 'top',
-    minHeight: 150,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    color: '#333',
+  charCount: {
+    alignSelf: "flex-end",
+    marginTop: 5,
+    fontSize: 12,
+    color: "#888",
   },
   buttonContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 20,
     marginTop: 10,
   },
   submitButton: {
     height: 50,
-    width: '90%',
-    backgroundColor: '#3498db',
+    width: "90%",
+    backgroundColor: "#3498db",
     borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
   },
   disabledButton: {
-    backgroundColor: '#95a5a6',
+    backgroundColor: "#95a5a6",
   },
   inactiveButton: {
-    backgroundColor: '#bdc3c7',
+    backgroundColor: "#bdc3c7",
   },
   submitButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
+
+  textAreaInput: {
+    height: 150,
+    textAlignVertical: 'top',
+  },
+  
 });
 
 export default ReviewPage;
