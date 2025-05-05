@@ -36,5 +36,11 @@ export function useDeleteFavorite() {
         }
     };
 
-    return { removeFavorite, loading, success, error };
+    const reset = () => {
+        setSuccess(false);
+        setError(null);
+      };
+      
+
+    return { removeFavorite, loading, success, error , reset};
 }
