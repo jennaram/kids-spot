@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
@@ -34,7 +34,7 @@ type LocationType = { latitude: number; longitude: number } | null;
 const AddPlaceScreen = () => {
   const router = useRouter();
   const { token } = useAuth();
-  const { submitPlaceOrEvent, loading, error, success } = useAddPlaceOrEvent();
+  const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
 
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [placeName, setPlaceName] = useState('');
@@ -94,7 +94,7 @@ const AddPlaceScreen = () => {
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (!placeName || !address || !location) {
+    if (!placeName || !address) {
       Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
       return;
     }
@@ -134,29 +134,32 @@ const AddPlaceScreen = () => {
     const newPlace = {
       nom: placeName,
       description: description,
-      horaires: '', 
+      horaires: horaires, 
       adresse: address,
-      ville: '', 
-      code_postal: '', 
-      longitude: location.longitude,
-      latitude: location.latitude,
+      ville: ville, 
+      code_postal: codepostal, 
+      longitude: 12,
+      latitude: 12,
       telephone: phoneNumber.trim(),
       site_web: website.trim(),
       id_type: typeIdMap[placeType],
       equipements: activeEquipments,
       tranches_age: ageRangeIds
     };
+    
+    submitPlaceOrEvent(newPlace, token);
 
-    try {
-      await submitPlaceOrEvent(newPlace, token);
-      if (success) {
-        Alert.alert('Succès', 'Le lieu a été ajouté avec succès');
-        router.push('/accueil');
-      }
-    } catch (err) {
+  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router]);
+
+  useEffect(() => {
+    if (error) {
+      console.log(fieldErrors)
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
     }
-  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router]);
+    if (success) {
+      Alert.alert('Succès', 'Lieu ajouté avec succès')
+    }
+  }, [loading, error, success]);
 
   const toggleAgeRange = useCallback((age: string) => {
     setAgeRanges((prev) =>
@@ -212,6 +215,26 @@ const AddPlaceScreen = () => {
             address={address}
             onAddressChange={setAddress}
             onGetLocation={handleGetCurrentLocation}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Code Postal</Text>
+          <FormInput
+            label=""
+            value={website}
+            onChangeText={setWebsite}
+            placeholder="75000"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Ville</Text>
+          <FormInput
+            label=""
+            value={website}
+            onChangeText={setWebsite}
+            placeholder="Paris"
           />
         </View>
 
