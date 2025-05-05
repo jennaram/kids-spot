@@ -124,12 +124,14 @@ export default function RegistrationScreen() {
         >
           <View style={styles.content}>
             <Text style={[fontTitle, styles.titleText]}>Inscription</Text>
-
-            <GoogleAuthButton
-              onPress={() => googlePromptAsync()}
+            
+            {/* 
+            <GoogleAuthButton 
+              onPress={() => googlePromptAsync()} 
               loading={loading}
               disabled={!googleRequest || loading}
             />
+            */}
 
             <AuthSeparator text="ou" />
 

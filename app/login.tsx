@@ -114,11 +114,14 @@ export default function LoginScreen() {
 
             <AuthSeparator text="ou" />
 
-            <GoogleAuthButton
-              onPress={() => googlePromptAsync()} // Connexion Google
-              loading={loading || isLoading}
-            //disabled={!googleRequest || isLoading}
-            />
+          {/* 
+<GoogleAuthButton
+    // onPress={() => googlePromptAsync()}
+    // loading={isLoading}
+    // disabled={!googleRequest || isLoading}
+/> 
+*/}
+
 
             <View style={styles.signUpContainer}>
               <AuthFooterLink
