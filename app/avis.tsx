@@ -22,11 +22,10 @@ import StarRating from "@/components/Notation/StarRating";
 import FormInput from "@/app/components/Form/InputField";
 import SubmitButton from "@/app/components/Form/SubmitButton";
 
-
 const MAX_CHARACTERS = 500;
 
 const ReviewPage = () => {
-  const params = useLocalSearchParams() as { id: string };
+  const params = useLocalSearchParams() as { id: string; nomLieu?: string };
   const lieuId = Number(params.id?.toString() || "1");
 
   const [rating, setRating] = useState<number>(0);
@@ -50,15 +49,12 @@ const ReviewPage = () => {
     }
   }, [error]);
 
-  const handleSubmit =() => {
-    console.log("je click");
+  const handleSubmit = () => {
     if (!validateForm()) return;
     submitReview();
   };
 
   const validateForm = () => {
-    console.log("je vérifie");
-    console.log(comment);
     if (!token) {
       toast.error("Vous devez être connecté pour poster un avis");
       return false;
@@ -71,12 +67,10 @@ const ReviewPage = () => {
       toast.error("Votre commentaire doit contenir au moins 10 caractères.");
       return false;
     }
-    console.log("tout va bien");
     return true;
   };
 
   const submitReview = async () => {
-    console.log(lieuId)
     if (lieuId <= 0) {
       toast.error("Lieu invalide");
       return;
@@ -90,7 +84,7 @@ const ReviewPage = () => {
       note: rating,
       token: token,
     };
-    console.log("je suis ici");
+    
     await submitComment(reviewData, token);
   };
 
@@ -99,7 +93,6 @@ const ReviewPage = () => {
     setComment("");
   };
 
-  // Déterminez le texte du bouton en fonction de l'état
   const getButtonText = () => {
     if (!token) return "Connectez-vous pour poster";
     return "Publier l'avis";
@@ -115,9 +108,17 @@ const ReviewPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <BackButton style={styles.backButton} />
-      <View style={styles.container}>
-      <Title text={`${lieuName}`} />
+      {/* Header réorganisé avec BackButton en haut et Titre en dessous */}
+      <View style={styles.header}>
+        <View style={styles.backButtonContainer}>
+          <BackButton style={styles.backButton} />
+        </View>
+        <View style={styles.titleContainer}>
+          <Title text={`${lieuName}`} />
+        </View>
+      </View>
+
+      {/* Contenu principal centré verticalement */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
@@ -125,14 +126,19 @@ const ReviewPage = () => {
         <ScrollView 
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <View style={[styles.contentWrapper, { paddingHorizontal: 20 }]}>
-            <StarRating
-              rating={rating}
-              setRating={setRating}
-              disabled={loading || !token}
-            />
-  
+          <View style={styles.content}>
+            {/* Notation par étoiles */}
+            <View style={styles.ratingContainer}>
+              <StarRating
+                rating={rating}
+                setRating={setRating}
+                disabled={loading || !token}
+              />
+            </View>
+
+            {/* Champ de commentaire */}
             <Text style={styles.commentTitle}>Votre commentaire :</Text>
             <FormInput
               label=""
@@ -146,27 +152,26 @@ const ReviewPage = () => {
               keyboardType="default"
               secureTextEntry={false}
               multiline={true}
-              
+              style={styles.textAreaInput}
             />
             <Text style={styles.charCount}>
               {comment.length} / {MAX_CHARACTERS}
             </Text>
-          </View>
-  
-          <View style={styles.buttonContainer}>
-            <View style={styles.buttonWrapper}>
+
+            {/* Bouton de soumission */}
+            <View style={styles.buttonContainer}>
               <SubmitButton
                 title={getButtonText()}
                 onPress={handleSubmit}
                 loading={loading}
+                disabled={!token}
               />
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-  
-      </View>
-      
+
+      {/* Barre de navigation */}
       <Navigation />
     </SafeAreaView>
   );
@@ -182,68 +187,67 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
-  input: {
-    flex: 1, // Permet au champ de texte de prendre tout l'espace disponible
+  header: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    paddingTop: Platform.OS === "ios" ? 2 : 4,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
   },
-  
+  backButtonContainer: {
+    width: "100%",
+    flexDirection: "row",
+    marginBottom: 10,
+  },
+  backButton: {
+    top: 0,
+    left: 15,
+  },
+  titleContainer: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   keyboardAvoidingView: {
     flex: 1,
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 80,
-    justifyContent: "center", // Centre verticalement le contenu
-    minHeight: "100%", // Assure que le conteneur prend toute la hauteur disponible
+    justifyContent: "center",
   },
-  contentWrapper: {
-    width: "100%",
-    paddingVertical: 20,
+  content: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
-
-  ratingTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 10,
-    color: "#2c3e50",
+  ratingContainer: {
+    marginBottom: 30,
+    alignItems: "center",
   },
   commentTitle: {
     fontSize: 16,
     fontWeight: "600",
-    marginTop: 20,
     marginBottom: 10,
     color: "#2c3e50",
-  },
-  charCount: {
-    alignSelf: "flex-end",
-    marginTop: 5,
-    fontSize: 12,
-    color: "#888",
-  },
-  buttonContainer: {
-    alignItems: "center",
-    padding: 20,
-    marginTop: 10,
-    width: "100%",
-  },
-  buttonWrapper: {
-    width: "80%",
-    backgroundColor: "#fff", // Utilisez la même couleur que votre SubmitButton
-    borderRadius: 8, // Utilisez le même rayon que votre SubmitButton
-    paddingHorizontal: 20, // Ajoute de l'espace horizontal supplémentaire
-    paddingVertical: 3, // Ajoute un peu d'espace vertical si nécessaire
   },
   textAreaInput: {
     height: 150,
     textAlignVertical: "top",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 5,
   },
-  backButton: {
-    
-    top: 0,
-    left: 15,
-    zIndex: 1,
+  charCount: {
+    alignSelf: "flex-end",
+    fontSize: 12,
+    color: "#888",
+    marginBottom: 20,
   },
-  
+  buttonContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
 });
 
 export default ReviewPage;
