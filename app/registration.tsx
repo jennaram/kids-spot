@@ -59,7 +59,7 @@ export default function RegistrationScreen() {
   useEffect(() => {
     if (success) {
       Alert.alert('Succès', 'Inscription réussie !');
-      router.replace('/main');
+      router.replace('/accueil');
     } else if (error) {
       console.log(fieldErrors);
       if (fieldErrors) {
