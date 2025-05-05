@@ -5,7 +5,6 @@ import {
   TextInput, 
   TouchableOpacity, 
   StyleSheet, 
-  Image, 
   SafeAreaView,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -21,20 +20,16 @@ import { Title } from "@/components/Title";
 import { useAddComment } from "@/hooks/comments/useAddComment";
 import { AddComment } from "@/Types/comment";
 import { AuthContext } from "@/context/auth/AuthContext";
-
-const STAR_IMAGES = {
-  active: require('../assets/images/Etoilejaune.png'),
-  inactive: require('../assets/images/Etoilegrise.png')
-};
+import StarRating from "@/components/Notation/StarRating"; // <-- Importation du nouveau composant
 
 const ReviewPage = () => {
   const params = useLocalSearchParams() as { id: string };
   const lieuId = Number(params.id?.toString() || "0");
-  
-  const [rating, setRating] = useState<number | null>(null);
+
+  const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState('');
   const [lieuName, setLieuName] = useState<string>("Ce lieu");
-  
+
   const { submitComment, loading, success, error } = useAddComment();
   const { token, loading: authLoading } = useContext(AuthContext);
 
@@ -51,12 +46,6 @@ const ReviewPage = () => {
       toast.error(error);
     }
   }, [error]);
-
-  const handleStarPress = (starNumber: number) => {
-    if (!loading) {
-      setRating(starNumber);
-    }
-  };
 
   const handleCommentChange = (text: string) => {
     setComment(text);
@@ -94,7 +83,7 @@ const ReviewPage = () => {
     const reviewData: AddComment = {
       id_lieu: lieuId,
       commentaire: comment.trim(),
-      note: rating || 0,
+      note: rating,
       token: token,
     };
 
@@ -102,27 +91,9 @@ const ReviewPage = () => {
   };
 
   const resetForm = () => {
-    setRating(null);
+    setRating(0);
     setComment('');
   };
-
-  const StarRating = () => (
-    <View style={styles.starsContainer}>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <TouchableOpacity 
-          key={star} 
-          onPress={() => handleStarPress(star)}
-          activeOpacity={0.7}
-          disabled={loading || !token}
-        >
-          <Image
-            source={star <= (rating || 0) ? STAR_IMAGES.active : STAR_IMAGES.inactive}
-            style={styles.starImage}
-          />
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
 
   const CommentInput = () => (
     <TextInput
@@ -178,8 +149,15 @@ const ReviewPage = () => {
           
           <View style={styles.cardContainer}>
             <Text style={styles.ratingTitle}>Notez ce lieu :</Text>
-            <StarRating />
-            
+
+            {/* ✅ Nouveau composant étoile */}
+            <StarRating
+              rating={rating}
+              setRating={setRating}
+              disabled={loading || !token}
+              showLabel={false}
+            />
+
             <Text style={styles.commentTitle}>Votre commentaire :</Text>
             <CommentInput />
           </View>
@@ -229,6 +207,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 10,
     color: '#2c3e50',
+    textAlign: 'center',
   },
   commentTitle: {
     fontSize: 16,
@@ -236,17 +215,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
     color: '#2c3e50',
-  },
-  starsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  starImage: {
-    width: 32,
-    height: 32,
-    marginHorizontal: 6,
   },
   textArea: {
     backgroundColor: '#fff',
