@@ -22,49 +22,22 @@ import { useAddComment } from "@/hooks/comments/useAddComment";
 import { AddComment } from "@/Types/comment";
 import { AuthContext } from "@/context/auth/AuthContext";
 
-// Constantes
 const STAR_IMAGES = {
   active: require('../assets/images/Etoilejaune.png'),
   inactive: require('../assets/images/Etoilegrise.png')
 };
 
 const ReviewPage = () => {
-  // Récupération de l'ID du lieu
   const params = useLocalSearchParams() as { id: string };
   const lieuId = Number(params.id?.toString() || "0");
   
-  // États
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [lieuName, setLieuName] = useState<string>("Ce lieu");
-  const [userInfo, setUserInfo] = useState<{name: string; email: string} | null>(null);
   
-  // Hooks
   const { submitComment, loading, success, error } = useAddComment();
   const { token, loading: authLoading } = useContext(AuthContext);
 
-  // Effet pour charger les infos utilisateur
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      if (token) {
-        try {
-          // Ici vous devrez implémenter la récupération des infos utilisateur
-          // Exemple avec une API :
-          const response = await fetch('/api/user', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          const data = await response.json();
-          setUserInfo(data);
-        } catch (err) {
-          console.error("Erreur récupération infos utilisateur", err);
-        }
-      }
-    };
-
-    fetchUserInfo();
-  }, [token]);
-
-  // Effets pour la gestion des feedbacks
   useEffect(() => {
     if (success) {
       toast.success('Votre avis a été enregistré avec succès !');
@@ -79,7 +52,6 @@ const ReviewPage = () => {
     }
   }, [error]);
 
-  // Handlers
   const handleStarPress = (starNumber: number) => {
     if (!loading) {
       setRating(starNumber);
@@ -95,7 +67,6 @@ const ReviewPage = () => {
     await submitReview();
   };
 
-  // Validation
   const validateForm = () => {
     if (!token) {
       toast.error("Vous devez être connecté pour poster un avis");
@@ -112,7 +83,6 @@ const ReviewPage = () => {
     return true;
   };
 
-  // Soumission
   const submitReview = async () => {
     if (lieuId <= 0) {
       toast.error("Lieu invalide");
@@ -126,7 +96,6 @@ const ReviewPage = () => {
       commentaire: comment.trim(),
       note: rating || 0,
       token: token,
-      // Ajoutez d'autres champs selon votre API
     };
 
     await submitComment(reviewData, token);
@@ -136,14 +105,6 @@ const ReviewPage = () => {
     setRating(null);
     setComment('');
   };
-
-  // Composants internes
-  const UserInfoSection = () => (
-    <View style={styles.userInfoContainer}>
-      <Text style={styles.staticText}>Nom : {userInfo?.name}</Text>
-      <Text style={styles.staticText}>Email : {userInfo?.email}</Text>
-    </View>
-  );
 
   const StarRating = () => (
     <View style={styles.starsContainer}>
@@ -216,8 +177,6 @@ const ReviewPage = () => {
           <Title text={`Avis sur ${lieuName}`} />
           
           <View style={styles.cardContainer}>
-            <UserInfoSection />
-            
             <Text style={styles.ratingTitle}>Notez ce lieu :</Text>
             <StarRating />
             
@@ -232,7 +191,6 @@ const ReviewPage = () => {
       </KeyboardAvoidingView>
 
       <Navigation />
-      
     </SafeAreaView>
   );
 };
@@ -265,24 +223,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
-  },
-  lieuTitre: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-    color: '#2c3e50',
-  },
-  userInfoContainer: {
-    marginBottom: 20,
-    paddingBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  staticText: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: '#555',
   },
   ratingTitle: {
     fontSize: 16,
