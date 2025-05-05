@@ -2,9 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
   View,
-  TouchableOpacity,
   StyleSheet,
-  Image,
   SafeAreaView,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -21,7 +19,8 @@ import { useAddComment } from "@/hooks/comments/useAddComment";
 import { AddComment } from "@/Types/comment";
 import { AuthContext } from "@/context/auth/AuthContext";
 import StarRating from "@/components/Notation/StarRating";
-import FormInput from "@/app/components/Form/InputField"; // Mettez à jour le chemin selon votre projet
+import FormInput from "@/app/components/Form/InputField";
+import SubmitButton from "@/app/components/Form/SubmitButton";
 
 const MAX_CHARACTERS = 500;
 
@@ -94,26 +93,11 @@ const ReviewPage = () => {
     setComment("");
   };
 
-  const SubmitButton = () => (
-    <TouchableOpacity
-      style={[
-        styles.submitButton,
-        loading && styles.disabledButton,
-        (!token || !rating || comment.length < 10) && styles.inactiveButton,
-      ]}
-      onPress={handleSubmit}
-      activeOpacity={0.8}
-      disabled={loading || !token || !rating || comment.length < 10}
-    >
-      {loading ? (
-        <ActivityIndicator color="#fff" />
-      ) : !token ? (
-        <Text style={styles.submitButtonText}>Connectez-vous pour poster</Text>
-      ) : (
-        <Text style={styles.submitButtonText}>Publier votre avis</Text>
-      )}
-    </TouchableOpacity>
-  );
+  // Déterminez le texte du bouton en fonction de l'état
+  const getButtonText = () => {
+    if (!token) return "Connectez-vous pour poster";
+    return "Publier l'avis";
+  };
 
   if (authLoading) {
     return (
@@ -126,45 +110,58 @@ const ReviewPage = () => {
   return (
     <SafeAreaView style={styles.container}>
       <BurgerMenu />
+      <Title text={`Avis sur ${lieuName}`} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
       >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Title text={`Avis sur ${lieuName}`} />
-
-          <View style={styles.cardContainer}>
-            
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={[styles.contentWrapper, { paddingHorizontal: 20 }]}>
             <StarRating
               rating={rating}
               setRating={setRating}
               disabled={loading || !token}
             />
-
-<Text style={styles.commentTitle}>Votre commentaire :</Text>
-<FormInput
-  label=""
-  value={comment}
-  onChangeText={(text) => {
-    if (text.length <= MAX_CHARACTERS) {
-      setComment(text);
-    }
-  }}
-  placeholder={`Décrivez votre expérience à ${lieuName}...`}
-  keyboardType="default"
-  secureTextEntry={false}
-  multiline={true}
-/>
-<Text style={styles.charCount}>{comment.length} / {MAX_CHARACTERS}</Text>
-
+  
+            <Text style={styles.commentTitle}>Votre commentaire :</Text>
+            <FormInput
+              label=""
+              value={comment}
+              onChangeText={(text) => {
+                if (text.length <= MAX_CHARACTERS) {
+                  setComment(text);
+                }
+              }}
+              placeholder={`Décrivez votre expérience à ${lieuName}...`}
+              keyboardType="default"
+              secureTextEntry={false}
+              multiline={true}
+              
+            />
+            <Text style={styles.charCount}>
+              {comment.length} / {MAX_CHARACTERS}
+            </Text>
           </View>
-
+  
           <View style={styles.buttonContainer}>
-            <SubmitButton />
+            <View style={styles.buttonWrapper}>
+              <SubmitButton
+                title={getButtonText()}
+                onPress={
+                  loading || !token || !rating || comment.length < 10
+                    ? () => {}
+                    : handleSubmit
+                }
+                loading={loading}
+              />
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
+  
       <Navigation />
     </SafeAreaView>
   );
@@ -180,25 +177,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  input: {
+    flex: 1, // Permet au champ de texte de prendre tout l'espace disponible
+  },
+  
   keyboardAvoidingView: {
     flex: 1,
   },
   scrollContainer: {
     flexGrow: 1,
     paddingBottom: 80,
+    justifyContent: "center", // Centre verticalement le contenu
+    minHeight: "100%", // Assure que le conteneur prend toute la hauteur disponible
   },
-  cardContainer: {
-    backgroundColor: "#f8f8f8",
-    marginHorizontal: 20,
-    marginTop: 20,
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
+  contentWrapper: {
+    width: "100%",
+    paddingVertical: 20,
   },
+
   ratingTitle: {
     fontSize: 16,
     fontWeight: "600",
@@ -222,37 +219,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     marginTop: 10,
+    width: "100%",
   },
-  submitButton: {
-    height: 50,
-    width: "90%",
-    backgroundColor: "#3498db",
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+  buttonWrapper: {
+    width: "80%",
+    backgroundColor: "#fff", // Utilisez la même couleur que votre SubmitButton
+    borderRadius: 8, // Utilisez le même rayon que votre SubmitButton
+    paddingHorizontal: 20, // Ajoute de l'espace horizontal supplémentaire
+    paddingVertical: 3, // Ajoute un peu d'espace vertical si nécessaire
   },
-  disabledButton: {
-    backgroundColor: "#95a5a6",
-  },
-  inactiveButton: {
-    backgroundColor: "#bdc3c7",
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-
   textAreaInput: {
     height: 150,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
-  
 });
 
 export default ReviewPage;
