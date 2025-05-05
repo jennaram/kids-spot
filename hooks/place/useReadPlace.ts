@@ -1,49 +1,70 @@
 import { getPlace } from "@/services/placeServices";
 import { Place } from "@/types/place";
+import { handleApiError } from "@/utils/handleApiError";
 import { useEffect, useState } from "react";
 
 /**
- * Hook pour gérer l'état et la logique de la lecture de tous les lieux
- * @param id - number - Identifiant
- * @returns Objet contenant la fonction de soumission et les états associés
+ * Hook pour gérer l'état et la logique de la lecture d'un lieu spécifique
+ * @version 1.0
+ * @date 2025-05-01
+ * 
+ * @param id - Identifiant numérique du lieu à récupérer
+ * @returns Un objet contenant le lieu, l'état de chargement et les erreurs éventuelles
  * 
  * @example
  * ```jsx
- * const { location, loading, error } = useReadLocations(1);
+ * const { place, loading, error } = useReadPlace(1);
+ * 
+ * if (loading) {
+ *    console.log("Chargement du lieu...");
+ *    return <LoadingSpinner />;
+ * }
+ * 
+ * if (error) {
+ *    console.log("Erreur:", error);
+ *    return <ErrorMessage message={error} />;
+ * }
+ * 
+ * if (!place) {
+ *    return <NotFoundMessage message="Lieu non trouvé" />;
+ * }
+ * 
+ * return (
+ *    <PlaceDetails place={place} />
+ * );
  * ```
  */
-export function useReadPlace(id:number) {
-    const [place, setPlace] = useState<Place | null>();
+export function useReadPlace(id: number) {
+    const [place, setPlace] = useState<Place | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const load = async () => {
-          try {
-            setLoading(true);
-            const response = await getPlace(id);
-            if (
-              response.statusCode === 200 &&
-              response.data
-            ) {
-              setPlace(response.data.data);
-              setError(null);
-            } else if (response.statusCode === 404) {
-              setPlace(null);
-              setError(null);
-            } else {
-              setError("Erreur lors du chargement du lieux.");
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await getPlace(id);
+                
+                if (
+                    response.statusCode === 200 &&
+                    response.data
+                ) {
+                    setPlace(response.data.data);
+                } else if (response.statusCode === 404) {
+                    setPlace(null);
+                } else {
+                    setError("Erreur lors du chargement du lieu.");
+                }
+            } catch (err) {
+                setError(handleApiError(err));
+            } finally {
+                setLoading(false);
             }
-          } catch (err) {
-            console.error("Erreur API :", err);
-            setError("Erreur lors de l'appel API.");
-          } finally {
-            setLoading(false);
-          }
         };
     
         load();
-      }, [id]);
+    }, [id]);
     
-      return { place, loading, error };
+    return { place, loading, error };
 }

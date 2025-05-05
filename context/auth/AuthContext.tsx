@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (logoutTimeout.current) clearTimeout(logoutTimeout.current);
 
     if (newToken) {
-      const duration = expirationDuration ?? 3600 * 1; // 1h par défaut
+      const duration = expirationDuration ?? 3600 * 1000; // 1h par défaut
       const expirationDate = new Date(Date.now() + duration);
       const expirationISOString = expirationDate.toISOString();
 

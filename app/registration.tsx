@@ -96,6 +96,8 @@ export default function RegistrationScreen() {
       mot_de_passe: formData.password,
       telephone: formData.phone,
     });
+
+    
   };
 
   return (

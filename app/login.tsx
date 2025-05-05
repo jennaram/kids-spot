@@ -32,8 +32,7 @@ export default function LoginScreen() {
   // Effet pour gérer la connexion réussie
   useEffect(() => {
     if (data?.token) {
-      //setToken(data.token, data.expiresIn * 1000);
-      setToken(data.token, 60000);
+      setToken(data.token, data.expiresIn * 1000);
       Alert.alert('Succès', 'Connexion réussie');
       router.replace('/main'); // Redirection après succès
     }
@@ -53,7 +52,18 @@ export default function LoginScreen() {
 
     // Appeler le hook submit pour se connecter
     await submit(email, password);
+    if (error) {
+      Alert.alert('Erreur de connexion', error);
+    }
+
+
+
+
   };
+
+  function googlePromptAsync(): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -95,7 +105,7 @@ export default function LoginScreen() {
               loading={loading || isLoading} // Afficher loading si en cours
             />
 
-            
+
 
             <AuthFooterLink
               text="Mot de passe oublié ?"
@@ -107,7 +117,7 @@ export default function LoginScreen() {
             <GoogleAuthButton
               onPress={() => googlePromptAsync()} // Connexion Google
               loading={loading || isLoading}
-              //disabled={!googleRequest || isLoading}
+            //disabled={!googleRequest || isLoading}
             />
 
             <View style={styles.signUpContainer}>

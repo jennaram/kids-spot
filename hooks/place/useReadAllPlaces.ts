@@ -1,53 +1,71 @@
 import { getAllPlaces } from "@/services/placeServices";
 import { Place } from "@/types/place";
+import { handleApiError } from "@/utils/handleApiError";
 import { useEffect, useState } from "react";
 
 /**
  * Hook pour gérer l'état et la logique de la lecture de tous les lieux
- * @param lat - number - Latitude
- * @param lgt - number - longitude
- * @returns Objet contenant la fonction de soumission et les états associés
+ * @version 1.0
+ * @date 2025-05-01
+ * 
+ * @param lat - Latitude du point central pour la recherche des lieux
+ * @param lng - Longitude du point central pour la recherche des lieux
+ * @returns Un objet contenant les lieux, l'état de chargement et les erreurs éventuelles
  * 
  * @example
  * ```jsx
- * const { locations, loading, error } = useReadAllLocations(48.85, 2.35);
+ * const { places, loading, error } = useReadAllPlaces(48.85, 2.35);
+ * 
+ * if (loading) {
+ *    console.log("Chargement des lieux...");
+ *    return <LoadingSpinner />;
+ * }
+ * 
+ * if (error) {
+ *    console.log("Erreur:", error);
+ *    return <ErrorMessage message={error} />;
+ * }
+ * 
+ * console.log(`${places.length} lieux trouvés`);
+ * return (
+ *    <PlacesList places={places} />
+ * );
  * ```
  */
-export function useReadAllPlaces(lat: number, lgt: number) {
+export function useReadAllPlaces(lat: number, lng: number) {
     const [places, setPlaces] = useState<Place[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const load = async () => {
-          try {
-            setLoading(true);
-            const response = await getAllPlaces(lat, lgt);
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await getAllPlaces(lat, lng);
     
-            if (
-              response.statusCode === 200 &&
-              response.data &&
-              response.data.data &&
-              Array.isArray(response.data.data)
-            ) {
-              setPlaces(response.data.data);
-              setError(null);
-            } else if (response.statusCode === 404) {
-              setPlaces([]);
-              setError(null);
-            } else {
-              setError("Erreur lors du chargement des lieux.");
+                if (
+                    response.statusCode === 200 &&
+                    response.data &&
+                    response.data.data &&
+                    Array.isArray(response.data.data)
+                ) {
+                    setPlaces(response.data.data);
+                } else if (response.statusCode === 404) {
+                    // Si aucun lieu n'est trouvé, on initialise avec un tableau vide
+                    setPlaces([]);
+                } else {
+                    setError("Erreur lors du chargement des lieux.");
+                }
+            } catch (err) {
+                setError(handleApiError(err));
+            } finally {
+                setLoading(false);
             }
-          } catch (err) {
-            console.error("Erreur API :", err);
-            setError("Erreur lors de l'appel API.");
-          } finally {
-            setLoading(false);
-          }
         };
     
         load();
-      }, [lat, lgt]);
+    }, [lat, lng]);
     
-      return { places, loading, error };
+    return { places, loading, error };
 }

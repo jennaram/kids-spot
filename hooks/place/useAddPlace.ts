@@ -11,13 +11,14 @@ import { useState } from "react";
  * 
  * @example
  * ```jsx
- * const { submitLocationOrEvent, loading, error, success, fieldErrors } = useAddLocationOrEvent();
+ * const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
+ * 
  * async function handleSubmit() {
  *    if (!token) {
  *      console.error("Token manquant : authentification requise");
  *      return;
  *    }
- *    await submitLocationOrEvent(
+ *    await submitPlaceOrEvent(
  *      {
  *        nom: "Nom du lieu",
  *        description: "Description du lieu",
@@ -32,24 +33,25 @@ import { useState } from "react";
  *        id_type: 1,
  *        equipements: [1],
  *        tranches_age: [2],
- *        date_debut: "date de début de l'évenememt" // optionnel
- *        date_fin: "date de fin de l'événement" // optionnel
+ *        date_debut: "2025-06-01", // optionnel
+ *        date_fin: "2025-06-05" // optionnel
  *      }, token);
  * }
  * 
- * if(error){
+ * if(error) {
  *    console.log("Erreur générale :", error);
- *    console.log(fieldErrors)
+ *    console.log(fieldErrors);
  * }
  * 
- * if(loading){
- *    console.log("Chargment...")
+ * if(loading) {
+ *    console.log("Chargement...");
  * }
  * 
- * if(success){
- *    console.log("Tout est ok")
+ * if(success) {
+ *    console.log("Ajout réussi");
  * }
  * ```
+ * @returns Un objet contenant les fonctions et états pour gérer l'ajout d'un lieu ou événement
  */
 export function useAddPlaceOrEvent() {
   const [loading, setLoading] = useState(false);
@@ -75,9 +77,10 @@ export function useAddPlaceOrEvent() {
    * - `id_type`: `number` - L'identifiant du type de lieu ou d'événement.
    * - `equipements`: `number[]` - Un tableau d'identifiants des équipements disponibles.
    * - `tranches_age`: `number[]` - Un tableau d'identifiants des tranches d'âge concernées.
-   * - `date_debut`: `string` - (optionnel) - La date de début de l'événement
-   * - `date_fin`: `string` - (optionnel) - La date de fin de l'événement
-   * @param token - Le token d'authentification.
+   * - `date_debut`: `string` - (optionnel) - La date de début de l'événement au format YYYY-MM-DD.
+   * - `date_fin`: `string` - (optionnel) - La date de fin de l'événement au format YYYY-MM-DD.
+   * @param token - Le token d'authentification JWT requis pour l'API.
+   * @returns Une promesse résolue après la soumission des données.
    */
   const submitPlaceOrEvent = async (data: AddPlaceOrEventPayload, token: string) => {
     setLoading(true);
