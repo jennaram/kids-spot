@@ -44,6 +44,13 @@ export function useAddFavorite() {
         } finally {
             setLoading(false);
         }
+
+
+    };
+
+    const reset = () => {
+        setSuccess(false);
+        setError(null);
     }
-    return { submitFavorite, loading, success, error };
+    return { submitFavorite, loading, success, error, reset };
 }

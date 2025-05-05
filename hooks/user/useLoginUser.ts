@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { loginUser } from '@/services/userServices';
 import { AuthResult } from '@/types/user';
 import { handleApiError } from '@/utils/handleApiError';
+import { getApiMessage } from '@/utils/apiResponseHelpers';
 
 /**
  * Hook pour gérer l'authentification d'un utilisateur avec gestion des erreurs globales et par champ
@@ -56,7 +57,7 @@ export function useLoginUser() {
       if (response.statusCode === 200 && response.data) {
         setData(response.data);
       } else if (response.statusCode === 401) {
-        setError('Identifiants incorrects');
+        setError(getApiMessage(response));
       } else if (response.statusCode === 422 && response.data) {
         setError('Veuillez corriger les erreurs dans le formulaire');
       } else {
