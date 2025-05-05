@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
 import { fontTitle, loadFonts } from './style/styles';
+import { styles } from '@/app/style/accueil.styles';
 
 const Stack = createNativeStackNavigator();
 
@@ -56,22 +57,4 @@ export default function Index() {
   );
 }
 
-// Styles
-const styles = StyleSheet.create({
 
-  
-  submitButton: {
-    height: 40,
-    width: '50%',
-    backgroundColor: colorButtonFirst,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 30,
-  },
-  submitButtonText: {
-    color: colorButtonThird,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
