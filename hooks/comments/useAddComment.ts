@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { addComment } from "@/services/commentsServices";
 import { isApiSuccess, isApiError, getApiMessage } from "@/utils/apiResponseHelpers";
-import { AddComment } from "@/types/comment";
+import { AddComment } from "@/Types/comment";
 
 /**
  * Hook pour gérer l'état et la logique d'ajout d'un commentaire
