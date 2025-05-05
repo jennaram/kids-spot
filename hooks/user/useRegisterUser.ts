@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { RegisterUser } from '@/types/user';
 import { registerUser } from '@/services/userServices';
 import { ApiResponseSuccessOnly } from '@/types/api-response';
+import { getApiMessage, isApiError } from '@/utils/apiResponseHelpers';
 
 export function useRegisterUser() {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<ApiResponseSuccessOnly | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string> | null>(null);
+  const [success, setSuccess] = useState(false);
 
   async function submit(userData: RegisterUser) {
     setLoading(true);
@@ -17,11 +18,18 @@ export function useRegisterUser() {
       const response = await registerUser(userData);
       console.log(response)
       if (response.statusCode === 201 && response.data) {
-        setData(response.data);
+        setSuccess(false);
+      } else if (isApiError(response)) {
+        setSuccess(false);
+        setError(getApiMessage(response));
+        if (response.data?.errors) {
+          setFieldErrors(response.data.errors);
+        }
       } else {
-        setError('Une erreur est survenue lors de l’inscription');
+        setSuccess(false);
+        setError(getApiMessage(response) || "Erreur inattendue lors de l'ajout.");
       }
-      
+
     } catch (err: any) {
       setError(err.message || 'Erreur inconnue');
       if (err.errors) {
@@ -32,5 +40,5 @@ export function useRegisterUser() {
     }
   }
 
-  return { submit, loading, data, error, fieldErrors };
+  return { submit, loading, success, error, fieldErrors };
 }

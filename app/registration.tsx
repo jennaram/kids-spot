@@ -39,7 +39,7 @@ export default function RegistrationScreen() {
   const {
     submit,
     loading,
-    data,
+    success,
     error,
     fieldErrors,
   } = useRegisterUser();
@@ -57,13 +57,21 @@ export default function RegistrationScreen() {
   }, [googleResponse]);
 
   useEffect(() => {
-    if (data) {
+    if (success) {
       Alert.alert('Succès', 'Inscription réussie !');
       router.replace('/main');
     } else if (error) {
-      Alert.alert('Erreur', error);
+      console.log(fieldErrors);
+      if (fieldErrors) {
+        const errorMessages = Object.entries(fieldErrors)
+          .map(([field, message]) => `${field} : ${message}`)
+          .join('\n');
+
+        Alert.alert('Erreur(s) de validation', errorMessages);
+      }
+
     }
-  }, [data, error]);
+  }, [success, fieldErrors]);
 
   const handleGoogleSignIn = async (token?: string) => {
     if (!token) return;
@@ -97,7 +105,7 @@ export default function RegistrationScreen() {
       telephone: formData.phone,
     });
 
-    
+
   };
 
   return (
