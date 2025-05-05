@@ -92,7 +92,7 @@ export default function LoginScreen() {
       const { email, name } = googleUser;
   
       // 2. Envoie les infos à ton propre backend
-      const apiResponse = await fetch('https://ton-api.com/api/auth/google', {
+      const apiResponse = await fetch('https://seb-prod.alwaysdata.net/kidsspot/users/google-auth.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
