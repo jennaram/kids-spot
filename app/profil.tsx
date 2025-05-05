@@ -96,10 +96,6 @@ export default function ProfileScreen() {
               <Text style={styles.label}>Âge des enfants</Text>
               <AgeBadges 
                 tranchesAge={userData.childrenAges ? userData.childrenAges.split(',') : []}
-                badgeColor={colorButtonThird}
-                containerStyle={styles.ageContainerStyle}
-                badgeStyle={styles.ageBadgeStyle}
-                textStyle={styles.ageBadgeTextStyle}
               />
             </View>
 
