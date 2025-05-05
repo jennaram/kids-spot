@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,50 +7,28 @@ import {
   StyleSheet,
   Image,
   TextInput,
+  ActivityIndicator
 } from 'react-native';
+import { useLocation } from "@/context/locate/LocationContext";
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types/navigation';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
+import Icon from 'react-native-vector-icons/Feather';
+
 import {
   colorButtonFirst,
   colorButtonSecondary,
   colorButtonThird,
   colorFourth,
-  fontSubtitle,
-  fontTitle,
 } from './style/styles';
-
-interface Favori {
-  id: string;
-  nom: string;
-  imageUrl: string;
-  description: string;
-}
 
 const Favoris = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [favoris, setFavoris] = useState<Favori[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { favorites, loading, error, refreshFavorites } = useLocation();
   const [search, setSearch] = useState<string>('');
   const [selectedType, setSelectedType] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchFavoris = async () => {
-      try {
-        const response = await fetch('https://your-api-url.com/favoris');
-        const data = await response.json();
-        setFavoris(data);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des favoris:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFavoris();
-  }, []);
 
   const handleRemoveFavori = async (id: string) => {
     try {
@@ -58,7 +36,7 @@ const Favoris = () => {
         method: 'DELETE',
       });
       if (response.ok) {
-        setFavoris(favoris.filter((favori) => favori.id !== id));
+        refreshFavorites(); // recharge les favoris depuis le context
       } else {
         console.error('Erreur lors de la suppression du favori');
       }
@@ -67,92 +45,114 @@ const Favoris = () => {
     }
   };
 
-  const renderItem = ({ item }: { item: Favori }) => (
-    <View style={styles.favoriCard}>
-      <Image source={{ uri: item.imageUrl }} style={styles.favoriImage} />
-      <View style={styles.favoriDetails}>
-        <Text style={styles.favoriName}>{item.nom}</Text>
-        <Text style={styles.favoriDescription}>{item.description}</Text>
+  const filteredFavoris = (favorites || []).filter((favori) => {
+    const matchSearch = favori.nom.toLowerCase().includes(search.toLowerCase());
+    const matchType = selectedType ? favori.type?.toLowerCase() === selectedType : true;
+    return matchSearch && matchType;
+  });
+
+  const renderItem = ({ item }: { item: any }) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('details_lieu', { id: item.id })}
+      activeOpacity={0.9}
+    >
+      <View style={styles.favoriCard}>
+        {/* Icône poubelle */}
         <TouchableOpacity
-          style={styles.removeButton}
+          style={styles.trashIconContainer}
           onPress={() => handleRemoveFavori(item.id)}
         >
-          <Text style={styles.removeButtonText}>Retirer des favoris</Text>
+          <Icon name="trash-2" size={20}/>
         </TouchableOpacity>
+  
+        <Image source={{ uri: item.imageUrl }} style={styles.favoriImage} />
+        <View style={styles.favoriDetails}>
+          <Text style={styles.favoriName}>{item.nom}</Text>
+          <Text style={styles.favoriDescription}>{item.description}</Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <BurgerMenu/>
+        <BurgerMenu />
         <Title text="Favoris" />
+        <ActivityIndicator size="large" />
         <Text>Chargement...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.loaderContainer}>
+        <BurgerMenu />
+        <Title text="Favoris" />
+        <Text>Erreur : {error}</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.safeArea}>
-      <BurgerMenu/>
-        <View style={styles.container}>
-          <Title text="Favoris" />
+      <BurgerMenu />
+      <View style={styles.container}>
+        <Title text="Favoris" />
 
-          {/* Recherche & Bouton Équipement */}
-          <View style={styles.searchRow}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Rechercher un lieu favori"
-              value={search}
-              onChangeText={setSearch}
-            />
-            <TouchableOpacity
-              style={styles.equipButton}
-              onPress={() => console.log('Afficher les équipements')}
-            >
-              <Text style={{ color: 'white' }}>Équipements</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Filtres principaux */}
-          <View style={styles.filterRow}>
-            {['Restaurant', 'Loisirs', 'Culturel'].map((type) => {
-              const isSelected = selectedType === type.toLowerCase();
-              return (
-                <TouchableOpacity
-                  key={type}
-                  style={[
-                    styles.filterButton,
-                    isSelected && styles.filterButtonActive,
-                  ]}
-                  onPress={() =>
-                    setSelectedType(isSelected ? null : type.toLowerCase())
-                  }
-                >
-                  <Text
-                    style={[
-                      styles.filterText,
-                      isSelected && styles.filterTextActive,
-                    ]}
-                  >
-                    {type}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {favoris.length > 0 ? (
-            <FlatList
-              data={favoris}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-            />
-          ) : (
-            <Text style={styles.noFavorisText}>Aucun favori trouvé.</Text>
-          )}
+        <View style={styles.searchRow}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Rechercher un lieu favori"
+            value={search}
+            onChangeText={setSearch}
+          />
+          <TouchableOpacity
+            style={styles.equipButton}
+            onPress={() => console.log('Afficher les équipements')}
+          >
+            <Text style={{ color: 'white' }}>Équipements</Text>
+          </TouchableOpacity>
         </View>
+
+        <View style={styles.filterRow}>
+          {['Restaurant', 'Loisirs', 'Culturel'].map((type) => {
+            const isSelected = selectedType === type.toLowerCase();
+            return (
+              <TouchableOpacity
+                key={type}
+                style={[
+                  styles.filterButton,
+                  isSelected && styles.filterButtonActive,
+                ]}
+                onPress={() =>
+                  setSelectedType(isSelected ? null : type.toLowerCase())
+                }
+              >
+                <Text
+                  style={[
+                    styles.filterText,
+                    isSelected && styles.filterTextActive,
+                  ]}
+                >
+                  {type}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {filteredFavoris.length > 0 ? (
+          <FlatList
+            data={filteredFavoris}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        ) : (
+          <Text style={styles.noFavorisText}>Aucun favori trouvé.</Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -256,6 +256,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  trashIconContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    padding: 5,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    elevation: 2,
+  },
+  
 });
 
 export default Favoris;
