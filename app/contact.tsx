@@ -4,21 +4,18 @@ import {
   Text,
   Linking,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "./types/navigation";
+import { router } from "expo-router";
 import { Title } from "@/components/Title";
-import { colorButtonThird, colorFourth } from "./style/styles";
-import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
 import { Navigation } from "@/components/NavBar/Navigation";
 import { styles } from '@/app/style/contact.styles'; 
+import { BackButton } from './components/BackButton';
 
-// Données de l'équipe
+// LISTE COMPLÈTE DE TOUS VOS CONTACTS
 const TEAM_MEMBERS = [
   {
     name: "Jenna Ramiaramanantsoa",
@@ -47,75 +44,52 @@ const TEAM_MEMBERS = [
   },
 ];
 
-// Constantes pour les icônes
-const ICONS: {
-  github: { name: 'github'; color: string };
-  linkedin: { name: 'linkedin'; color: string };
-} = {
-  github: { name: 'github', color: 'black' },
-  linkedin: { name: 'linkedin', color: '#0077B5' },
-};
-
 const ContactScreen = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  // Composant pour un membre de l'équipe
-  const TeamMember = ({ member }: { member: (typeof TEAM_MEMBERS)[0] }) => (
-    <View style={styles.member}>
-      <Text style={styles.name}>{member.name}</Text>
-      <View style={styles.iconsContainer}>
-        <SocialIcon type="github" url={member.github} />
-        <SocialIcon type="linkedin" url={member.linkedin} />
-      </View>
-    </View>
-  );
-
-  // Composant pour une icône sociale
-  const SocialIcon = ({
-    type,
-    url,
-  }: {
-    type: keyof typeof ICONS;
-    url: string;
-  }) => {
-    const iconName = ICONS[type].name;
-    if (!['github', 'linkedin'].includes(iconName)) {
-      throw new Error(`Nom d'icône invalide : ${iconName}`);
-    }
-  
-    return (
-      <TouchableOpacity
-        onPress={() => Linking.openURL(url)}
-        style={styles.iconButton}
-        activeOpacity={0.7}
-      >
-        <FontAwesome
-          name={iconName}
-          size={24}
-          color={ICONS[type].color}
-          style={styles.icon}
-        />
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BurgerMenu />
-      <ScrollView contentContainerStyle={styles.container}>
+      {/* BOUTON RETOUR EN HAUT À GAUCHE */}
+      <View style={{
+        position: 'absolute',
+        top: Platform.select({ ios: 10, android: 5 }), // Position ultra-haute
+        left: 10,
+        zIndex: 100,
+      }}>
+        <BackButton onPress={() => router.back()} />
+      </View>
+
+      <ScrollView 
+        contentContainerStyle={[styles.container, { paddingTop: 50 }]}
+        showsVerticalScrollIndicator={false}
+      >
         <Title text="Contactez-nous" />
+        
+        {/* LISTE COMPLÈTE DES CONTACTS */}
         <View style={styles.content}>
-          {TEAM_MEMBERS.map((member) => (
-            <TeamMember key={member.name} member={member} />
+          {TEAM_MEMBERS.map((member, index) => (
+            <View key={index} style={styles.member}>
+              <Text style={styles.name}>{member.name}</Text>
+              <View style={styles.iconsContainer}>
+                <TouchableOpacity 
+                  onPress={() => Linking.openURL(member.github)}
+                  style={styles.iconButton}
+                >
+                  <FontAwesome name="github" size={24} color="black" />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => Linking.openURL(member.linkedin)}
+                  style={styles.iconButton}
+                >
+                  <FontAwesome name="linkedin" size={24} color="#0077B5" />
+                </TouchableOpacity>
+              </View>
+            </View>
           ))}
         </View>
       </ScrollView>
+
       <Navigation />
     </SafeAreaView>
   );
 };
-
-
 
 export default ContactScreen;
