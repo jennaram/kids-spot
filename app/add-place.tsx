@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import { useAuth } from '@/context/auth';
+import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
   View, Text, TextInput, ScrollView, TouchableOpacity,
   Image, Alert, SafeAreaView
@@ -31,6 +33,8 @@ type LocationType = { latitude: number; longitude: number } | null;
 
 const AddPlaceScreen = () => {
   const router = useRouter();
+  const { token } = useAuth();
+  const { submitPlaceOrEvent, loading, error, success } = useAddPlaceOrEvent();
 
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [placeName, setPlaceName] = useState('');
@@ -89,28 +93,69 @@ const AddPlaceScreen = () => {
     }
   }, []);
 
-  const handleSubmit = useCallback(() => {
-    if (!placeName || !address) {
+  const handleSubmit = useCallback(async () => {
+    if (!placeName || !address || !location) {
       Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
       return;
     }
 
-    const newPlace = {
-      name: placeName,
-      type: placeType,
-      address,
-      location,
-      description,
-      ageRanges,
-      rating,
-      equipments,
-      website: website.trim(), // Ajout du site web
-      phoneNumber: phoneNumber.trim(), // Ajout du numéro de téléphone
+    if (!token) {
+      Alert.alert('Erreur', 'Vous devez être connecté pour ajouter un lieu');
+      return;
+    }
+
+    const typeIdMap = {
+      restaurant: 1,
+      leisure: 2,
+      culture: 3
     };
 
-    console.log('Nouveau lieu:', newPlace);
-    Alert.alert('Succès', 'Lieu ajouté avec succès!');
-    router.push('/home');
+    const equipmentIdMap = {
+      strollerAccess: 1,
+      playArea: 2,
+      microwave: 3,
+      highChair: 4,
+      changingTable: 5,
+      parking: 6
+    };
+
+    const ageRangeIdMap = {
+      '0-2': 1,
+      '3-6': 2,
+      '7+': 3
+    };
+
+    const activeEquipments = Object.entries(equipments)
+      .filter(([_, isActive]) => isActive)
+      .map(([key]) => equipmentIdMap[key as keyof typeof equipmentIdMap]);
+
+    const ageRangeIds = ageRanges.map(age => ageRangeIdMap[age as keyof typeof ageRangeIdMap]);
+
+    const newPlace = {
+      nom: placeName,
+      description: description,
+      horaires: '', 
+      adresse: address,
+      ville: '', 
+      code_postal: '', 
+      longitude: location.longitude,
+      latitude: location.latitude,
+      telephone: phoneNumber.trim(),
+      site_web: website.trim(),
+      id_type: typeIdMap[placeType],
+      equipements: activeEquipments,
+      tranches_age: ageRangeIds
+    };
+
+    try {
+      await submitPlaceOrEvent(newPlace, token);
+      if (success) {
+        Alert.alert('Succès', 'Le lieu a été ajouté avec succès');
+        router.push('/accueil');
+      }
+    } catch (err) {
+      Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
+    }
   }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router]);
 
   const toggleAgeRange = useCallback((age: string) => {
