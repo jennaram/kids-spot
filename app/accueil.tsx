@@ -25,7 +25,7 @@ export default function Index() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       {/* Partie haute avec logo et texte */}
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 80 }}>
         <Image
@@ -58,6 +58,8 @@ export default function Index() {
 
 // Styles
 const styles = StyleSheet.create({
+
+  
   submitButton: {
     height: 40,
     width: '50%',
