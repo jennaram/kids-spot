@@ -13,7 +13,7 @@ import {
   ScrollView
 } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/NavBar/Navigation";
@@ -50,17 +50,11 @@ const ReviewPage = () => {
         try {
           // Ici vous devrez implémenter la récupération des infos utilisateur
           // Exemple avec une API :
-          // const response = await fetch('/api/user', {
-          //   headers: { 'Authorization': `Bearer ${token}` }
-          // });
-          // const data = await response.json();
-          // setUserInfo(data);
-          
-          // Solution temporaire avec des valeurs mockées :
-          setUserInfo({
-            name: "Utilisateur Connecté",
-            email: "user@example.com"
+          const response = await fetch('/api/user', {
+            headers: { 'Authorization': `Bearer ${token}` }
           });
+          const data = await response.json();
+          setUserInfo(data);
         } catch (err) {
           console.error("Erreur récupération infos utilisateur", err);
         }
@@ -146,8 +140,8 @@ const ReviewPage = () => {
   // Composants internes
   const UserInfoSection = () => (
     <View style={styles.userInfoContainer}>
-      <Text style={styles.staticText}>Nom : {userInfo?.name || "Non connecté"}</Text>
-      <Text style={styles.staticText}>Email : {userInfo?.email || "-"}</Text>
+      <Text style={styles.staticText}>Nom : {userInfo?.name}</Text>
+      <Text style={styles.staticText}>Email : {userInfo?.email}</Text>
     </View>
   );
 
