@@ -117,7 +117,7 @@ const ReviewPage = () => {
     <SafeAreaView style={styles.container}>
       <BackButton style={styles.backButton} />
       <View style={styles.container}>
-      <Title text={`Avis sur ${lieuName}`} />
+      <Title text={`${lieuName}`} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
@@ -243,6 +243,7 @@ const styles = StyleSheet.create({
     left: 15,
     zIndex: 1,
   },
+  
 });
 
 export default ReviewPage;
