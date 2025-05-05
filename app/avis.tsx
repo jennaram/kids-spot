@@ -27,7 +27,7 @@ const MAX_CHARACTERS = 500;
 
 const ReviewPage = () => {
   const params = useLocalSearchParams() as { id: string };
-  const lieuId = Number(params.id?.toString() || "0");
+  const lieuId = Number(params.id?.toString() || "1");
 
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState("");
@@ -50,12 +50,15 @@ const ReviewPage = () => {
     }
   }, [error]);
 
-  const handleSubmit = async () => {
+  const handleSubmit =() => {
+    console.log("je click");
     if (!validateForm()) return;
-    await submitReview();
+    submitReview();
   };
 
   const validateForm = () => {
+    console.log("je vérifie");
+    console.log(comment);
     if (!token) {
       toast.error("Vous devez être connecté pour poster un avis");
       return false;
@@ -68,10 +71,12 @@ const ReviewPage = () => {
       toast.error("Votre commentaire doit contenir au moins 10 caractères.");
       return false;
     }
+    console.log("tout va bien");
     return true;
   };
 
   const submitReview = async () => {
+    console.log(lieuId)
     if (lieuId <= 0) {
       toast.error("Lieu invalide");
       return;
@@ -85,7 +90,7 @@ const ReviewPage = () => {
       note: rating,
       token: token,
     };
-
+    console.log("je suis ici");
     await submitComment(reviewData, token);
   };
 
@@ -152,11 +157,7 @@ const ReviewPage = () => {
             <View style={styles.buttonWrapper}>
               <SubmitButton
                 title={getButtonText()}
-                onPress={
-                  loading || !token || !rating || comment.length < 10
-                    ? () => {}
-                    : handleSubmit
-                }
+                onPress={handleSubmit}
                 loading={loading}
               />
             </View>
