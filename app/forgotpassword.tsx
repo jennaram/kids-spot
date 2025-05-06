@@ -19,6 +19,7 @@ import { ConfirmationModal } from './components/Form/AlertPopUp';
 import { AppLogo } from './components/AppLogo';
 import { useSendMAil } from '@/hooks/user/useSendMail';
 
+
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -49,9 +50,12 @@ export default function ForgotPasswordScreen() {
     return email.includes('@') && email.includes('.');
   };
 
-  const closeModalAndRedirect = () => {
+  const closeModal = () => {
     setShowConfirmation(false);
-    router.replace('/login');
+    router.push({
+      pathname: '/sendResetCode',
+      params: { mail: email },
+    });
   };
 
   return (
@@ -94,7 +98,7 @@ export default function ForgotPasswordScreen() {
         <ConfirmationModal
           visible={showConfirmation}
           email={email}
-          onClose={closeModalAndRedirect}
+          onClose={closeModal}
           title="Email envoyé"
         />
       </KeyboardAvoidingView>

@@ -33,3 +33,4 @@ export async function sendMail(mail:string):
   Promise<ApiResponse<ApiResponseSuccessOnly>>{
     return apiPost<ApiResponseSuccessOnly>('users/forgot.php', {mail})
   }
+
