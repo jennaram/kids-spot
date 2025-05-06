@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView
 } from 'react-native';
 import { useLocation } from "@/context/locate/LocationContext";
 import { useNavigation } from '@react-navigation/native';
@@ -23,6 +24,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useDeleteFavorite } from '@/hooks/favorite/useDeleteFavorite';
+import { Navigation } from '@/components/NavBar/Navigation';
 
 
 const Favoris = () => {
@@ -120,51 +122,8 @@ const Favoris = () => {
       <BurgerMenu />
       <View>
         <Title text="Favoris" />
-
-        {/* <View style={styles.searchRow}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Rechercher un lieu favori"
-            value={search}
-            onChangeText={setSearch}
-          />
-          <TouchableOpacity
-            style={styles.equipButton}
-            onPress={() => console.log('Afficher les équipements')}
-          >
-            <Text style={{ color: 'white' }}>Équipements</Text>
-          </TouchableOpacity>
-        </View> */}
-
-        {/* <View style={styles.filterRow}>
-          {['Restaurant', 'Loisirs', 'Culturel'].map((type) => {
-            const isSelected = selectedType === type.toLowerCase();
-            return (
-              <TouchableOpacity
-                key={type}
-                style={[
-                  styles.filterButton,
-                  isSelected && styles.filterButtonActive,
-                ]}
-                onPress={() =>
-                  setSelectedType(isSelected ? null : type.toLowerCase())
-                }
-              >
-                <Text
-                  style={[
-                    styles.filterText,
-                    isSelected && styles.filterTextActive,
-                  ]}
-                >
-                  {type}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View> */}
-
         {filteredFavoris.length > 0 ? (
-          <FlatList
+          <FlatList style= {{ padding: 10 }}
             data={filteredFavoris}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
@@ -173,6 +132,7 @@ const Favoris = () => {
           <Text style={styles.noFavorisText}>Aucun favori trouvé.</Text>
         )}
       </View>
+      <Navigation />
     </SafeAreaView>
   );
 };
