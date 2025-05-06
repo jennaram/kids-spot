@@ -45,6 +45,9 @@ const AddPlaceScreen = () => {
   const [rating, setRating] = useState(3);
   const [website, setWebsite] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [codepostal, setCodepostal] = useState('');
+  const [ville, setVille] = useState('');
+  const [horaires, setHoraires] = useState('');
   const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
@@ -222,8 +225,8 @@ const AddPlaceScreen = () => {
           <Text style={styles.label}>Code Postal</Text>
           <FormInput
             label=""
-            value={website}
-            onChangeText={setWebsite}
+            value={codepostal}
+            onChangeText={setCodepostal}
             placeholder="75000"
           />
         </View>
@@ -232,8 +235,8 @@ const AddPlaceScreen = () => {
           <Text style={styles.label}>Ville</Text>
           <FormInput
             label=""
-            value={website}
-            onChangeText={setWebsite}
+            value={ville}
+            onChangeText={setVille}
             placeholder="Paris"
           />
         </View>
@@ -256,6 +259,16 @@ const AddPlaceScreen = () => {
             onChangeText={setPhoneNumber}
             placeholder="01 23 45 67 89"
             keyboardType="phone-pad"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Horaires</Text>
+          <FormInput
+            label=""
+            value={horaires}
+            onChangeText={setHoraires}
+            placeholder="10h-18h"
           />
         </View>
 

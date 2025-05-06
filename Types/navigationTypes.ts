@@ -5,11 +5,10 @@ export type RootStackParamList = {
     Favorites: undefined;
     contact: undefined;
     // Ajoutez d'autres écrans ici au besoin
-  };
+};
   
-
-  declare global {
+declare global {
     namespace ReactNavigation {
-      interface RootParamList extends RootStackParamList {}
+        interface RootParamList extends RootStackParamList {}
     }
-  }
+}
