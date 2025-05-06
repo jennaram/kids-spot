@@ -1,4 +1,6 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useAuth } from '@/context/auth';
+import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
   View, Text, TextInput, ScrollView, TouchableOpacity,
   Image, Alert, SafeAreaView
@@ -31,6 +33,8 @@ type LocationType = { latitude: number; longitude: number } | null;
 
 const AddPlaceScreen = () => {
   const router = useRouter();
+  const { token } = useAuth();
+  const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
 
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [placeName, setPlaceName] = useState('');
@@ -41,6 +45,9 @@ const AddPlaceScreen = () => {
   const [rating, setRating] = useState(3);
   const [website, setWebsite] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [codepostal, setCodepostal] = useState('');
+  const [ville, setVille] = useState('');
+  const [horaires, setHoraires] = useState('');
   const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
@@ -89,29 +96,73 @@ const AddPlaceScreen = () => {
     }
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!placeName || !address) {
       Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
       return;
     }
 
-    const newPlace = {
-      name: placeName,
-      type: placeType,
-      address,
-      location,
-      description,
-      ageRanges,
-      rating,
-      equipments,
-      website: website.trim(), // Ajout du site web
-      phoneNumber: phoneNumber.trim(), // Ajout du numéro de téléphone
+    if (!token) {
+      Alert.alert('Erreur', 'Vous devez être connecté pour ajouter un lieu');
+      return;
+    }
+
+    const typeIdMap = {
+      restaurant: 1,
+      leisure: 2,
+      culture: 3
     };
 
-    console.log('Nouveau lieu:', newPlace);
-    Alert.alert('Succès', 'Lieu ajouté avec succès!');
-    router.push('/home');
+    const equipmentIdMap = {
+      strollerAccess: 1,
+      playArea: 2,
+      microwave: 3,
+      highChair: 4,
+      changingTable: 5,
+      parking: 6
+    };
+
+    const ageRangeIdMap = {
+      '0-2': 1,
+      '3-6': 2,
+      '7+': 3
+    };
+
+    const activeEquipments = Object.entries(equipments)
+      .filter(([_, isActive]) => isActive)
+      .map(([key]) => equipmentIdMap[key as keyof typeof equipmentIdMap]);
+
+    const ageRangeIds = ageRanges.map(age => ageRangeIdMap[age as keyof typeof ageRangeIdMap]);
+
+    const newPlace = {
+      nom: placeName,
+      description: description,
+      horaires: horaires, 
+      adresse: address,
+      ville: ville, 
+      code_postal: codepostal, 
+      longitude: 12,
+      latitude: 12,
+      telephone: phoneNumber.trim(),
+      site_web: website.trim(),
+      id_type: typeIdMap[placeType],
+      equipements: activeEquipments,
+      tranches_age: ageRangeIds
+    };
+    
+    submitPlaceOrEvent(newPlace, token);
+
   }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router]);
+
+  useEffect(() => {
+    if (error) {
+      console.log(fieldErrors)
+      Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
+    }
+    if (success) {
+      Alert.alert('Succès', 'Lieu ajouté avec succès')
+    }
+  }, [loading, error, success]);
 
   const toggleAgeRange = useCallback((age: string) => {
     setAgeRanges((prev) =>
@@ -171,6 +222,26 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.label}>Code Postal</Text>
+          <FormInput
+            label=""
+            value={codepostal}
+            onChangeText={setCodepostal}
+            placeholder="75000"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Ville</Text>
+          <FormInput
+            label=""
+            value={ville}
+            onChangeText={setVille}
+            placeholder="Paris"
+          />
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.label}>Site web (optionnel)</Text>
           <FormInput
             label=""
@@ -188,6 +259,16 @@ const AddPlaceScreen = () => {
             onChangeText={setPhoneNumber}
             placeholder="01 23 45 67 89"
             keyboardType="phone-pad"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Horaires</Text>
+          <FormInput
+            label=""
+            value={horaires}
+            onChangeText={setHoraires}
+            placeholder="10h-18h"
           />
         </View>
 
