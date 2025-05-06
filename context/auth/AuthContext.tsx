@@ -7,6 +7,7 @@ type AuthContextType = {
   token: string | null;
   setToken: (token: string | null, expirationDuration?: number | null) => void;
   loading: boolean;
+  
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -94,3 +95,5 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+
+export { AuthContext };

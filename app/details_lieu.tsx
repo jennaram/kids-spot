@@ -201,6 +201,8 @@ const DetailsLieu = () => {
                   nomLieu={place.nom}
                   lieuId={place.id.toString()}
                   onBeforeAction={handleDonnerAvis}
+                  onPress={() => navigation.navigate('ReviewPage', { lieuId: lieuId, nomLieu: place.nom })}
+                  
                 />
                 <AvisButton
                   type="voir"
