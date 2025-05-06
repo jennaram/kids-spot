@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  TextInput,
   ActivityIndicator
 } from 'react-native';
 import { useLocation } from "@/context/locate/LocationContext";
@@ -16,34 +15,47 @@ import { RootStackParamList } from './types/navigation';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import Icon from 'react-native-vector-icons/Feather';
-
+import BackButton from "./components/BackButton";
 import {
   colorButtonFirst,
-  colorButtonSecondary,
   colorButtonThird,
-  colorFourth,
 } from './style/styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '@/context/auth/AuthContext';
+import { useDeleteFavorite } from '@/hooks/favorite/useDeleteFavorite';
+
 
 const Favoris = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { favorites, loading, error, refreshFavorites } = useLocation();
   const [search, setSearch] = useState<string>('');
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const { token } = useAuth();
+  const {
+      removeFavorite,
+      loading: deleting,
+      success: deleteSuccess,
+      error: deleteError,
+      reset: resetDeleteFavorite,
+    } = useDeleteFavorite();
 
+    const IMAGE_BASE_URL = 'https://ton-site.com/images/';
+    const [imageError, setImageError] = useState(false);
   const handleRemoveFavori = async (id: string) => {
-    try {
-      const response = await fetch(`https://your-api-url.com/favoris/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        refreshFavorites(); // recharge les favoris depuis le context
-      } else {
-        console.error('Erreur lors de la suppression du favori');
-      }
-    } catch (error) {
-      console.error('Erreur lors de la suppression du favori:', error);
+    if (!token) {
+      console.error('Token non disponible pour la suppression');
+      return;
     }
+    await removeFavorite(Number(id), token);
+    
   };
+  useEffect(() => {
+    if (deleteSuccess) {
+      refreshFavorites();
+      resetDeleteFavorite();
+    }
+  }
+  , [deleteSuccess]);
 
   const filteredFavoris = (favorites || []).filter((favori) => {
     const matchSearch = favori.nom.toLowerCase().includes(search.toLowerCase());
@@ -65,7 +77,15 @@ const Favoris = () => {
           <Icon name="trash-2" size={20}/>
         </TouchableOpacity>
   
-        <Image source={{ uri: item.imageUrl }} style={styles.favoriImage} />
+       <Image
+                               source={
+                                   imageError
+                                       ? require('@/assets/images/carte.png')
+                                       : { uri: `${IMAGE_BASE_URL}${item.id}.jpg` }
+                               }
+                               style={styles.image}
+                               onError={() => setImageError(true)}
+                           />
         <View style={styles.favoriDetails}>
           <Text style={styles.favoriName}>{item.nom}</Text>
           <Text style={styles.favoriDescription}>{item.description}</Text>
@@ -77,7 +97,7 @@ const Favoris = () => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <BurgerMenu />
+        <BackButton style={styles.backButton} />
         <Title text="Favoris" />
         <ActivityIndicator size="large" />
         <Text>Chargement...</Text>
@@ -88,7 +108,7 @@ const Favoris = () => {
   if (error) {
     return (
       <View style={styles.loaderContainer}>
-        <BurgerMenu />
+        <BackButton style={styles.backButton} />
         <Title text="Favoris" />
         <Text>Erreur : {error}</Text>
       </View>
@@ -96,12 +116,12 @@ const Favoris = () => {
   }
 
   return (
-    <View style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
       <BurgerMenu />
-      <View style={styles.container}>
+      <View>
         <Title text="Favoris" />
 
-        <View style={styles.searchRow}>
+        {/* <View style={styles.searchRow}>
           <TextInput
             style={styles.searchInput}
             placeholder="Rechercher un lieu favori"
@@ -114,9 +134,9 @@ const Favoris = () => {
           >
             <Text style={{ color: 'white' }}>Équipements</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
-        <View style={styles.filterRow}>
+        {/* <View style={styles.filterRow}>
           {['Restaurant', 'Loisirs', 'Culturel'].map((type) => {
             const isSelected = selectedType === type.toLowerCase();
             return (
@@ -141,7 +161,7 @@ const Favoris = () => {
               </TouchableOpacity>
             );
           })}
-        </View>
+        </View> */}
 
         {filteredFavoris.length > 0 ? (
           <FlatList
@@ -153,7 +173,7 @@ const Favoris = () => {
           <Text style={styles.noFavorisText}>Aucun favori trouvé.</Text>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -162,50 +182,50 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colorButtonThird,
   },
-  container: {
-    flex: 1,
-    backgroundColor: colorButtonThird,
-  },
-  searchRow: {
-    flexDirection: 'row',
-    padding: 12,
-    gap: 8,
-  },
-  searchInput: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-  },
-  equipButton: {
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-    backgroundColor: colorButtonSecondary,
-    borderRadius: 8,
-  },
-  filterRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 8,
-    paddingHorizontal: 8,
-  },
-  filterButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: colorButtonThird,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colorButtonFirst,
-  },
-  filterButtonActive: {
-    backgroundColor: colorButtonFirst,
-  },
-  filterText: {
-    color: '#000',
-  },
-  filterTextActive: {
-    color: colorButtonThird,
-  },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: colorButtonThird,
+  // },
+  // searchRow: {
+  //   flexDirection: 'row',
+  //   padding: 12,
+  //   gap: 8,
+  // },
+  // searchInput: {
+  //   flex: 1,
+  //   padding: 10,
+  //   backgroundColor: '#f0f0f0',
+  //   borderRadius: 8,
+  // },
+  // equipButton: {
+  //   paddingHorizontal: 12,
+  //   justifyContent: 'center',
+  //   backgroundColor: colorButtonSecondary,
+  //   borderRadius: 8,
+  // },
+  // filterRow: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-around',
+  //   marginBottom: 8,
+  //   paddingHorizontal: 8,
+  // },
+  // filterButton: {
+  //   paddingVertical: 6,
+  //   paddingHorizontal: 12,
+  //   backgroundColor: colorButtonThird,
+  //   borderRadius: 20,
+  //   borderWidth: 1,
+  //   borderColor: colorButtonFirst,
+  // },
+  // filterButtonActive: {
+  //   backgroundColor: colorButtonFirst,
+  // },
+  // filterText: {
+  //   color: '#000',
+  // },
+  // filterTextActive: {
+  //   color: colorButtonThird,
+  // },
   favoriCard: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -266,7 +286,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     elevation: 2,
   },
-  
+  backButton:{
+    top: 0,
+    left: 15,
+  },
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 8,
+    marginRight: 10,
+    backgroundColor: '#ddd',
+},
 });
 
 export default Favoris;
