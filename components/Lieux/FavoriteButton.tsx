@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from "@/context/auth";
 import { useAddFavorite } from '@/hooks/favorite/useAddFavorite';
@@ -50,11 +50,15 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
       refreshFavorites();
       onToggle?.(true);
       resetAddFavorite();
+      Alert.alert(
+        "Ajouté aux favoris",)
     } else if (deleteSuccess) {
       setIsFavorite(false);
       refreshFavorites();
       onToggle?.(false);
       resetDeleteFavorite();
+      Alert.alert(
+        "Retiré des favoris",)  
     }
   }, [addSuccess, deleteSuccess]);
 
