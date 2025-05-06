@@ -19,7 +19,7 @@ import BackButton from "@/app/components/BackButton";
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from "@/components/Title";
 import { useAddComment } from "@/hooks/comments/useAddComment";
-import { AddComment } from "@/Types/comment";
+import { AddComment } from "@/types/comment";
 import { AuthContext } from "@/context/auth/AuthContext";
 import StarRating from "@/components/Notation/StarRating";
 import FormInput from "@/app/components/Form/InputField";
@@ -28,12 +28,12 @@ import SubmitButton from "@/app/components/Form/SubmitButton";
 const MAX_CHARACTERS = 500;
 
 const ReviewPage = () => {
-  const params = useLocalSearchParams() as { id: string; nomLieu?: string };
-  const lieuId = Number(params.id?.toString() || "1");
+  const params = useLocalSearchParams() as { lieuId: string; nomLieu?: string };
 
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState("");
-  const [lieuName, setLieuName] = useState(params.nomLieu || "Ce lieu");
+  const [lieuName] = useState(params.nomLieu || "Ce lieu");
+  const [lieuId] = useState(Number(params.lieuId) || 0);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
   // Debug state
@@ -140,6 +140,7 @@ const ReviewPage = () => {
       if (Platform.OS === 'web') {
         toast.error("Lieu invalide");
       } else {
+        console.log(lieuId);
         Alert.alert("Erreur", "Lieu invalide");
       }
       return;
