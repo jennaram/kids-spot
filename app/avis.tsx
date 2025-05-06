@@ -8,8 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Modal,
-  TouchableOpacity,
   Alert,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -19,11 +17,12 @@ import BackButton from "@/app/components/BackButton";
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from "@/components/Title";
 import { useAddComment } from "@/hooks/comments/useAddComment";
-import { AddComment } from "@/types/comment";
+import { AddComment } from "@/Types/comment";
 import { AuthContext } from "@/context/auth/AuthContext";
 import StarRating from "@/components/Notation/StarRating";
 import FormInput from "@/app/components/Form/InputField";
 import SubmitButton from "@/app/components/Form/SubmitButton";
+import { styles } from "@/app/style/avis.styles";
 
 const MAX_CHARACTERS = 500;
 
@@ -34,45 +33,29 @@ const ReviewPage = () => {
   const [comment, setComment] = useState("");
   const [lieuName] = useState(params.nomLieu || "Ce lieu");
   const [lieuId] = useState(Number(params.lieuId) || 0);
-  const [showConfirmation, setShowConfirmation] = useState(false);
   
-  // Debug state
-  const [debugInfo, setDebugInfo] = useState({
-    submissionAttempted: false,
-    apiResponseReceived: false,
-  });
-
   const { submitComment, loading, success, error } = useAddComment();
   const { token, loading: authLoading } = useContext(AuthContext);
-
-  // Cette fonction sera utilisée pour montrer la modal directement
-  const showConfirmationPopup = () => {
-    console.log("Affichage de la popup de confirmation");
-    setShowConfirmation(true);
-  };
 
   useEffect(() => {
     console.log("État success:", success);
     console.log("État error:", error);
     
     if (success) {
-      console.log("Succès détecté, affichage de la popup");
-      setDebugInfo(prev => ({...prev, apiResponseReceived: true}));
+      console.log("Succès détecté, affichage de la notification");
       
-      // Utiliser Alert natif en cas de problème avec la Modal
       if (Platform.OS === 'web') {
         // Sur web, on utilise toast (déjà configuré)
         toast.success("Votre avis a été enregistré avec succès !");
       } else {
-        // Sur mobile, on utilise Alert en plus de la Modal
+        // Sur mobile, on utilise Alert native
         Alert.alert(
           "Merci pour votre avis !",
           "Votre commentaire a été enregistré avec succès.",
-          [{ text: "OK", onPress: () => console.log("Alert fermée") }]
+          [{ text: "OK", onPress: () => router.back() }]
         );
       }
       
-      setShowConfirmation(true);
       resetForm();
     }
   }, [success]);
@@ -80,7 +63,6 @@ const ReviewPage = () => {
   useEffect(() => {
     if (error) {
       console.log("Erreur détectée:", error);
-      setDebugInfo(prev => ({...prev, apiResponseReceived: true}));
       
       if (Platform.OS === 'web') {
         toast.error(error);
@@ -92,7 +74,6 @@ const ReviewPage = () => {
 
   const handleSubmit = () => {
     console.log("Bouton de soumission cliqué");
-    setDebugInfo(prev => ({...prev, submissionAttempted: true}));
     
     if (!validateForm()) {
       console.log("Validation du formulaire échouée");
@@ -179,18 +160,6 @@ const ReviewPage = () => {
     return "Publier l'avis";
   };
 
-  const handleCloseConfirmation = () => {
-    console.log("Fermeture de la popup demandée");
-    setShowConfirmation(false);
-    router.back();
-  };
-
-  // Afficher un bouton de test pour vérifier le modal
-  const testModal = () => {
-    console.log("Test de l'affichage de la modal");
-    setShowConfirmation(true);
-  };
-
   if (authLoading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
@@ -260,52 +229,9 @@ const ReviewPage = () => {
                 disabled={!token}
               />
             </View>
-            
-            {/* Bouton de débogage pour tester la modal */}
-            {__DEV__ && (
-              <TouchableOpacity style={styles.debugButton} onPress={testModal}>
-                <Text style={styles.debugButtonText}>Test Modal</Text>
-              </TouchableOpacity>
-            )}
-            
-            {/* Statut de débogage */}
-            {__DEV__ && (
-              <View style={styles.debugInfo}>
-                <Text>Tentative d'envoi: {debugInfo.submissionAttempted ? "Oui" : "Non"}</Text>
-                <Text>Réponse API reçue: {debugInfo.apiResponseReceived ? "Oui" : "Non"}</Text>
-                <Text>État loading: {loading ? "Oui" : "Non"}</Text>
-                <Text>État success: {success ? "Oui" : "Non"}</Text>
-                <Text>État error: {error ? "Oui" : "Non"}</Text>
-                <Text>Modal visible: {showConfirmation ? "Oui" : "Non"}</Text>
-              </View>
-            )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
-      {/* Pop-up de confirmation - version améliorée plus compatible */}
-      <Modal
-        visible={showConfirmation}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={handleCloseConfirmation}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Merci pour votre avis !</Text>
-            <Text style={styles.modalMessage}>
-              Votre commentaire a été enregistré avec succès.
-            </Text>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={handleCloseConfirmation}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.modalButtonText}>Fermer</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
 
       {/* Barre de navigation */}
       <Navigation />
@@ -313,147 +239,6 @@ const ReviewPage = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    paddingTop: Platform.OS === "ios" ? 2 : 4,
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-  backButtonContainer: {
-    width: "100%",
-    flexDirection: "row",
-    marginBottom: 10,
-  },
-  backButton: {
-    top: 0,
-    left: 15,
-  },
-  titleContainer: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    top: 30,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-  },
-  content: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  ratingContainer: {
-    marginBottom: 30,
-    alignItems: "center",
-  },
-  commentTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 10,
-    color: "#2c3e50",
-  },
-  textAreaInput: {
-    height: 150,
-    textAlignVertical: "top",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 5,
-  },
-  charCount: {
-    alignSelf: "flex-end",
-    fontSize: 12,
-    color: "#888",
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-  // Styles pour la pop-up de confirmation
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 24,
-    width: "80%",
-    maxWidth: 400,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 12,
-    textAlign: "center",
-    color: "#2c3e50",
-  },
-  modalMessage: {
-    fontSize: 16,
-    marginBottom: 24,
-    textAlign: "center",
-    color: "#5d6d7e",
-  },
-  modalButton: {
-    backgroundColor: "#3498db",
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 8,
-    width: "80%",
-    alignItems: "center",
-  },
-  modalButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  // Styles pour le débogage
-  debugButton: {
-    backgroundColor: "#e74c3c",
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 20,
-    alignSelf: "center",
-  },
-  debugButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  debugInfo: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-});
+
 
 export default ReviewPage;
