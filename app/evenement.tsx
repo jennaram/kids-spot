@@ -107,7 +107,7 @@ const Evenement = () => {
       <BurgerMenu />
       <Title text={'Événements'} />
 
-      <ScrollView>
+      <ScrollView style={styles.scrollView}>
         {lieux.map((lieu) => (
           <EventCard
             key={lieu.id}
