@@ -28,3 +28,8 @@ export async function loginUser(email: string, password: string):
   const data = { mail: email, mot_de_passe: password };
   return apiPost<AuthResult>('users/login.php', data);
 }
+
+export async function sendMail(mail:string):
+  Promise<ApiResponse<ApiResponseSuccessOnly>>{
+    return apiPost<ApiResponseSuccessOnly>('users/forgot.php', {mail})
+  }

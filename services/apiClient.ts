@@ -59,7 +59,6 @@ export async function apiPost<T>(endpoint: string, body: object, token?: string)
     
     const statusCode = response.status;
     const data = await response.json();
-    
     return { statusCode, data };
   } catch (error) {
     console.error('Erreur API POST:', error);

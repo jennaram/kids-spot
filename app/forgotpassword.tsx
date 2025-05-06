@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   KeyboardAvoidingView,
@@ -17,11 +17,12 @@ import { FormInput } from './components/Form/InputField';
 import { SubmitButton } from './components/Form/SubmitButton';
 import { ConfirmationModal } from './components/Form/AlertPopUp';
 import { AppLogo } from './components/AppLogo';
+import { useSendMAil } from '@/hooks/user/useSendMail';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { send, loading, success, error } = useSendMAil()
 
   const handleResetPassword = () => {
     if (!validateEmail(email)) {
@@ -29,13 +30,20 @@ export default function ForgotPasswordScreen() {
       return;
     }
 
-    setLoading(true);
-    // Simulation d'envoi d'email
-    setTimeout(() => {
-      setLoading(false);
-      setShowConfirmation(true);
-    }, 1000);
+    send(email);
+
   };
+
+  useEffect(() => {
+    if (!loading && success) {
+      setShowConfirmation(true);
+    }
+
+    if (!loading && error) {
+      Alert.alert('Erreur', 'Une erreur est survenue lors de l’envoi de l’email.');
+    }
+  }, [loading, success, error]);
+
 
   const validateEmail = (email: string) => {
     return email.includes('@') && email.includes('.');
@@ -49,13 +57,13 @@ export default function ForgotPasswordScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <BackButton onPress={() => router.back()} style={styles.backButton} />
-      
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -73,7 +81,6 @@ export default function ForgotPasswordScreen() {
               onChangeText={setEmail}
               placeholder="email@exemple.com"
               keyboardType="email-address"
-              autoCapitalize="none"
             />
 
             <SubmitButton
