@@ -9,6 +9,8 @@ import { API_BASE_URL } from '@/api/apiConfig';
  * Type générique pour les réponses d'API
  */
 type ApiResponse<T> = {
+  ok: any;
+  json(): unknown;
   statusCode: number;
   data: T | null;
 };
