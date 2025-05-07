@@ -7,13 +7,13 @@
 import { apiPost } from '@/services/apiClient';
 import { ApiResponse, ApiResponseSuccessOnly } from '@/types/api-response';
 import { checkToken } from '@/utils/auth';
-import { RegisterUser, AuthResult } from '@/types/user';
+import { RegisterUser, AuthResult, ResetPass } from '@/types/user';
 
 /**
  * Inscription d'un nouvel utilisateur
  * @param user - Données d'inscription : pseudo, mail, mot_de_passe, téléphone
  */
-export async function registerUser(user: RegisterUser): 
+export async function registerUser(user: RegisterUser):
   Promise<ApiResponse<ApiResponseSuccessOnly>> {
   return apiPost<ApiResponseSuccessOnly>('users/create.php', user);
 }
@@ -23,8 +23,20 @@ export async function registerUser(user: RegisterUser):
  * @param email - Adresse mail
  * @param password - Mot de passe
  */
-export async function loginUser(email: string, password: string): 
+export async function loginUser(email: string, password: string):
   Promise<ApiResponse<AuthResult>> {
   const data = { mail: email, mot_de_passe: password };
   return apiPost<AuthResult>('users/login.php', data);
 }
+
+export async function sendMail(mail: string):
+  Promise<ApiResponse<ApiResponseSuccessOnly>> {
+  return apiPost<ApiResponseSuccessOnly>('users/forgot.php', { mail })
+}
+
+export async function resetPass(user: ResetPass):
+  Promise<ApiResponse<ApiResponseSuccessOnly>> {
+    return apiPost<ApiResponseSuccessOnly>('users/reset.php', user)
+}
+
+

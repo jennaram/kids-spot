@@ -16,7 +16,6 @@ export function useRegisterUser() {
     setFieldErrors(null);
     try {
       const response = await registerUser(userData);
-      console.log(response)
       if (response.statusCode === 201 && response.data) {
         setSuccess(true);
       } else if (isApiError(response)) {
