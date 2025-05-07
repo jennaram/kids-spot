@@ -5,10 +5,9 @@ import {
   View, Text, TextInput, ScrollView, TouchableOpacity,
   Image, Alert, SafeAreaView
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-
 
 // Composants
 import { Navigation } from '@/components/NavBar/Navigation';
@@ -30,12 +29,45 @@ import { useGeocodeAddress } from '@/hooks/location/useGeocodeAddress';
 
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
-type LocationType = { latitude: number; longitude: number } | null;
+type LocationType = LatLng | null;
 
 const AddPlaceScreen = () => {
   const router = useRouter();
   const { token } = useAuth();
   const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
+
+  const sendEmailNotification = async (placeData: any) => {
+    try {
+      console.log('Tentative d\'envoi d\'email pour:', placeData.nom);
+      
+      const response = await fetch('https://api.kidspot.fr/api/notifications/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          subject: 'Nouveau lieu ajouté sur KidsSpot',
+          to: 'kidsspottp@gmail.com',
+          data: {
+            placeName: placeData.nom,
+            address: placeData.adresse,
+            ville: placeData.ville
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur lors de l'envoi de l'email (${response.status})`);
+      }
+
+      console.log('Email envoyé avec succès');
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi de l\'email:', error);
+      throw error;
+    }
+  };
 
   const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
@@ -101,8 +133,8 @@ const AddPlaceScreen = () => {
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (!placeName || !address) {
-      Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
+    if (!placeName || !address || !codepostal || !ville) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires (nom, adresse, code postal et ville)');
       return;
     }
 
@@ -111,13 +143,22 @@ const AddPlaceScreen = () => {
       return;
     }
 
-    const fullAddress = `${address}, ${codepostal} ${ville}`;
+    // Construire l'adresse complète pour le géocodage
+    const fullAddress = `${address.trim()}, ${codepostal.trim()} ${ville.trim()}, France`;
+    console.log('Tentative de géocodage avec l\'adresse:', fullAddress);
+    
     const coords = await geocode(fullAddress);
 
     if (!coords) {
-      Alert.alert('Erreur', 'Impossible de récupérer les coordonnées GPS de cette adresse');
+      Alert.alert(
+        'Erreur de géolocalisation',
+        'Impossible de récupérer les coordonnées GPS de cette adresse. Vérifiez que l\'adresse est correcte et réessayez.',
+        [{ text: 'OK' }]
+      );
       return;
     }
+
+    console.log('Coordonnées GPS obtenues:', coords);
 
     const typeIdMap = {
       restaurant: 1,
@@ -146,7 +187,6 @@ const AddPlaceScreen = () => {
 
     const ageRangeIds = ageRanges.map(age => ageRangeIdMap[age as keyof typeof ageRangeIdMap]);
 
-
     const newPlace = {
       nom: placeName,
       description: description,
@@ -163,9 +203,45 @@ const AddPlaceScreen = () => {
       tranches_age: ageRangeIds
     };
 
-    submitPlaceOrEvent(newPlace, token);
+    console.log('Tentative d\'ajout du lieu avec les données:', newPlace);
 
-  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router]);
+    try {
+      await submitPlaceOrEvent(newPlace, token);
+      console.log('Réponse de submitPlaceOrEvent - success:', success, 'error:', error);
+      
+      if (error) {
+        console.error('Erreurs par champ:', fieldErrors);
+        let errorMessage = 'Une erreur est survenue lors de l\'ajout du lieu';
+        if (Object.keys(fieldErrors).length > 0) {
+          errorMessage += ':\n' + Object.entries(fieldErrors)
+            .map(([field, msg]) => `${field}: ${msg}`)
+            .join('\n');
+        }
+        Alert.alert('Erreur', errorMessage);
+        return;
+      }
+
+      try {
+        await sendEmailNotification(newPlace);
+        Alert.alert(
+          'Succès',
+          'Le lieu a été ajouté avec succès',
+          [{ text: 'OK', onPress: () => router.push('/(tabs)/places') }]
+        );
+      } catch (emailError) {
+        console.error('Erreur lors de l\'envoi de l\'email de notification:', emailError);
+        // Le lieu a été ajouté mais l'email a échoué
+        Alert.alert(
+          'Lieu ajouté - Erreur email',
+          'Le lieu a été ajouté mais l\'email de notification n\'a pas pu être envoyé.',
+          [{ text: 'OK', onPress: () => router.push('/(tabs)/places') }]
+        );
+      }
+    } catch (err) {
+      console.error('Error submitting place:', err);
+      Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
+    }
+  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success]);
 
   useEffect(() => {
     if (error) {
@@ -329,8 +405,7 @@ const AddPlaceScreen = () => {
               <MapView
                 style={styles.map}
                 initialRegion={{
-                  latitude: location.latitude,
-                  longitude: location.longitude,
+                  ...location,
                   latitudeDelta: 0.01,
                   longitudeDelta: 0.01,
                 }}
