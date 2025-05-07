@@ -14,7 +14,7 @@ import { Title } from '@/components/Title';
 import InputField from '@/app/components/Form/InputField'; // Import du composant InputField
 import SubmitButton from '@/app/components/Form/SubmitButton';
 import { styles } from '@/app/style/profil.styles';
- 
+import { AuthContext } from "@/context/auth/AuthContext";
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState({

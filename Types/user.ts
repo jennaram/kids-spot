@@ -22,3 +22,9 @@ export interface RegisterUser {
       email: string;
     };
   }
+  export interface ProfilUser {
+    id: number;
+    pseudo: string;
+    mail: string;
+    telephone: string;
+  }

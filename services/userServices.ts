@@ -4,10 +4,10 @@
  * Créé le : 04/05/2025
  */
 
-import { apiPost } from '@/services/apiClient';
+import { apiGet, apiPost } from '@/services/apiClient';
 import { ApiResponse, ApiResponseSuccessOnly } from '@/types/api-response';
 import { checkToken } from '@/utils/auth';
-import { RegisterUser, AuthResult } from '@/types/user';
+import { RegisterUser, AuthResult, ProfilUser } from '@/types/user';
 
 /**
  * Inscription d'un nouvel utilisateur
@@ -27,4 +27,10 @@ export async function loginUser(email: string, password: string):
   Promise<ApiResponse<AuthResult>> {
   const data = { mail: email, mot_de_passe: password };
   return apiPost<AuthResult>('users/login.php', data);
+}
+
+export async function profilUser(token: string): 
+  Promise<ApiResponse<ProfilUser>> {
+    checkToken(token);
+  return apiGet<ProfilUser>('profil/read.php',  token );
 }

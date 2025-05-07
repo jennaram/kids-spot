@@ -8,8 +8,9 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { useAddFavorite } from '@/hooks/favorite/useAddFavorite';
 import { useDeleteFavorite } from '@/hooks/favorite/useDeleteFavorite';
 import { useReadAllFavorites } from '@/hooks/favorite/useReadAllFavorites';
+import { useProfilUser } from '@/hooks/user/useProfilUser';
 
-export default function PlaceScreen() {
+export default async function PlaceScreen() {
 
 
 
@@ -27,6 +28,10 @@ export default function PlaceScreen() {
       Alert.alert('Erreur de connexion', 'Impossible de se connecter avec ces identifiants.');
     }
   }
+if (token) {
+  const [dataProfil, loading] = useProfilUser(token);
+  console.log(dataProfil.id);
+}
 
 
 
