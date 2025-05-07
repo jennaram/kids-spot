@@ -17,16 +17,26 @@ import SwitchMapButton from '@/components/SwitchMapButton';
 
 export default function NearbyPlacesScreen() {
     const { userLocation, nearbyPlaces, error } = useLocation();
-    const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
+    const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]); // Changé pour gérer un tableau d'IDs
     const [searchQuery, setSearchQuery] = useState('');
     const { fadeAnim, fadeOut } = useFadeInOut();
 
-    const handleFilterPress = (typeId: number | null) => {
-        setSelectedTypeId(typeId);
+    const handleFilterPress = (typeId: number) => {
+        fadeOut(() => {
+            setSelectedTypeIds(prev => {
+                if (prev.includes(typeId)) {
+                    return prev.filter(id => id !== typeId);
+                } else {
+                    return [...prev, typeId];
+                }
+            });
+        });
     };
 
     const filteredPlaces = (nearbyPlaces ?? []).filter((place: Place) => {
-        const matchType = selectedTypeId ? place.type?.some((t) => t.id === selectedTypeId) : true;
+        const matchType = selectedTypeIds.length > 0 
+            ? place.type?.some(t => selectedTypeIds.includes(t.id)) 
+            : true;
         const matchSearch = place.nom.toLowerCase().includes(searchQuery.toLowerCase());
         return matchType && matchSearch;
     });
@@ -43,8 +53,8 @@ export default function NearbyPlacesScreen() {
             <Title text={'Liste des lieux à proximité'} />
 
             <FiltreButtons 
-                selectedTypeId={selectedTypeId} 
-                onPress={(id) => fadeOut(() => handleFilterPress(id))} 
+                selectedTypeIds={selectedTypeIds} // Passer le tableau d'IDs sélectionnés
+                onPress={handleFilterPress} 
             />
 
             <SearchBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />

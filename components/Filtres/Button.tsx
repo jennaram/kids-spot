@@ -1,31 +1,27 @@
 // Composant FiltreButton : bouton permettant de filtrer des lieux par type
-
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { colorButtonFirst, colorButtonThird } from "@/app/style/styles";
 
 type FiltreButtonProps = {
     type: string; // Nom du type (ex: "Parc", "Restaurant")
     typeId: number; // ID unique du type
-    onPress: (typeId: number | null) => void; // Fonction appelée au clic
-    selectedTypeId: number | null; // ID du type actuellement sélectionné
+    onPress: (typeId: number) => void; // Fonction appelée au clic (ne gère plus null)
+    isSelected: boolean; // Booléen indiquant si le bouton est sélectionné
 };
 
-export function FiltreButton({ type, typeId, onPress, selectedTypeId }: FiltreButtonProps) {
-    // Vérifie si ce bouton est actuellement sélectionné
-    const isSelected = selectedTypeId === typeId;
-
-    // Gère le clic : sélectionne ou désélectionne
+export function FiltreButton({ type, typeId, onPress, isSelected }: FiltreButtonProps) {
+    // Gère le clic : ajoute ou retire le filtre
     const handlePress = () => {
-        onPress(isSelected ? null : typeId);
+        onPress(typeId);
     };
 
     return (
         <TouchableOpacity
-            style={[styles.filterButton, isSelected && styles.filterButtonActive]} // Change de style si sélectionné
+            style={[styles.filterButton, isSelected && styles.filterButtonActive]}
             onPress={handlePress}
         >
             <Text style={[styles.filterText, isSelected && styles.filterTextActive]}>
-                {type} {/* Affiche le nom du type */}
+                {type}
             </Text>
         </TouchableOpacity>
     );
@@ -36,19 +32,19 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 6,
         paddingHorizontal: 12,
-        backgroundColor: colorButtonThird, // Couleur de fond par défaut
+        backgroundColor: colorButtonThird,
         borderRadius: 20,
         borderWidth: 1,
         borderColor: colorButtonFirst,
         alignItems: 'center',
     },
     filterButtonActive: {
-        backgroundColor: colorButtonFirst, // Couleur différente quand sélectionné
+        backgroundColor: colorButtonFirst,
     },
     filterText: {
-        color: '#000', // Texte noir par défaut
+        color: '#000',
     },
     filterTextActive: {
-        color: '#fff', // Texte blanc quand sélectionné
+        color: '#fff',
     },
 });

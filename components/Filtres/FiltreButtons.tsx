@@ -1,17 +1,13 @@
-// Composant FiltreButtons : ensemble de boutons pour filtrer les lieux par catégorie (Restaurant, Loisir, Culture)
-
 import React from 'react';
 import { Row } from '@/components/Row';
 import { FiltreButton } from '@/components/Filtres/Button';
 
-// Typage des props attendues par FiltreButtons
 interface FilterProps {
-    selectedTypeId: number | null; // ID du type actuellement sélectionné
-    onPress: (id: number | null) => void; // Fonction déclenchée au clic sur un bouton
+    selectedTypeIds: number[]; // Maintenant un tableau d'IDs
+    onPress: (id: number) => void; // La fonction ne gère plus le null
 }
 
-// Définition du composant
-const FiltreButtons: React.FC<FilterProps> = ({ selectedTypeId, onPress }) => {
+const FiltreButtons: React.FC<FilterProps> = ({ selectedTypeIds, onPress }) => {
     return (
         <Row style={{ gap: 10 }}>
             {/* Bouton pour filtrer sur les Restaurants */}
@@ -19,7 +15,7 @@ const FiltreButtons: React.FC<FilterProps> = ({ selectedTypeId, onPress }) => {
                 type="Restaurant"
                 typeId={1}
                 onPress={onPress}
-                selectedTypeId={selectedTypeId}
+                isSelected={selectedTypeIds.includes(1)}
             />
 
             {/* Bouton pour filtrer sur les Loisirs */}
@@ -27,7 +23,7 @@ const FiltreButtons: React.FC<FilterProps> = ({ selectedTypeId, onPress }) => {
                 type="Loisirs"
                 typeId={2}
                 onPress={onPress}
-                selectedTypeId={selectedTypeId}
+                isSelected={selectedTypeIds.includes(2)}
             />
 
             {/* Bouton pour filtrer sur la Culture */}
@@ -35,7 +31,7 @@ const FiltreButtons: React.FC<FilterProps> = ({ selectedTypeId, onPress }) => {
                 type="Culture"
                 typeId={3}
                 onPress={onPress}
-                selectedTypeId={selectedTypeId}
+                isSelected={selectedTypeIds.includes(3)}
             />
         </Row>
     );

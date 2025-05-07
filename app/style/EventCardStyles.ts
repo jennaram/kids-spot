@@ -27,12 +27,15 @@ export const eventCardStyles = StyleSheet.create({
   container: {
     flex:1,
     paddingVertical: 20,
-    paddingBottom: 90, // Espace pour la barre de navigation
+    paddingBottom: 90, 
   },
   cardContainer: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 34,
+  },
+  scrollView: {
+    marginBottom: 34, // Espace pour la barre de navigation
   },
   card: {
     width: cardWidth,
