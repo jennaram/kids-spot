@@ -73,7 +73,7 @@ export default function NearbyPlacesScreen() {
                 </View>
             )}
 
-            <SwitchMapButton type="liste" />
+            
             <SwitchMapButton isMapView={false} /> 
             <Navigation />
         </SafeAreaView>

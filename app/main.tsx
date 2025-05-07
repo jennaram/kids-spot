@@ -99,7 +99,7 @@ export default function MapScreen() {
         <BurgerMenu />
       </View>
 
-      <SwitchMapButton type="map" />
+      
       <SwitchMapButton isMapView={true} />
       <Navigation />
     </View>
