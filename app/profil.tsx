@@ -11,7 +11,6 @@ import { fontTitle } from './style/styles';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from '@/components/Title';
-import AgeBadges from '@/components/Lieux/AgeBadges';
 import InputField from '@/app/components/Form/InputField'; // Import du composant InputField
 import SubmitButton from '@/app/components/Form/SubmitButton';
 import { styles } from '@/app/style/profil.styles';
@@ -65,7 +64,7 @@ export default function ProfileScreen() {
             />
 
             <InputField
-              label="Adresse e-mail"
+              label="Adresse mail"
               value={userData.email}
               onChangeText={(text) => setUserData({ ...userData, email: text })}
               placeholder="email@exemple.com"
@@ -81,23 +80,6 @@ export default function ProfileScreen() {
               keyboardType="phone-pad"
               
             />
-
-            <InputField
-              label="Nombre d'enfants"
-              value={userData.childrenCount.toString()}
-              onChangeText={(text) => setUserData({ ...userData, childrenCount: parseInt(text) })}
-              placeholder="Nombre d'enfants"
-              keyboardType="numeric"
-              
-            />
-
-            {/* Remplacement de l'affichage de l'âge des enfants par AgeBadges */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Âge des enfants</Text>
-              <AgeBadges 
-                tranchesAge={userData.childrenAges ? userData.childrenAges.split(',') : []}
-              />
-            </View>
 
             <InputField
               label="Nombre d'avis rédigés"
