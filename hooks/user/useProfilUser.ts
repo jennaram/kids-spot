@@ -1,13 +1,14 @@
+import { fetch } from 'node-fetch';
 import { useEffect, useState } from 'react';
 import { ProfilUser } from '@/types/user';
 import { profilUser } from '@/services/userServices';
-export function useProfilUser(token : string) {
+export function useProfilUser(token: string) {
     const [loading, setLoading] = useState(false);
-    const [dataProfil, setDataProfil] = useState<ProfilUser>();
+    const [profil, setProfil] = useState<ProfilUser>();
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const load = async () => {
+        const fetchProfil = async () => {
             setLoading(true);
             setError(null);
 
@@ -15,7 +16,7 @@ export function useProfilUser(token : string) {
                 const response = await profilUser(token);
                 if (response.statusCode === 200 && response.data) {
                     console.log(response);
-                    setDataProfil(response.data);
+                    setProfil(response.data);
                 } else {
                     setError('Erreur lors de la récupération des données');
                 }
@@ -25,11 +26,16 @@ export function useProfilUser(token : string) {
                 setLoading(false);
             }
         }
-
-        load();
+        if (token) {
+            fetchProfil();
+        }
 
     }, [token]);
-    
+    return {
+        loading,
+        profil,
+        error,
+    };
 
 
 }
