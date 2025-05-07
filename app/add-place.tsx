@@ -26,6 +26,7 @@ import GeoLocationInput from '@/components/Lieux/GeoLocationInput';
 // Styles
 import { colorButtonFirst } from './style/styles';
 import styles from '@/app/style/add-place.styles';
+import { useGeocodeAddress } from '@/hooks/location/useGeocodeAddress';
 
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
@@ -56,6 +57,8 @@ const AddPlaceScreen = () => {
     changingTable: false,
     parking: false,
   });
+
+  const { geocode, coords, loading, error } = useGeocodeAddress();
 
   const placeIcons = useMemo(() => ({
     restaurant: require('@/assets/images/user-location-restaurant.png'),
@@ -141,8 +144,8 @@ const AddPlaceScreen = () => {
       adresse: address,
       ville: ville, 
       code_postal: codepostal, 
-      longitude: 12,
-      latitude: 12,
+      longitude: ,
+      latitude: ,
       telephone: phoneNumber.trim(),
       site_web: website.trim(),
       id_type: typeIdMap[placeType],
