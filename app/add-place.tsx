@@ -37,6 +37,7 @@ const AddPlaceScreen = () => {
   const { token } = useAuth();
   const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
 
+  const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [placeName, setPlaceName] = useState('');
   const [address, setAddress] = useState('');
@@ -58,7 +59,7 @@ const AddPlaceScreen = () => {
     parking: false,
   });
 
-  const { geocode} = useGeocodeAddress();
+  const { geocode } = useGeocodeAddress();
 
   const placeIcons = useMemo(() => ({
     restaurant: require('@/assets/images/user-location-restaurant.png'),
@@ -216,10 +217,9 @@ const AddPlaceScreen = () => {
         <View style={styles.section}>
           <Text style={styles.label}>Type de lieu</Text>
           <FiltreButtons
-            selectedTypeId={placeType === 'restaurant' ? 1 : placeType === 'leisure' ? 2 : 3}
+            selectedTypeIds={selectedTypeIds}
             onPress={(id) => {
-              const newType = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
-              setPlaceType(newType);
+              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
             }}
           />
         </View>
