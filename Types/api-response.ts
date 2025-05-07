@@ -20,6 +20,7 @@ export interface ApiResponseError {
  * Réponse générique enveloppant n'importe quel type de données
  */
 export interface ApiResponse<T> {
+    success: ProfilData | null;
     statusCode: number;
     data: T | null;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,24 +11,44 @@ import { fontTitle } from './style/styles';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from '@/components/Title';
-import AgeBadges from '@/components/Lieux/AgeBadges';
-import InputField from '@/app/components/Form/InputField'; // Import du composant InputField
+import InputField from '@/app/components/Form/InputField';
 import SubmitButton from '@/app/components/Form/SubmitButton';
 import { styles } from '@/app/style/profil.styles';
- 
+import { getProfil, updateProfil } from '@/services/profilServices'; // Import des services
+import { ProfilData } from '@/Types/profil'; // Assurez-vous d'avoir ce type
 
 export default function ProfileScreen() {
-  const [userData, setUserData] = useState({
-    pseudo: 'Utilisateur123',
-    email: 'email@exemple.com',
-    phone: '06 12 34 56 78',
-    password: '••••••••',
-    childrenCount: 2,
-    childrenAges: '5,7,10', // Exemple d'âge des enfants sous forme de chaîne
-    reviewsCount: 10,
+  const [userData, setUserData] = useState<ProfilData>({
+    pseudo: '',
+    password: '••••••••', // Mot de passe masqué par défaut
+    email: '',
+    telephone: '',
+    reviewsCount: 0,
   });
-
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Récupération du profil au chargement
+  useEffect(() => {
+    const fetchProfil = async () => {
+      try {
+        const response = await getProfil('123'); // Remplacez '123' par l'ID utilisateur dynamique
+        if (response.success && response.data) {
+          setUserData({
+            ...response.data,
+            email: response.data.mail, // Map 'mail' to 'email'
+            password: '••••••••', // Garder le mot de passe masqué
+          });
+        } else {
+          setError('Erreur lors du chargement du profil');
+        }
+      } catch (err) {
+        setError('Erreur réseau');
+      }
+    };
+
+    fetchProfil();
+  }, []);
 
   const handlePasswordChange = () => {
     setLoading(true);
@@ -38,30 +58,47 @@ export default function ProfileScreen() {
     }, 2000);
   };
 
+  const handleUpdateProfil = async () => {
+    setLoading(true);
+    try {
+      const { password, reviewsCount, ...dataToUpdate } = userData; // Exclure les champs non modifiables
+      const response = await updateProfil('123', dataToUpdate); // ID utilisateur dynamique
+      if (response.success) {
+        alert('Profil mis à jour !');
+      } else {
+        setError('Échec de la mise à jour');
+      }
+    } catch (err) {
+      setError('Erreur API');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <BurgerMenu />
       <Title text={'Mon Profil'} />
 
+      {error && <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>}
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <View style={styles.formContainer}>
-            {/* Remplacement des TextInput par InputField */}
             <InputField
               label="Pseudonyme"
               value={userData.pseudo}
               onChangeText={(text) => setUserData({ ...userData, pseudo: text })}
               placeholder="Entrez votre pseudonyme"
-              
             />
 
             <InputField
               label="Mot de passe"
-              value={userData.password}
-              onChangeText={(text) => setUserData({ ...userData, password: text })}
+              value={userData.password || ''}
+              onChangeText={() => {}} // Désactivé (rediriger vers un écran dédié)
               placeholder="••••••••"
               secureTextEntry
-              
+              editable={false}
             />
 
             <InputField
@@ -70,45 +107,30 @@ export default function ProfileScreen() {
               onChangeText={(text) => setUserData({ ...userData, email: text })}
               placeholder="email@exemple.com"
               keyboardType="email-address"
-              
             />
 
             <InputField
               label="Téléphone"
-              value={userData.phone}
-              onChangeText={(text) => setUserData({ ...userData, phone: text })}
+              value={userData.telephone}
+              onChangeText={(text) => setUserData({ ...userData, telephone: text })}
               placeholder="06 12 34 56 78"
               keyboardType="phone-pad"
-              
             />
-
-            <InputField
-              label="Nombre d'enfants"
-              value={userData.childrenCount.toString()}
-              onChangeText={(text) => setUserData({ ...userData, childrenCount: parseInt(text) })}
-              placeholder="Nombre d'enfants"
-              keyboardType="numeric"
-              
-            />
-
-            {/* Remplacement de l'affichage de l'âge des enfants par AgeBadges */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Âge des enfants</Text>
-              <AgeBadges 
-                tranchesAge={userData.childrenAges ? userData.childrenAges.split(',') : []}
-              />
-            </View>
 
             <InputField
               label="Nombre d'avis rédigés"
-              value={userData.reviewsCount.toString()}
-              onChangeText={(text) => setUserData({ ...userData, reviewsCount: parseInt(text) })}
-              placeholder="Nombre d'avis"
+              value={userData.reviewsCount?.toString() || '0'}
+              onChangeText={() => {}} // Lecture seule
               keyboardType="numeric"
-              
+              editable={false}
             />
 
-            {/* Bouton "Changer de mot de passe" */}
+            <SubmitButton
+              title="Enregistrer les modifications"
+              onPress={handleUpdateProfil}
+              loading={loading}
+            />
+
             <SubmitButton
               title="Changer de mot de passe"
               onPress={handlePasswordChange}
@@ -121,5 +143,3 @@ export default function ProfileScreen() {
     </SafeAreaView>
   );
 }
-
-

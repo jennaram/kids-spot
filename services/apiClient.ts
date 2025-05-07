@@ -9,6 +9,7 @@ import { API_BASE_URL } from '@/api/apiConfig';
  * Type générique pour les réponses d'API
  */
 type ApiResponse<T> = {
+  success: (ProfilData & { nombreEnfants?: number; ageEnfants?: number[]; }) | null;
   statusCode: number;
   data: T | null;
 };
