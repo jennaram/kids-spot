@@ -1,29 +1,29 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export function useGeocodeAddress() {
-  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function geocode(address: string) {
+  async function geocode(address: string): Promise<{ lat: number; lon: number } | null> {
     setLoading(true);
     setError(null);
-    setCoords(null);
     try {
       const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`);
       const data = await response.json();
       if (data.length > 0) {
         const { lat, lon } = data[0];
-        setCoords({ lat: parseFloat(lat), lon: parseFloat(lon) });
+        return { lat: parseFloat(lat), lon: parseFloat(lon) };
       } else {
         setError('Adresse non trouvée');
+        return null;
       }
     } catch (err) {
       setError('Erreur lors de la géolocalisation');
+      return null;
     } finally {
       setLoading(false);
     }
   }
 
-  return { geocode, coords, loading, error };
+  return { geocode, loading, error };
 }

@@ -58,7 +58,7 @@ const AddPlaceScreen = () => {
     parking: false,
   });
 
-  const { geocode, coords, loading, error } = useGeocodeAddress();
+  const { geocode} = useGeocodeAddress();
 
   const placeIcons = useMemo(() => ({
     restaurant: require('@/assets/images/user-location-restaurant.png'),
@@ -110,6 +110,14 @@ const AddPlaceScreen = () => {
       return;
     }
 
+    const fullAddress = `${address}, ${codepostal} ${ville}`;
+    const coords = await geocode(fullAddress);
+
+    if (!coords) {
+      Alert.alert('Erreur', 'Impossible de récupérer les coordonnées GPS de cette adresse');
+      return;
+    }
+
     const typeIdMap = {
       restaurant: 1,
       leisure: 2,
@@ -137,22 +145,23 @@ const AddPlaceScreen = () => {
 
     const ageRangeIds = ageRanges.map(age => ageRangeIdMap[age as keyof typeof ageRangeIdMap]);
 
+
     const newPlace = {
       nom: placeName,
       description: description,
-      horaires: horaires, 
+      horaires: horaires,
       adresse: address,
-      ville: ville, 
-      code_postal: codepostal, 
-      longitude: ,
-      latitude: ,
+      ville: ville,
+      code_postal: codepostal,
+      longitude: coords.lon,
+      latitude: coords.lat,
       telephone: phoneNumber.trim(),
       site_web: website.trim(),
       id_type: typeIdMap[placeType],
       equipements: activeEquipments,
       tranches_age: ageRangeIds
     };
-    
+
     submitPlaceOrEvent(newPlace, token);
 
   }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router]);
@@ -179,8 +188,8 @@ const AddPlaceScreen = () => {
 
   const getTranslatedLabel = (key: string) => {
     return key === '0-2' ? '0-2 ans' :
-           key === '3-6' ? '3-6 ans' :
-           '7 ans et plus';
+      key === '3-6' ? '3-6 ans' :
+        '7 ans et plus';
   };
 
   function setPhotoUri(uri: string): void {
