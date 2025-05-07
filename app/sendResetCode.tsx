@@ -1,17 +1,45 @@
-import { Platform, SafeAreaView, ScrollView, View, StyleSheet, Text } from "react-native";
+import { Platform, SafeAreaView, ScrollView, View, StyleSheet, Text, Alert } from "react-native";
 import BackButton from "./components/BackButton";
 import { router, useLocalSearchParams } from "expo-router";
 import AppLogo from "./components/AppLogo";
 import FormInput from "./components/Form/InputField";
-import { useState } from "react";
-
-
+import { useEffect, useState } from "react";
+import SubmitButton from "./components/Form/SubmitButton";
+import { useResetPass } from "@/hooks/user/useResetPass";
 
 export default function SendResetCode() {
     const [code, setCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const params = useLocalSearchParams() as { mail: string };
+    const { submit, success, loading, error} = useResetPass();
+
+    function handleResetPassword(): void {
+        if (!code) {
+            Alert.alert('Erreur', 'Veuillez saisir le code de réinitialisation');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
+            return;
+        }
+        submit({
+            mail: params.mail,
+            mot_de_passe: newPassword,
+            token_reinitialisation: code
+        });
+    }
+
+    useEffect(() => {
+        console.log('success', success);
+        if (success) {
+            Alert.alert('Succès', 'Inscription réussie !');
+            router.replace('/accueil');
+        } else if (error) {
+            Alert.alert('Erreur', error);
+        }
+    }, [success, error]);
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <BackButton onPress={() => router.back()} style={styles.backButton} />
@@ -56,11 +84,11 @@ export default function SendResetCode() {
                         secureTextEntry
                     />
 
-                    {/* <SubmitButton
-                            title="Réinitialiser mot de passe"
-                            onPress={handleResetPassword}
-                            loading={loading}
-                        /> */}
+                    <SubmitButton
+                        title="Réinitialiser mot de passe"
+                        onPress={handleResetPassword}
+                        loading={loading}
+                    />
                 </View>
             </ScrollView>
 

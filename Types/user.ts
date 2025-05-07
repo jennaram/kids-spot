@@ -9,6 +9,15 @@ export interface RegisterUser {
     mot_de_passe: string;
     telephone: string;
   }
+
+  /**
+   * Données pour la récupération de compte
+   */
+  export interface ResetPass{
+    mail: string;
+    mot_de_passe: string;
+    token_reinitialisation: string;
+  }
   
   /**
    * Données retournées à la connexion
