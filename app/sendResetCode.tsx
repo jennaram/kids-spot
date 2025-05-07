@@ -33,7 +33,7 @@ export default function SendResetCode() {
     useEffect(() => {
         console.log('success', success);
         if (success) {
-            Alert.alert('Succès', 'Inscription réussie !');
+            Alert.alert('Succès', 'Mot de passe changé');
             router.replace('/accueil');
         } else if (error) {
             Alert.alert('Erreur', error);
