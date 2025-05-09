@@ -116,7 +116,7 @@ export default function MapScreen() {
               <Image source={iconByType.Culture} style={styles.cultureMarker} resizeMode="contain" />
             ) : item.type[0].nom === 'Restaurant' ? (
               <Image source={iconByType.Restaurant} style={styles.foodMarker} resizeMode="contain" />
-            ) : item.type[0].nom === 'Loisir' ? (
+            ) : item.type[0].nom === 'Loisirs' ? (
               <Image source={iconByType.Loisir} style={styles.loisirsMarker} resizeMode="contain" />
             ) : (
               <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
