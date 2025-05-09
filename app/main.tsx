@@ -24,7 +24,7 @@ const iconByType = {
   switchmap: require('../assets/images/switchmap.png'),
   Culture: require('../assets/images/icon-culture2.png'),
   Restaurant: require('../assets/images/icon-food2.png'),
-  Loisir: require('../assets/images/icon-loisirs2.png'),
+  Loisirs: require('../assets/images/icon-loisirs2.png'),
 };
 
 export default function MapScreen() {
@@ -117,7 +117,7 @@ export default function MapScreen() {
             ) : item.type[0].nom === 'Restaurant' ? (
               <Image source={iconByType.Restaurant} style={styles.foodMarker} resizeMode="contain" />
             ) : item.type[0].nom === 'Loisirs' ? (
-              <Image source={iconByType.Loisir} style={styles.loisirsMarker} resizeMode="contain" />
+              <Image source={iconByType.Loisirs} style={styles.loisirsMarker} resizeMode="contain" />
             ) : (
               <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
                 <Text style={{ color: 'white' }}>{item.nom}</Text>

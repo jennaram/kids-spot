@@ -78,7 +78,7 @@ const PlacePopUp: React.FC<PlacePopUpProps> = ({
         return styles.cultureBackground;
       case 'Restaurant':
         return styles.restaurantBackground;
-      case 'Loisir':
+      case 'Loisirs':
         return styles.loisirBackground;
       default:
         return {};
