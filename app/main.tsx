@@ -6,6 +6,7 @@ import {
   Platform,
   Linking,
   TouchableOpacity,
+  StyleSheet,
   Button,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -13,29 +14,34 @@ import { router, useFocusEffect } from 'expo-router';
 import { Navigation } from '@/components/NavBar/Navigation';
 import PlacePopUp from '@/components/MainMap/PlacePopUp';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
-import { useLocation } from '@/context/locate';
-import styles from '@/app/style/MapScreen.style';
-import SwitchMapButton from '@/components/SwitchMapButton';
+import { useLocation } from '@/context/locate'; // Import du contexte
+import styles from '@/app/style/MapScreen.style'; // Ton style actuel
+import { SwitchMapButton } from '@/components/SwitchMapButton';
 
+// Icônes personnalisées
 const iconByType = {
   user: require('../assets/images/user-location.png'),
+  switchmap: require('../assets/images/switchmap.png'),
   Culture: require('../assets/images/icon-culture2.png'),
   Restaurant: require('../assets/images/icon-food2.png'),
   Loisir: require('../assets/images/icon-loisirs2.png'),
 };
 
 export default function MapScreen() {
+  // Utilisation du contexte Location
   const { userLocation, nearbyPlaces, error, refreshLocation } = useLocation();
   const [selectedPlace, setSelectedPlace] = useState<any | null>(null);
   const [showPopup, setShowPopup] = useState(false);
 
+  // Mise à jour lorsque le composant reprend le focus
   useFocusEffect(
     React.useCallback(() => {
-      refreshLocation();
+      refreshLocation(); // Recharge la localisation et les lieux à partir du contexte
       return () => {};
     }, [])
   );
 
+  // Gestion des erreurs d'obtention de la localisation
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -52,12 +58,18 @@ export default function MapScreen() {
     );
   }
 
+  // Affichage de l'écran de chargement
   if (!userLocation) {
-    return <View style={styles.loadingContainer}><Text>Chargement...</Text></View>;
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Chargement de votre position...</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
+      {/* Carte */}
       <MapView
         style={styles.map}
         region={{
@@ -67,41 +79,73 @@ export default function MapScreen() {
           longitudeDelta: 0.005,
         }}
         showsUserLocation={true}
+        showsMyLocationButton={true}
+        loadingEnabled={true}
+        userLocationPriority="high"
+        userLocationUpdateInterval={5000}
         provider={Platform.OS === 'android' ? 'google' : undefined}
       >
-        <Marker coordinate={userLocation}>
-          <Image source={iconByType.user} style={styles.userMarker} />
+        {/* Marqueur pour l'utilisateur */}
+        <Marker
+          coordinate={userLocation}
+          anchor={{ x: 0.5, y: 0.5 }}
+          tracksViewChanges={true}
+        >
+          <Image
+            source={iconByType.user}
+            style={styles.userMarker}
+            resizeMode="contain"
+          />
         </Marker>
 
-        {nearbyPlaces?.map((item: { id: string; position: { latitude: number; longitude: number }; type: { nom: keyof typeof iconByType }[] }) => (
+        {/* Marqueurs pour les lieux */}
+        {nearbyPlaces && nearbyPlaces.length > 0 && nearbyPlaces.map((item) => (
           <Marker
             key={item.id}
-            coordinate={item.position}
+            coordinate={{
+              latitude: item.position.latitude,
+              longitude: item.position.longitude,
+            }}
             onPress={() => {
               setSelectedPlace(item);
               setShowPopup(true);
             }}
+            tracksInfoWindowChanges={false}
           >
-            <Image 
-              source={iconByType[item.type[0].nom]} 
-              style={styles[`${item.type[0].nom.toLowerCase()}Marker` as keyof typeof styles]}
-            />
+            {item.type[0].nom === 'Culture' ? (
+              <Image source={iconByType.Culture} style={styles.cultureMarker} resizeMode="contain" />
+            ) : item.type[0].nom === 'Restaurant' ? (
+              <Image source={iconByType.Restaurant} style={styles.foodMarker} resizeMode="contain" />
+            ) : item.type[0].nom === 'Loisir' ? (
+              <Image source={iconByType.Loisir} style={styles.loisirsMarker} resizeMode="contain" />
+            ) : (
+              <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
+                <Text style={{ color: 'white' }}>{item.nom}</Text>
+              </View>
+            )}
           </Marker>
         ))}
       </MapView>
 
+      {/* Composant PopUp */}
       <PlacePopUp
         visible={showPopup}
         onClose={() => setShowPopup(false)}
-        place={selectedPlace} userLocation={null} iconByType={{}}      />
+        place={selectedPlace}
+        userLocation={userLocation}
+        iconByType={iconByType}
+      />
 
+      {/* Burger Menu flottant */}
       <View style={styles.burgerMenuContainer}>
         <BurgerMenu />
       </View>
 
-      
+      {/* Bouton pour changer la carte */}
       <SwitchMapButton isMapView={true} />
+
+      {/* Barre de navigation */}
       <Navigation />
     </View>
   );
-}
+};
