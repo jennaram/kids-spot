@@ -221,22 +221,22 @@ const AddPlaceScreen = () => {
         return;
       }
 
-      try {
-        await sendEmailNotification(newPlace);
-        Alert.alert(
-          'Succès',
-          'Le lieu a été ajouté avec succès',
-          [{ text: 'OK', onPress: () => router.push('/(tabs)/places') }]
-        );
-      } catch (emailError) {
-        console.error('Erreur lors de l\'envoi de l\'email de notification:', emailError);
-        // Le lieu a été ajouté mais l'email a échoué
-        Alert.alert(
-          'Lieu ajouté - Erreur email',
-          'Le lieu a été ajouté mais l\'email de notification n\'a pas pu être envoyé.',
-          [{ text: 'OK', onPress: () => router.push('/(tabs)/places') }]
-        );
-      }
+      // try {
+      //   await sendEmailNotification(newPlace);
+      //   Alert.alert(
+      //     'Succès',
+      //     'Le lieu a été ajouté avec succès',
+      //     [{ text: 'OK', onPress: () => router.push('/(tabs)/places') }]
+      //   );
+      // } catch (emailError) {
+      //   console.error('Erreur lors de l\'envoi de l\'email de notification:', emailError);
+      //   // Le lieu a été ajouté mais l'email a échoué
+      //   Alert.alert(
+      //     'Lieu ajouté - Erreur email',
+      //     'Le lieu a été ajouté mais l\'email de notification n\'a pas pu être envoyé.',
+      //     [{ text: 'OK', onPress: () => router.push('/(tabs)/places') }]
+      //   );
+      // }
     } catch (err) {
       console.error('Error submitting place:', err);
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
