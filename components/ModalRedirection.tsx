@@ -38,7 +38,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ visible, onClose, title = "S'
   const handleRegistration = () => {
     onClose();
     setTimeout(() => {
-      navigation.navigate("login" as never); // ou le nom correct de votre écran
+      navigation.navigate("users/login" as never); // ou le nom correct de votre écran
     }, 300);
   };
 

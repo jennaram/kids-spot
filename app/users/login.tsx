@@ -30,6 +30,7 @@ import { FormInput } from '../components/Form/InputField';
 import { AuthButton } from '../components/Form/MainButton';
 import { AuthSeparator } from '../components/Form/SeparatorWithText ';
 import { AuthFooterLink } from '../components/InlineLink';
+import { Title } from '@/components/Title';
 
 /**
  * Composant principal de l'écran de connexion
@@ -86,7 +87,6 @@ export default function LoginScreen() {
     if (error) {
       Alert.alert('Erreur de connexion', error);
     }
-
   };
 
   return (
@@ -108,6 +108,9 @@ export default function LoginScreen() {
           <View style={styles.logoContainer}>
             <AppLogo size={120} />
           </View>
+
+          {/* Titre de l'écran */}
+          <Title text={'Connection'} />
 
           {/* Contenu principal du formulaire */}
           <View style={styles.content}>
@@ -160,7 +163,7 @@ export default function LoginScreen() {
 
       {/* Modal de chargement affiché pendant la connexion */}
       <Modal
-        visible={loading }
+        visible={loading}
         transparent
         animationType="fade"
       >
@@ -204,14 +207,12 @@ const styles = StyleSheet.create({
   },
   // Style pour le conteneur du logo
   logoContainer: {
-    marginTop: 40,
-    marginBottom: 20,
+    marginTop: 35,
     alignItems: 'center',
   },
   // Style pour le contenu principal
   content: {
     flex: 1,
-    justifyContent: 'center',
   },
   // Style pour le conteneur du lien d'inscription
   signUpContainer: {
