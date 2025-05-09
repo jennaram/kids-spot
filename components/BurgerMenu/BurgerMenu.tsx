@@ -125,7 +125,7 @@ export function BurgerMenu() {
                                 style={styles.logoutItem}
                                 imageName={"log-out"}
                                 text={"Déconnexion"}
-                                link={"/Logout"}
+                                link={"/users/Logout"}
                                 color={"#d9534f"}
                                 onPress={handleNavigate}
                             />

@@ -30,7 +30,7 @@ export function AppLogo({ size = 150 }: AppLogoProps) {
 
 const styles = StyleSheet.create({
   logo: {
-    marginBottom: 40,
+    marginBottom: 10,
   },
 });
 
