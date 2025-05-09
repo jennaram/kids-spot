@@ -14,7 +14,7 @@ export function SwitchMapButton({ isMapView }: SwitchMapButtonProps) {
       { bottom: Platform.select({ ios: 100, android: 90 }) }
     ]}>
       <TouchableOpacity
-        onPress={() => isMapView ? router.push('/Places') : router.back()}
+        onPress={() => isMapView ? router.push('/Places') : router.push('/main')}
         style={styles.button}
       >
         <Image
