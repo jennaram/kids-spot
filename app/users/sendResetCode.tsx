@@ -1,10 +1,10 @@
 import { Platform, SafeAreaView, ScrollView, View, StyleSheet, Text, Alert } from "react-native";
-import BackButton from "./components/BackButton";
+import BackButton from "../components/BackButton";
 import { router, useLocalSearchParams } from "expo-router";
-import AppLogo from "./components/AppLogo";
-import FormInput from "./components/Form/InputField";
+import AppLogo from "../components/AppLogo";
+import FormInput from "../components/Form/InputField";
 import { useEffect, useState } from "react";
-import SubmitButton from "./components/Form/SubmitButton";
+import SubmitButton from "../components/Form/SubmitButton";
 import { useResetPass } from "@/hooks/user/useResetPass";
 
 export default function SendResetCode() {

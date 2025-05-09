@@ -12,7 +12,7 @@ export default function Index() {
 
   const handleConnexion = () => {
     // Rediriger vers la page de connexion
-    router.push('/login');
+    router.push('/users/login');
   };
 
   const handleAPropos = () => {
