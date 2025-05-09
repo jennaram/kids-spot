@@ -1,4 +1,3 @@
-import { fetch } from 'node-fetch';
 import { useEffect, useState } from 'react';
 import { ProfilUser } from '@/types/user';
 import { profilUser } from '@/services/userServices';
