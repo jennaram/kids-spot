@@ -26,6 +26,7 @@ import GeoLocationInput from '@/components/Lieux/GeoLocationInput';
 import { colorButtonFirst } from './style/styles';
 import styles from '@/app/style/add-place.styles';
 import { useGeocodeAddress } from '@/hooks/location/useGeocodeAddress';
+import { useSendMail } from '@/hooks/place/useSendMail';
 
 // Types
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
@@ -35,39 +36,7 @@ const AddPlaceScreen = () => {
   const router = useRouter();
   const { token } = useAuth();
   const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
-
-  const sendEmailNotification = async (placeData: any) => {
-    try {
-      console.log('Tentative d\'envoi d\'email pour:', placeData.nom);
-      
-      const response = await fetch('https://api.kidspot.fr/api/notifications/email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          subject: 'Nouveau lieu ajouté sur KidsSpot',
-          to: 'kidsspottp@gmail.com',
-          data: {
-            placeName: placeData.nom,
-            address: placeData.adresse,
-            ville: placeData.ville
-          }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur lors de l'envoi de l'email (${response.status})`);
-      }
-
-      console.log('Email envoyé avec succès');
-      return true;
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi de l\'email:', error);
-      throw error;
-    }
-  };
+  const { submitMail, loading:loadinMail, error:errorMail, success:successMail } = useSendMail();
 
   const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
@@ -145,8 +114,8 @@ const AddPlaceScreen = () => {
 
     // Construire l'adresse complète pour le géocodage
     const fullAddress = `${address.trim()}, ${codepostal.trim()} ${ville.trim()}, France`;
-    console.log('Tentative de géocodage avec l\'adresse:', fullAddress);
-    
+    //console.log('Tentative de géocodage avec l\'adresse:', fullAddress);
+
     const coords = await geocode(fullAddress);
 
     if (!coords) {
@@ -158,7 +127,7 @@ const AddPlaceScreen = () => {
       return;
     }
 
-    console.log('Coordonnées GPS obtenues:', coords);
+    //console.log('Coordonnées GPS obtenues:', coords);
 
     const typeIdMap = {
       restaurant: 1,
@@ -203,14 +172,14 @@ const AddPlaceScreen = () => {
       tranches_age: ageRangeIds
     };
 
-    console.log('Tentative d\'ajout du lieu avec les données:', newPlace);
+    //console.log('Tentative d\'ajout du lieu avec les données:', newPlace);
 
     try {
       await submitPlaceOrEvent(newPlace, token);
-      console.log('Réponse de submitPlaceOrEvent - success:', success, 'error:', error);
-      
+      //console.log('Réponse de submitPlaceOrEvent - success:', success, 'error:', error);
+
       if (error) {
-        console.error('Erreurs par champ:', fieldErrors);
+        //console.error('Erreurs par champ:', fieldErrors);
         let errorMessage = 'Une erreur est survenue lors de l\'ajout du lieu';
         if (Object.keys(fieldErrors).length > 0) {
           errorMessage += ':\n' + Object.entries(fieldErrors)
@@ -221,24 +190,27 @@ const AddPlaceScreen = () => {
         return;
       }
 
-      // try {
-      //   await sendEmailNotification(newPlace);
-      //   Alert.alert(
-      //     'Succès',
-      //     'Le lieu a été ajouté avec succès',
-      //     [{ text: 'OK', onPress: () => router.push('/(tabs)/places') }]
-      //   );
-      // } catch (emailError) {
-      //   console.error('Erreur lors de l\'envoi de l\'email de notification:', emailError);
-      //   // Le lieu a été ajouté mais l'email a échoué
-      //   Alert.alert(
-      //     'Lieu ajouté - Erreur email',
-      //     'Le lieu a été ajouté mais l\'email de notification n\'a pas pu être envoyé.',
-      //     [{ text: 'OK', onPress: () => router.push('/(tabs)/places') }]
-      //   );
-      // }
+      try {
+        // Envoi de mail de confirmation
+        const sujet = "Nouveau lieu ajouté";
+        const contenueHTML = `
+    <h1>Nouveau lieu ajouté</h1>
+    <p><strong>${placeName}</strong> a été ajouté avec succès par un utilisateur.</p>
+    <p>Ville : ${ville}</p>
+    <p>Adresse : ${address}</p>
+  `;
+        await submitMail(sujet, contenueHTML, token);
+
+        Alert.alert(
+          'Succès',
+          'Le lieu a été ajouté avec succès',
+          [{ text: 'OK', onPress: () => router.push('accueil') }]
+        );
+      } catch (err) {
+        Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu (mail)');
+      }
     } catch (err) {
-      console.error('Error submitting place:', err);
+      //console.error('Error submitting place:', err);
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
     }
   }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success]);
@@ -247,9 +219,6 @@ const AddPlaceScreen = () => {
     if (error) {
       console.log(fieldErrors)
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
-    }
-    if (success) {
-      Alert.alert('Succès', 'Lieu ajouté avec succès')
     }
   }, [loading, error, success]);
 
@@ -440,3 +409,4 @@ const AddPlaceScreen = () => {
 };
 
 export default AddPlaceScreen;
+

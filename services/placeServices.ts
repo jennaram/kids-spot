@@ -96,3 +96,11 @@ export async function getAllPlaces(lat: number, lgt: number): Promise<ApiRespons
 export async function getPlace(id: number): Promise<ApiResponse<FetchPlace>> {
     return apiGet<FetchPlace>(`lieux/${id}`);
 }
+
+/**
+ * Envoie d'un mail quand un lieu est ajouté
+ */
+export async function sendMail(sujet: string, contenueHTML: string, token:string):Promise<ApiResponse<ApiResponseSuccessOnly>>{
+    checkToken(token);
+    return apiPost<ApiResponseSuccessOnly>('users/sendMail.php', {sujet, contenueHTML}, token);
+}
