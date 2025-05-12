@@ -6,8 +6,6 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { colorButtonFirst, colorButtonThird, colorFourth, colorButtonSecondary } from './style/styles';
-import { fontTitle } from './style/styles';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from '@/components/Title';
