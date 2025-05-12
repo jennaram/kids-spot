@@ -52,7 +52,9 @@ const AddPlaceScreen = () => {
   const [ville, setVille] = useState('');
   const [horaires, setHoraires] = useState('');
   const [isEvent, setIsEvent] = useState(false);
-  const [date, setDate] = useState('');
+  const [expiration, setExpiration] = useState("");
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const formatDate = (date: string | number | Date) => {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
@@ -70,6 +72,13 @@ const AddPlaceScreen = () => {
   });
 
   const { geocode } = useGeocodeAddress();
+  
+  const handleExpirationChange = (text: string) => {
+    const onlyNumbers = text.replace(/\D/g, "");
+    if (onlyNumbers.length <= 4) {
+      setExpiration(onlyNumbers);
+    }
+  };
 
   const placeIcons = useMemo(() => ({
     restaurant: require('@/assets/images/user-location-restaurant.png'),
@@ -184,7 +193,8 @@ const AddPlaceScreen = () => {
       id_type: typeIdMap[placeType],
       equipements: activeEquipments,
       tranches_age: ageRangeIds,
-      date: isEvent ? date : null,
+      date_debut: isEvent ? startDate : null,
+      date_fin: isEvent ? endDate : null,
     };
 
     //console.log('Tentative d\'ajout du lieu avec les données:', newPlace);
@@ -228,7 +238,7 @@ const AddPlaceScreen = () => {
       //console.error('Error submitting place:', err);
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
     }
-  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success, token, submitPlaceOrEvent, geocode, submitMail, fieldErrors, ville, codepostal, horaires, isEvent, date]);
+  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success, token, submitPlaceOrEvent, geocode, submitMail, fieldErrors, ville, codepostal, horaires, isEvent, startDate, endDate]);
 
   useEffect(() => {
     if (error) {
@@ -252,6 +262,32 @@ const AddPlaceScreen = () => {
       key === '3-6' ? '3-6 ans' :
         '7 ans et plus';
   };
+
+  const formatEventDate = (text: string, setter: (val: string) => void) => {
+    const onlyNumbers = text.replace(/\D/g, "").slice(0, 8); // max 8 chiffres pour JJMMAAAA
+  
+    let formatted = "";
+    if (onlyNumbers.length <= 2) {
+      formatted = onlyNumbers;
+    } else if (onlyNumbers.length <= 4) {
+      formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2)}`;
+    } else {
+      formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2, 4)}/${onlyNumbers.slice(4)}`;
+    }
+  
+    setter(formatted);
+  };
+
+  const isStartBeforeEnd = (start: string, end: string) => {
+    const [startDay, startMonth, startYear] = start.split("/").map(Number);
+    const [endDay, endMonth, endYear] = end.split("/").map(Number);
+  
+    const startDateObj = new Date(startYear, startMonth - 1, startDay);
+    const endDateObj = new Date(endYear, endMonth - 1, endDay);
+  
+    return startDateObj < endDateObj;
+  };
+  
 
   function setPhotoUri(uri: string): void {
     // Gérer la sélection de photo ici si nécessaire
@@ -355,32 +391,49 @@ const AddPlaceScreen = () => {
 
         <View style={styles.section}>
           <Text style={styles.label}>Est-ce un événement ?</Text>
-          <Switch
-            value={isEvent}
-            onValueChange={setIsEvent}
+          <Switch value={isEvent} onValueChange={setIsEvent} />
+        </View>
+
+      {isEvent && (
+          <>
+        <View style={styles.section}>
+          <Text style={styles.label}>Date de début de l’événement</Text>
+          <FormInput
+            label=""
+            value={startDate}
+            placeholder="JJ/MM/AAAA"
+            onChangeText={(text) => {
+              formatEventDate(text, setStartDate);
+              if (text.length === 10 && endDate.length === 10) {
+                if (!isStartBeforeEnd(text, endDate)) {
+                  alert("La date de début doit être antérieure à la date de fin.");
+                }
+              }
+            }}
+            
           />
         </View>
 
-        {isEvent && (
-          <View style={styles.section}>
-            <Text style={styles.label}>Date de l’événement</Text>
-            <FormInput
-              label=""
-              value={date}
-              placeholder="JJ/MM/AAAA"
-              onChangeText={(text) => {
-                const onlyNumbers = text.replace(/[^0-9]/g, '');
-                let formatted = onlyNumbers;
-                if (onlyNumbers.length >= 3 && onlyNumbers.length <= 4) {
-                  formatted = `<span class="math-inline">\{onlyNumbers\.slice\(0, 2\)\}/</span>{onlyNumbers.slice(2)}`;
-                } else if (onlyNumbers.length > 4) {
-                  formatted = `<span class="math-inline">\{onlyNumbers\.slice\(0, 2\)\}/</span>{onlyNumbers.slice(2, 4)}/${onlyNumbers.slice(4, 8)}`;
+        <View style={styles.section}>
+          <Text style={styles.label}>Date de fin de l’événement</Text>
+          <FormInput
+            label=""
+            value={endDate}
+            placeholder="JJ/MM/AAAA"
+            onChangeText={(text) => {
+              formatEventDate(text, setEndDate);
+              if (startDate.length === 10 && text.length === 10) {
+                if (!isStartBeforeEnd(startDate, text)) {
+                  alert("La date de début doit être antérieure à la date de fin.");
                 }
-                setDate(formatted);
-              }}
-            />
-          </View>
-        )}
+              }
+            }}
+            
+          />
+        </View>
+       </>
+      )}
+
 
 
         <View style={styles.section}>
