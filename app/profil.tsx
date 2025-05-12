@@ -17,10 +17,14 @@ import { AuthContext } from "@/context/auth/AuthContext";
 import CheckSwitch from '@/components/Checkbox';
 import { profilUser } from '@/services/userServices';
 import { useRouter } from 'expo-router';
+import { useProfilUser } from '@/hooks/user/useProfilUser';
 
 
 export default function ProfileScreen() {
   const { token } = useContext(AuthContext);
+  const {profil} = useProfilUser(token ?? '');
+
+
   const [userData, setUserData] = useState({
     pseudo: '',
     email: '',
@@ -28,40 +32,23 @@ export default function ProfileScreen() {
   });
   const [receiveEmails, setReceiveEmails] = useState(false);
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        if (!token) {
-          console.error("Token is null");
-          return;
-        }
-        const response = await profilUser(token);
-  
-        const user = response?.data?.data;
-  
-        if (user) {
-          const { pseudo, mail, telephone, recevoirMail } = user;
-  
-          setUserData(prev => ({
-            ...prev,
-            pseudo: pseudo,
-            email: mail,
-            phone: telephone,
-            receiveEmails: recevoirMail
-          }));
-          setReceiveEmails(user.recevoirMail);
-        } else {
-          console.error("Données utilisateur non trouvées", response);
-        }
-      } catch (error) {
-        console.error("Erreur API profil", error);
-      }
-    }
-  
-    if (token) {
-      fetchProfile();
-    }
-  }, [token]);
+
+useEffect(() => {
+  if(profil) {
+    setUserData(prevData => ({
+      ...prevData,
+      pseudo: profil.pseudo,
+      email: profil.mail,
+      phone: profil.telephone,
+    }));
+    setReceiveEmails(profil.recevoirMail);
+  }
+}, [profil]);
+
+
+
+
+
 
   const router = useRouter();
 

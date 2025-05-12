@@ -36,4 +36,13 @@ export interface RegisterUser {
     pseudo: string;
     mail: string;
     telephone: string;
+    recevoirMail:boolean;
+  }
+
+  /**
+   * Réponse pour la récupération d'un commentaire spécifique
+   */
+  export interface FetchProfileResponse {
+    status: "success";
+    data: ProfilUser;
   }

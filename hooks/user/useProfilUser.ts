@@ -3,7 +3,7 @@ import { ProfilUser } from '@/types/user';
 import { profilUser } from '@/services/userServices';
 export function useProfilUser(token: string) {
     const [loading, setLoading] = useState(false);
-    const [profil, setProfil] = useState<ProfilUser>();
+    const [profil, setProfil] = useState<ProfilUser |null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -14,8 +14,7 @@ export function useProfilUser(token: string) {
             try {
                 const response = await profilUser(token);
                 if (response.statusCode === 200 && response.data) {
-                    console.log(response);
-                    setProfil(response.data);
+                    setProfil(response.data.data);
                 } else {
                     setError('Erreur lors de la récupération des données');
                 }
@@ -35,6 +34,4 @@ export function useProfilUser(token: string) {
         profil,
         error,
     };
-
-
 }
