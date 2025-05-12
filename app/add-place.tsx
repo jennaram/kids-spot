@@ -2,12 +2,15 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
-  View, Text, TextInput, ScrollView, TouchableOpacity,
+  View, Text, Switch, TextInput, ScrollView, TouchableOpacity,
   Image, Alert, SafeAreaView
 } from 'react-native';
 import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
+
+const [isEvent, setIsEvent] = useState(false);
+const [date, setDate] = useState('');
 
 
 // Composants
@@ -184,7 +187,7 @@ const AddPlaceScreen = () => {
       id_type: typeIdMap[placeType],
       equipements: activeEquipments,
       tranches_age: ageRangeIds,
-      date : date
+      date: isEvent ? date : null,
     };
 
     //console.log('Tentative d\'ajout du lieu avec les données:', newPlace);
@@ -354,16 +357,22 @@ const AddPlaceScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Date de l'evenement</Text>
+          <Text style={styles.label}>Est-ce un événement ?</Text>
+          <Switch
+            value={isEvent}
+            onValueChange={setIsEvent}
+          />
+        </View>
+
+        {isEvent && (
+        <View style={styles.section}>
+          <Text style={styles.label}>Date de l’événement</Text>
           <FormInput
             label=""
             value={date}
             placeholder="JJ/MM/AAAA"
             onChangeText={(text) => {
-              // Retirer tout sauf les chiffres
               const onlyNumbers = text.replace(/[^0-9]/g, '');
-
-              // Ajouter les / automatiquement
               let formatted = onlyNumbers;
               if (onlyNumbers.length >= 3 && onlyNumbers.length <= 4) {
                 formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2)}`;
@@ -371,11 +380,12 @@ const AddPlaceScreen = () => {
                 formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2, 4)}/${onlyNumbers.slice(4, 8)}`;
               }
               setDate(formatted);
-              }}
-              />
+            }}
+            />
           </View>
+)}
 
-
+          
         <View style={styles.section}>
           <Text style={styles.label}>Description</Text>
           <TextInput
