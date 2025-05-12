@@ -107,6 +107,11 @@ const AddPlaceScreen = () => {
       return;
     }
 
+    if (selectedTypeIds.length === 0) {
+      Alert.alert('Erreur', 'Veuillez sélectionner au moins un type de lieu : Restaurant, Loisirs ou Culture');
+      return;
+    }
+
     if (!token) {
       Alert.alert('Erreur', 'Vous devez être connecté pour ajouter un lieu');
       return;
@@ -264,9 +269,12 @@ const AddPlaceScreen = () => {
           <FiltreButtons
             selectedTypeIds={selectedTypeIds}
             onPress={(id) => {
-              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
+            setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
+            const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
+            setPlaceType(type);
             }}
           />
+
         </View>
 
         <View style={styles.section}>
