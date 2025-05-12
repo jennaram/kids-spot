@@ -12,7 +12,7 @@ import { Row } from '@/components/Row';
 import LoadingView from '@/components/Messages/LocationLoading';
 import SearchBar from '@/components/Filtres/SearchBar';
 import ErrorScreen from '@/components/ErrorScreen';
-import { Place } from '@/types/place';
+import { Place } from '@/Types/place';
 import SwitchMapButton from '@/components/SwitchMapButton';
 
 export default function NearbyPlacesScreen() {

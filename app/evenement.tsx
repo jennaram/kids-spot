@@ -10,8 +10,8 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { ExitButton } from './components/ExitButton';
-import { useLocation } from '@/context/locate'; // Import du contexte
-import { Place } from '@/types/place';
+import { useLocation } from '@/context/locate';
+import { Place } from '@/Types/place';
 
 const Evenement = () => {
   // Récupérer la liste des lieux à partir du contexte
@@ -32,27 +32,31 @@ const Evenement = () => {
 
   // Fonction pour vérifier si un événement est encore valide (non expiré)
   const isEventValid = (event: Place): boolean => {
-    if (!event.date_evenement?.fin) return false;
+    if (!event.est_evenement || !event.date_evenement?.fin) return false;
     
     try {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      // Conversion de la date de fin (format DD/MM/YYYY)
-      const [day, month, year] = event.date_evenement.fin.split('/');
-      const endDate = new Date(`${year}-${month}-${day}`);
-      endDate.setDate(endDate.getDate() + 1); // Lendemain de la date de fin
+      // Conversion de la date de fin (format YYYY-MM-DD)
+      const endDate = new Date(event.date_evenement.fin);
+      endDate.setHours(23, 59, 59, 999); // Fin de la journée
       
       return endDate >= today;
-    } catch {
+    } catch (error) {
+      console.error("Erreur de traitement de date:", error);
       return false;
     }
   };
 
   useEffect(() => {
     if (nearbyPlaces) {
+      console.log('Nombre de lieux reçus:', nearbyPlaces.length);
+      
       // Filtrer pour ne garder que les événements valides
-      const validEvents = nearbyPlaces.filter(l => l.est_evenement && isEventValid(l));
+      const validEvents = nearbyPlaces.filter(isEventValid);
+
+      console.log('Événements valides trouvés:', validEvents.length);
 
       // Initialiser les animations pour chaque événement
       validEvents.forEach((event) => {
@@ -66,11 +70,6 @@ const Evenement = () => {
       setLieux(validEvents);
     }
   }, [nearbyPlaces]);
-
-  /* 
-   * Toutes les fonctions suivantes restent EXACTEMENT identiques à votre code original
-   * Aucune modification n'a été apportée en dessous de cette ligne
-   */
 
   const flipCard = (id: number) => {
     if (flippedCardId !== null && flippedCardId !== id) {
@@ -116,6 +115,13 @@ const Evenement = () => {
       <SafeAreaView style={styles.container}>
         <BurgerMenu />
         <Title text={'Événements'} />
+        <View style={styles.noEventsContainer}>
+          <Text style={styles.noEventsText}>
+            {nearbyPlaces?.length > 0 
+              ? "Aucun événement à venir actuellement" 
+              : "Chargement des événements..."}
+          </Text>
+        </View>
         <Navigation />
       </SafeAreaView>
     );
