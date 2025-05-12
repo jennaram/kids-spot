@@ -1,62 +1,47 @@
-import { TouchableOpacity, View } from "react-native";
-import { StyleSheet, Text, Image } from "react-native";
-import { colorButtonFirst } from "@/app/style/styles";
+import React from "react";
+import { View, Text, StyleSheet, Image, Switch } from "react-native";
 
-interface CheckboxProps {
+interface CheckSwitchProps {
   label: string;
   checked: boolean;
   onToggle: () => void;
-  icon?: any; // Replace 'any' with a specific type if you know the type of 'icon'
+  icon?: any; // Remplace 'any' par ImageSourcePropType si tu veux typer précisément
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onToggle, icon }) => {
-    return (
-      <View style={checkboxStyles.container}>
-        <TouchableOpacity 
-          style={[checkboxStyles.checkbox, checked && checkboxStyles.checked]} 
-          onPress={onToggle}
-        >
-          {checked && <Text style={checkboxStyles.checkmark}>✓</Text>}
-        </TouchableOpacity>
-        {icon && (
-          <Image source={icon} style={checkboxStyles.icon} />
-        )}
-        <Text style={checkboxStyles.label}>{label}</Text>
-      </View>
-    );
-  };
-  
-  // Styles pour le composant Checkbox
-  const checkboxStyles = StyleSheet.create({
-    container: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginVertical: 12,
+const CheckSwitch: React.FC<CheckSwitchProps> = ({ label, checked, onToggle, icon }) => {
+  return (
+    <View style={styles.container}>
+      {icon && <Image source={icon} style={styles.icon} />}
+      <Text style={styles.label}>{label}</Text>
+      <Switch style={ styles.switch }
+        value={checked}
+        onValueChange={onToggle}
+        trackColor={{ false: "#ccc", true: "#4cd137" }}
+        thumbColor={checked ? "#fff" : "#f4f3f4"}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 12,
+    justifyContent: "space-between",
+  },
+  label: {
+    flex: 1,
+    fontSize: 16,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+    switch: {
+     marginLeft: 5,
     },
-    checkbox: {
-      height: 24,
-      width: 24,
-      borderRadius: 4,
-      borderWidth: 2,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    checked: {
-      backgroundColor: 'white',
-    },
-    checkmark: {
-      color: 'black',
-      fontSize: 16,
-    },
-    label: {
-      marginLeft: 10,
-      fontSize: 16,
-    },
-    icon: {
-      width: 24,
-      height: 24,
-      marginLeft: 10,
-      marginRight: 5,
-    },
-  });
-export default Checkbox;
+});
+
+export default CheckSwitch;

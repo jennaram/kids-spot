@@ -16,7 +16,7 @@ import SubmitButton from '@/app/components/Form/SubmitButton';
 import { styles } from '@/app/style/profil.styles';
 import envelopeIcon from '@expo/vector-icons'
 import { AuthContext } from "@/context/auth/AuthContext";
-import Checkbox from '@/components/Checkbox';
+import CheckSwitch from '@/components/Checkbox';
 import { profilUser } from '@/services/userServices';
 import { useRouter } from 'expo-router';
 
@@ -28,7 +28,7 @@ export default function ProfileScreen() {
     email: '',
     phone: '',
   });
-
+  const [receiveEmails, setReceiveEmails] = useState(false);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     async function fetchProfile() {
@@ -42,14 +42,16 @@ export default function ProfileScreen() {
         const user = response?.data?.data;
   
         if (user) {
-          const { pseudo, mail, telephone } = user;
+          const { pseudo, mail, telephone, recevoirMail } = user;
   
           setUserData(prev => ({
             ...prev,
             pseudo: pseudo,
             email: mail,
             phone: telephone,
+            receiveEmails: recevoirMail
           }));
+          setReceiveEmails(user.recevoirMail);
         } else {
           console.error("Données utilisateur non trouvées", response);
         }
@@ -69,10 +71,18 @@ export default function ProfileScreen() {
     router.push('/forgotpassword');
   };
   
-
-  function setReceiveEmails(arg0: boolean): void {
-    throw new Error('Function not implemented.');
-  }
+  const handleToggleReceiveEmails = async () => {
+    const newValue = !receiveEmails;
+    setReceiveEmails(newValue); // mise à jour UI immédiate
+  
+    try {
+      await updateReceiveMailPreference(token, newValue); // fonction à créer
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences", error);
+      setReceiveEmails(!newValue); // rollback en cas d'erreur
+    }
+  };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -83,13 +93,10 @@ export default function ProfileScreen() {
         <View style={styles.content}>
           <View style={styles.formContainer}>
             {/* Remplacement des TextInput par InputField */}
-            <InputField
-              label="Pseudonyme"
-              value={userData.pseudo}
-              onChangeText={(text) => setUserData({ ...userData, pseudo: text })}
-              placeholder="Entrez votre pseudonyme"
-              
-            />
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 4 }}>Pseudonyme</Text>
+              <Text style={{ fontSize: 16 }}>{userData.pseudo}</Text>
+            </View>
 
             {/* <InputField
               label="Mot de passe"
@@ -100,23 +107,17 @@ export default function ProfileScreen() {
               
             /> */}
 
-            <InputField
-              label="Adresse mail"
-              value={userData.email}
-              onChangeText={(text) => setUserData({ ...userData, email: text })}
-              placeholder="email@exemple.com"
-              keyboardType="email-address"
-              
-            />
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 4 }}>Adresse mail</Text>
+              <Text style={{ fontSize: 16 }}>{userData.email}</Text>
+            </View>
 
-            <InputField
-              label="Téléphone"
-              value={userData.phone}
-              onChangeText={(text) => setUserData({ ...userData, phone: text })}
-              placeholder="06 12 34 56 78"
-              keyboardType="phone-pad"
-              
-            />
+
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 4 }}>Téléphone</Text>
+              <Text style={{ fontSize: 16 }}>{userData.phone}</Text>
+            </View>
+
 
             {/* <InputField
               label="Nombre d'avis rédigés"
@@ -126,11 +127,10 @@ export default function ProfileScreen() {
               keyboardType="numeric"
               
             /> */}
-            <Checkbox
+            <CheckSwitch
               label="Recevoir des notifications par email"
-              checked
-              onToggle={() => setReceiveEmails}
-              icon={envelopeIcon}
+              checked={receiveEmails}
+              onToggle={handleToggleReceiveEmails}
             />
             {/* Bouton "Changer de mot de passe" */}
             <SubmitButton
@@ -146,4 +146,8 @@ export default function ProfileScreen() {
   );
 }
 
+
+function updateReceiveMailPreference(token: string | null, newValue: boolean) {
+  throw new Error('Function not implemented.');
+}
 
