@@ -2,13 +2,12 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
-  View, Text, TextInput, ScrollView, TouchableOpacity,
+  View, Text, Switch, TextInput, ScrollView, TouchableOpacity,
   Image, Alert, SafeAreaView
 } from 'react-native';
 import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-
 
 // Composants
 import { Navigation } from '@/components/NavBar/Navigation';
@@ -37,7 +36,7 @@ const AddPlaceScreen = () => {
   const router = useRouter();
   const { token } = useAuth();
   const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
-  const { submitMail, loading:loadinMail, error:errorMail, success:successMail } = useSendMail();
+  const { submitMail, loading: loadinMail, error: errorMail, success: successMail } = useSendMail();
 
   const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
@@ -52,6 +51,17 @@ const AddPlaceScreen = () => {
   const [codepostal, setCodepostal] = useState('');
   const [ville, setVille] = useState('');
   const [horaires, setHoraires] = useState('');
+  const [isEvent, setIsEvent] = useState(false);
+  const [expiration, setExpiration] = useState("");
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const formatDate = (date: string | number | Date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `<span class="math-inline">\{day\}/</span>{month}/${year}`;
+  };
   const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
@@ -62,6 +72,13 @@ const AddPlaceScreen = () => {
   });
 
   const { geocode } = useGeocodeAddress();
+  
+  const handleExpirationChange = (text: string) => {
+    const onlyNumbers = text.replace(/\D/g, "");
+    if (onlyNumbers.length <= 4) {
+      setExpiration(onlyNumbers);
+    }
+  };
 
   const placeIcons = useMemo(() => ({
     restaurant: require('@/assets/images/user-location-restaurant.png'),
@@ -94,7 +111,7 @@ const AddPlaceScreen = () => {
       if (addressResult) {
         const street = addressResult.street || '';
         const city = addressResult.city || '';
-        setAddress(`${street}${street && city ? ', ' : ''}${city}`);
+        setAddress(`<span class="math-inline">\{street\}</span>{street && city ? ', ' : ''}${city}`);
       }
     } catch (error) {
       console.error('Error getting location:', error);
@@ -175,7 +192,9 @@ const AddPlaceScreen = () => {
       site_web: website.trim(),
       id_type: typeIdMap[placeType],
       equipements: activeEquipments,
-      tranches_age: ageRangeIds
+      tranches_age: ageRangeIds,
+      date_debut: isEvent ? startDate : null,
+      date_fin: isEvent ? endDate : null,
     };
 
     //console.log('Tentative d\'ajout du lieu avec les données:', newPlace);
@@ -204,7 +223,7 @@ const AddPlaceScreen = () => {
     <p><strong>${placeName}</strong> a été ajouté avec succès par un utilisateur.</p>
     <p>Ville : ${ville}</p>
     <p>Adresse : ${address}</p>
-  `;
+`;
         await submitMail(sujet, contenueHTML, token);
 
         Alert.alert(
@@ -219,14 +238,14 @@ const AddPlaceScreen = () => {
       //console.error('Error submitting place:', err);
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
     }
-  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success]);
+  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success, token, submitPlaceOrEvent, geocode, submitMail, fieldErrors, ville, codepostal, horaires, isEvent, startDate, endDate]);
 
   useEffect(() => {
     if (error) {
-      console.log(fieldErrors)
+      console.log(fieldErrors);
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
     }
-  }, [loading, error, success]);
+  }, [loading, error, success, fieldErrors]);
 
   const toggleAgeRange = useCallback((age: string) => {
     setAgeRanges((prev) =>
@@ -243,6 +262,32 @@ const AddPlaceScreen = () => {
       key === '3-6' ? '3-6 ans' :
         '7 ans et plus';
   };
+
+  const formatEventDate = (text: string, setter: (val: string) => void) => {
+    const onlyNumbers = text.replace(/\D/g, "").slice(0, 8); // max 8 chiffres pour JJMMAAAA
+  
+    let formatted = "";
+    if (onlyNumbers.length <= 2) {
+      formatted = onlyNumbers;
+    } else if (onlyNumbers.length <= 4) {
+      formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2)}`;
+    } else {
+      formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2, 4)}/${onlyNumbers.slice(4)}`;
+    }
+  
+    setter(formatted);
+  };
+
+  const isStartBeforeEnd = (start: string, end: string) => {
+    const [startDay, startMonth, startYear] = start.split("/").map(Number);
+    const [endDay, endMonth, endYear] = end.split("/").map(Number);
+  
+    const startDateObj = new Date(startYear, startMonth - 1, startDay);
+    const endDateObj = new Date(endYear, endMonth - 1, endDay);
+  
+    return startDateObj < endDateObj;
+  };
+  
 
   function setPhotoUri(uri: string): void {
     // Gérer la sélection de photo ici si nécessaire
@@ -270,9 +315,9 @@ const AddPlaceScreen = () => {
           <FiltreButtons
             selectedTypeIds={selectedTypeIds}
             onPress={(id) => {
-            setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
-            const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
-            setPlaceType(type);
+              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
+              const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
+              setPlaceType(type);
             }}
           />
 
@@ -295,7 +340,7 @@ const AddPlaceScreen = () => {
             placeholder="75000"
             onChangeText={(text) => {
               const onlyNumbers = text.replace(/[^0-9]/g, '');
-              setCodepostal(onlyNumbers.slice(0, 5));    
+              setCodepostal(onlyNumbers.slice(0, 5));
             }}
           />
         </View>
@@ -329,7 +374,7 @@ const AddPlaceScreen = () => {
             keyboardType="phone-pad"
             onChangeText={(text) => {
               const onlyNumbers = text.replace(/[^0-9]/g, '');
-              setPhoneNumber(onlyNumbers.slice(0, 10));    
+              setPhoneNumber(onlyNumbers.slice(0, 10));
             }}
           />
         </View>
@@ -343,6 +388,53 @@ const AddPlaceScreen = () => {
             placeholder="10h-18h"
           />
         </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Est-ce un événement ?</Text>
+          <Switch value={isEvent} onValueChange={setIsEvent} />
+        </View>
+
+      {isEvent && (
+          <>
+        <View style={styles.section}>
+          <Text style={styles.label}>Date de début de l’événement</Text>
+          <FormInput
+            label=""
+            value={startDate}
+            placeholder="JJ/MM/AAAA"
+            onChangeText={(text) => {
+              formatEventDate(text, setStartDate);
+              if (text.length === 10 && endDate.length === 10) {
+                if (!isStartBeforeEnd(text, endDate)) {
+                  alert("La date de début doit être antérieure à la date de fin.");
+                }
+              }
+            }}
+            
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Date de fin de l’événement</Text>
+          <FormInput
+            label=""
+            value={endDate}
+            placeholder="JJ/MM/AAAA"
+            onChangeText={(text) => {
+              formatEventDate(text, setEndDate);
+              if (startDate.length === 10 && text.length === 10) {
+                if (!isStartBeforeEnd(startDate, text)) {
+                  alert("La date de début doit être antérieure à la date de fin.");
+                }
+              }
+            }}
+            
+          />
+        </View>
+       </>
+      )}
+
+
 
         <View style={styles.section}>
           <Text style={styles.label}>Description</Text>
@@ -414,14 +506,13 @@ const AddPlaceScreen = () => {
           />
         </View>
 
-        <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+<SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
+<View style={styles.bottomSpacer} />
+</ScrollView>
 
-      <Navigation />
-    </SafeAreaView>
-  );
+<Navigation />
+</SafeAreaView>
+);
 };
 
 export default AddPlaceScreen;
-
