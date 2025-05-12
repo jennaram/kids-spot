@@ -56,7 +56,7 @@ export async function apiPost<T>(endpoint: string, body: object, token?: string)
       headers: getHeaders(token),
       body: JSON.stringify(body),
     });
-    console.log(JSON.stringify(body));
+    // console.log(JSON.stringify(body));
     const statusCode = response.status;
     const data = await response.json();
     return { statusCode, data };
