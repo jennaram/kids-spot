@@ -9,10 +9,6 @@ import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 
-const [isEvent, setIsEvent] = useState(false);
-const [date, setDate] = useState('');
-
-
 // Composants
 import { Navigation } from '@/components/NavBar/Navigation';
 import { Title } from '@/components/Title';
@@ -40,7 +36,7 @@ const AddPlaceScreen = () => {
   const router = useRouter();
   const { token } = useAuth();
   const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
-  const { submitMail, loading:loadinMail, error:errorMail, success:successMail } = useSendMail();
+  const { submitMail, loading: loadinMail, error: errorMail, success: successMail } = useSendMail();
 
   const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
@@ -55,14 +51,15 @@ const AddPlaceScreen = () => {
   const [codepostal, setCodepostal] = useState('');
   const [ville, setVille] = useState('');
   const [horaires, setHoraires] = useState('');
+  const [isEvent, setIsEvent] = useState(false);
+  const [date, setDate] = useState('');
   const formatDate = (date: string | number | Date) => {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `<span class="math-inline">\{day\}/</span>{month}/${year}`;
   };
-  const [date, setDate] = useState('');
   const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
@@ -105,7 +102,7 @@ const AddPlaceScreen = () => {
       if (addressResult) {
         const street = addressResult.street || '';
         const city = addressResult.city || '';
-        setAddress(`${street}${street && city ? ', ' : ''}${city}`);
+        setAddress(`<span class="math-inline">\{street\}</span>{street && city ? ', ' : ''}${city}`);
       }
     } catch (error) {
       console.error('Error getting location:', error);
@@ -216,7 +213,7 @@ const AddPlaceScreen = () => {
     <p><strong>${placeName}</strong> a été ajouté avec succès par un utilisateur.</p>
     <p>Ville : ${ville}</p>
     <p>Adresse : ${address}</p>
-  `;
+`;
         await submitMail(sujet, contenueHTML, token);
 
         Alert.alert(
@@ -231,14 +228,14 @@ const AddPlaceScreen = () => {
       //console.error('Error submitting place:', err);
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
     }
-  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success]);
+  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success, token, submitPlaceOrEvent, geocode, submitMail, fieldErrors, ville, codepostal, horaires, isEvent, date]);
 
   useEffect(() => {
     if (error) {
-      console.log(fieldErrors)
+      console.log(fieldErrors);
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
     }
-  }, [loading, error, success]);
+  }, [loading, error, success, fieldErrors]);
 
   const toggleAgeRange = useCallback((age: string) => {
     setAgeRanges((prev) =>
@@ -282,9 +279,9 @@ const AddPlaceScreen = () => {
           <FiltreButtons
             selectedTypeIds={selectedTypeIds}
             onPress={(id) => {
-            setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
-            const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
-            setPlaceType(type);
+              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
+              const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
+              setPlaceType(type);
             }}
           />
 
@@ -307,7 +304,7 @@ const AddPlaceScreen = () => {
             placeholder="75000"
             onChangeText={(text) => {
               const onlyNumbers = text.replace(/[^0-9]/g, '');
-              setCodepostal(onlyNumbers.slice(0, 5));    
+              setCodepostal(onlyNumbers.slice(0, 5));
             }}
           />
         </View>
@@ -341,7 +338,7 @@ const AddPlaceScreen = () => {
             keyboardType="phone-pad"
             onChangeText={(text) => {
               const onlyNumbers = text.replace(/[^0-9]/g, '');
-              setPhoneNumber(onlyNumbers.slice(0, 10));    
+              setPhoneNumber(onlyNumbers.slice(0, 10));
             }}
           />
         </View>
@@ -365,27 +362,27 @@ const AddPlaceScreen = () => {
         </View>
 
         {isEvent && (
-        <View style={styles.section}>
-          <Text style={styles.label}>Date de l’événement</Text>
-          <FormInput
-            label=""
-            value={date}
-            placeholder="JJ/MM/AAAA"
-            onChangeText={(text) => {
-              const onlyNumbers = text.replace(/[^0-9]/g, '');
-              let formatted = onlyNumbers;
-              if (onlyNumbers.length >= 3 && onlyNumbers.length <= 4) {
-                formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2)}`;
-              } else if (onlyNumbers.length > 4) {
-                formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2, 4)}/${onlyNumbers.slice(4, 8)}`;
-              }
-              setDate(formatted);
-            }}
+          <View style={styles.section}>
+            <Text style={styles.label}>Date de l’événement</Text>
+            <FormInput
+              label=""
+              value={date}
+              placeholder="JJ/MM/AAAA"
+              onChangeText={(text) => {
+                const onlyNumbers = text.replace(/[^0-9]/g, '');
+                let formatted = onlyNumbers;
+                if (onlyNumbers.length >= 3 && onlyNumbers.length <= 4) {
+                  formatted = `<span class="math-inline">\{onlyNumbers\.slice\(0, 2\)\}/</span>{onlyNumbers.slice(2)}`;
+                } else if (onlyNumbers.length > 4) {
+                  formatted = `<span class="math-inline">\{onlyNumbers\.slice\(0, 2\)\}/</span>{onlyNumbers.slice(2, 4)}/${onlyNumbers.slice(4, 8)}`;
+                }
+                setDate(formatted);
+              }}
             />
           </View>
-)}
+        )}
 
-          
+
         <View style={styles.section}>
           <Text style={styles.label}>Description</Text>
           <TextInput
@@ -456,14 +453,13 @@ const AddPlaceScreen = () => {
           />
         </View>
 
-        <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+<SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
+<View style={styles.bottomSpacer} />
+</ScrollView>
 
-      <Navigation />
-    </SafeAreaView>
-  );
+<Navigation />
+</SafeAreaView>
+);
 };
 
 export default AddPlaceScreen;
-
