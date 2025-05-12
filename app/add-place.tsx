@@ -2,28 +2,26 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
-  View, Text, TextInput, ScrollView, TouchableOpacity,
-  Image, Alert, SafeAreaView
+  View, Text, TextInput, ScrollView, 
+  Image, Alert, SafeAreaView, KeyboardAvoidingView, Platform
 } from 'react-native';
 import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 
-// Composants
+// Composants personnalisés
 import { Navigation } from '@/components/NavBar/Navigation';
 import { Title } from '@/components/Title';
 import { FormInput } from './components/Form/InputField';
 import SubmitButton from './components/Form/SubmitButton';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
-import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { PhotoPickerButton } from '@/components/PhotoPickerButton';
-import AgeBadges from '@/components/Lieux/AgeBadges';
 import StarRating from '@/components/Notation/StarRating';
 import { AvailableEquipments, EquipmentKeys, EquipmentType } from '@/components/Lieux/AvailableEquipments';
 import GeoLocationInput from '@/components/Lieux/GeoLocationInput';
+import SelectionBadges from '@/components/SelectionBadges';
 
-// Styles
-import { colorButtonFirst } from './style/styles';
+// Styles et hooks personnalisés
 import styles from '@/app/style/add-place.styles';
 import { useGeocodeAddress } from '@/hooks/location/useGeocodeAddress';
 import { useSendMail } from '@/hooks/place/useSendMail';
@@ -33,14 +31,16 @@ type PlaceType = 'restaurant' | 'culture' | 'leisure';
 type LocationType = LatLng | null;
 
 const AddPlaceScreen = () => {
+  // Hooks de navigation et authentification
   const router = useRouter();
   const { token } = useAuth();
   const { submitPlaceOrEvent, loading, error, success, fieldErrors } = useAddPlaceOrEvent();
-  const { submitMail, loading:loadinMail, error:errorMail, success:successMail } = useSendMail();
+  const { submitMail } = useSendMail();
+  const { geocode } = useGeocodeAddress();
 
-  const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
-  const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
+  // États du formulaire
   const [placeName, setPlaceName] = useState('');
+  const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [address, setAddress] = useState('');
   const [location, setLocation] = useState<LocationType>(null);
   const [description, setDescription] = useState('');
@@ -51,6 +51,7 @@ const AddPlaceScreen = () => {
   const [codepostal, setCodepostal] = useState('');
   const [ville, setVille] = useState('');
   const [horaires, setHoraires] = useState('');
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
@@ -60,17 +61,11 @@ const AddPlaceScreen = () => {
     parking: false,
   });
 
-  const { geocode } = useGeocodeAddress();
-
-  const placeIcons = useMemo(() => ({
-    restaurant: require('@/assets/images/user-location-restaurant.png'),
-    culture: require('@/assets/images/user-location-culture.png'),
-    leisure: require('@/assets/images/user-location-loisir.png'),
-  }), []);
-
+  // Options constantes
+  const placeTypeOptions = useMemo(() => ['restaurant', 'culture', 'leisure'], []);
   const ageRangeOptions = useMemo(() => ['0-2', '3-6', '7+'], []);
-  const ratingOptions = useMemo(() => [1, 2, 3, 4, 5], []);
 
+  // Gestion de la localisation
   const handleGetCurrentLocation = useCallback(async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -80,30 +75,36 @@ const AddPlaceScreen = () => {
       }
 
       const currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation({
+      const newLocation = {
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
-      });
+      };
+      setLocation(newLocation);
 
-      const [addressResult] = await Location.reverseGeocodeAsync({
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-      });
-
+      const [addressResult] = await Location.reverseGeocodeAsync(newLocation);
       if (addressResult) {
         const street = addressResult.street || '';
         const city = addressResult.city || '';
         setAddress(`${street}${street && city ? ', ' : ''}${city}`);
+        setVille(addressResult.city || '');
+        setCodepostal(addressResult.postalCode || '');
       }
     } catch (error) {
-      console.error('Error getting location:', error);
+      console.error('Erreur de géolocalisation:', error);
       Alert.alert('Erreur', 'Impossible d\'obtenir la localisation actuelle');
     }
   }, []);
 
+  // Gestion de la sélection des équipements
+  const toggleEquipment = useCallback((key: EquipmentKeys) => {
+    setEquipments(prev => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  // Soumission du formulaire
   const handleSubmit = useCallback(async () => {
+    // Validation des champs obligatoires
     if (!placeName || !address || !codepostal || !ville) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires (nom, adresse, code postal et ville)');
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires');
       return;
     }
 
@@ -112,23 +113,20 @@ const AddPlaceScreen = () => {
       return;
     }
 
-    // Construire l'adresse complète pour le géocodage
+    // Géocodage de l'adresse
     const fullAddress = `${address.trim()}, ${codepostal.trim()} ${ville.trim()}, France`;
-    //console.log('Tentative de géocodage avec l\'adresse:', fullAddress);
-
     const coords = await geocode(fullAddress);
 
     if (!coords) {
       Alert.alert(
         'Erreur de géolocalisation',
-        'Impossible de récupérer les coordonnées GPS de cette adresse. Vérifiez que l\'adresse est correcte et réessayez.',
+        'Impossible de récupérer les coordonnées GPS de cette adresse.',
         [{ text: 'OK' }]
       );
       return;
     }
 
-    //console.log('Coordonnées GPS obtenues:', coords);
-
+    // Mapping des identifiants
     const typeIdMap = {
       restaurant: 1,
       leisure: 2,
@@ -150,6 +148,7 @@ const AddPlaceScreen = () => {
       '7+': 3
     };
 
+    // Préparation des données
     const activeEquipments = Object.entries(equipments)
       .filter(([_, isActive]) => isActive)
       .map(([key]) => equipmentIdMap[key as keyof typeof equipmentIdMap]);
@@ -172,241 +171,155 @@ const AddPlaceScreen = () => {
       tranches_age: ageRangeIds
     };
 
-    //console.log('Tentative d\'ajout du lieu avec les données:', newPlace);
-
     try {
+      // Soumettre le lieu
       await submitPlaceOrEvent(newPlace, token);
-      //console.log('Réponse de submitPlaceOrEvent - success:', success, 'error:', error);
 
-      if (error) {
-        //console.error('Erreurs par champ:', fieldErrors);
-        let errorMessage = 'Une erreur est survenue lors de l\'ajout du lieu';
-        if (Object.keys(fieldErrors).length > 0) {
-          errorMessage += ':\n' + Object.entries(fieldErrors)
-            .map(([field, msg]) => `${field}: ${msg}`)
-            .join('\n');
-        }
-        Alert.alert('Erreur', errorMessage);
-        return;
-      }
+      // Envoi d'un email de confirmation
+      const sujet = "Nouveau lieu ajouté";
+      const contenueHTML = `
+        <h1>Nouveau lieu ajouté</h1>
+        <p><strong>${placeName}</strong> a été ajouté avec succès.</p>
+        <p>Ville : ${ville}</p>
+        <p>Adresse : ${address}</p>
+      `;
+      await submitMail(sujet, contenueHTML, token);
 
-      try {
-        // Envoi de mail de confirmation
-        const sujet = "Nouveau lieu ajouté";
-        const contenueHTML = `
-    <h1>Nouveau lieu ajouté</h1>
-    <p><strong>${placeName}</strong> a été ajouté avec succès par un utilisateur.</p>
-    <p>Ville : ${ville}</p>
-    <p>Adresse : ${address}</p>
-  `;
-        await submitMail(sujet, contenueHTML, token);
-
-        Alert.alert(
-          'Succès',
-          'Le lieu a été ajouté avec succès',
-          [{ text: 'OK', onPress: () => router.push('accueil') }]
-        );
-      } catch (err) {
-        Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu (mail)');
-      }
+      // Redirection après succès
+      Alert.alert(
+        'Succès',
+        'Le lieu a été ajouté avec succès',
+        [{ text: 'OK', onPress: () => router.push('accueil') }]
+      );
     } catch (err) {
-      //console.error('Error submitting place:', err);
       Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
     }
-  }, [placeName, placeType, address, location, description, ageRanges, rating, equipments, website, phoneNumber, router, success]);
-
-  useEffect(() => {
-    if (error) {
-      console.log(fieldErrors)
-      Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du lieu');
-    }
-  }, [loading, error, success]);
-
-  const toggleAgeRange = useCallback((age: string) => {
-    setAgeRanges((prev) =>
-      prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]
-    );
-  }, []);
-
-  const toggleEquipment = useCallback((key: EquipmentKeys) => {
-    setEquipments(prev => ({ ...prev, [key]: !prev[key] }));
-  }, []);
-
-  const getTranslatedLabel = (key: string) => {
-    return key === '0-2' ? '0-2 ans' :
-      key === '3-6' ? '3-6 ans' :
-        '7 ans et plus';
-  };
-
-  function setPhotoUri(uri: string): void {
-    // Gérer la sélection de photo ici si nécessaire
-  }
+  }, [
+    placeName, address, codepostal, ville, description, 
+    horaires, placeType, ageRanges, phoneNumber, 
+    website, equipments, token, router, submitPlaceOrEvent, submitMail, geocode
+  ]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <BurgerMenu />
-      <Title text={'Ajouter un lieu'} />
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={styles.container}
+      >
+        <BurgerMenu />
+        <Title text={'Ajouter un lieu'} />
 
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.section}>
-          <Text style={styles.label}>Nom du lieu</Text>
-          <FormInput
-            label=""
-            value={placeName}
-            onChangeText={setPlaceName}
-            placeholder="Entrez le nom du lieu"
+        <ScrollView 
+          style={styles.scrollView}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Nom du lieu */}
+          <View style={styles.section}>
+            <Text style={styles.label}>Nom du lieu</Text>
+            <FormInput
+              value={placeName}
+              onChangeText={setPlaceName}
+              placeholder="Entrez le nom du lieu" label={''}            />
+            <PhotoPickerButton 
+              onPhotoSelected={(uri) => setPhotoUri(uri)} 
+            />
+          </View>
+
+          {/* Type de lieu */}
+          <SelectionBadges
+            label="Type de lieu"
+            options={placeTypeOptions}
+            selectedOptions={[placeType]}
+            onToggle={(type) => setPlaceType(type as PlaceType)}
+            multiSelect={false}
           />
-          <PhotoPickerButton onPhotoSelected={(uri) => setPhotoUri(uri)} />
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Type de lieu</Text>
-          <FiltreButtons
-            selectedTypeIds={selectedTypeIds}
-            onPress={(id) => {
-              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
+          {/* Adresse */}
+          <View style={styles.section}>
+            <Text style={styles.label}>Adresse</Text>
+            <GeoLocationInput
+              address={address}
+              onAddressChange={setAddress}
+              onGetLocation={handleGetCurrentLocation}
+            />
+          </View>
+
+          {/* Code Postal */}
+          <View style={styles.section}>
+            <Text style={styles.label}>Code Postal</Text>
+            <FormInput
+              value={codepostal}
+              onChangeText={setCodepostal}
+              placeholder="75000"
+              keyboardType="numeric" label={''}            />
+          </View>
+
+          {/* Ville */}
+          <View style={styles.section}>
+            <Text style={styles.label}>Ville</Text>
+            <FormInput
+              value={ville}
+              onChangeText={setVille}
+              placeholder="Paris" label={''}            />
+          </View>
+
+          {/* Tranches d'âge */}
+          <SelectionBadges
+            label="Tranche d'âge"
+            options={ageRangeOptions}
+            selectedOptions={ageRanges}
+            onToggle={(age) => {
+              setAgeRanges(prev => 
+                prev.includes(age) 
+                  ? prev.filter(a => a !== age) 
+                  : [...prev, age]
+              );
             }}
+            multiSelect={true}
           />
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Adresse</Text>
-          <GeoLocationInput
-            address={address}
-            onAddressChange={setAddress}
-            onGetLocation={handleGetCurrentLocation}
-          />
-        </View>
+          {/* Autres champs du formulaire */}
+          <View style={styles.section}>
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={styles.multilineInput}
+              placeholder="Entrez une description"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={4}
+            />
+          </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Code Postal</Text>
-          <FormInput
-            label=""
-            value={codepostal}
-            onChangeText={setCodepostal}
-            placeholder="75000"
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Ville</Text>
-          <FormInput
-            label=""
-            value={ville}
-            onChangeText={setVille}
-            placeholder="Paris"
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Site web (optionnel)</Text>
-          <FormInput
-            label=""
-            value={website}
-            onChangeText={setWebsite}
-            placeholder="https://www.exemple.com"
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Téléphone (optionnel)</Text>
-          <FormInput
-            label=""
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            placeholder="01 23 45 67 89"
-            keyboardType="phone-pad"
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Horaires</Text>
-          <FormInput
-            label=""
-            value={horaires}
-            onChangeText={setHoraires}
-            placeholder="10h-18h"
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={styles.multilineInput}
-            placeholder="Entrez une description"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-          />
-        </View>
-
-        <View style={styles.section}>
+          {/* Équipements */}
           <AvailableEquipments
             equipments={equipments}
             toggleEquipment={toggleEquipment}
           />
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Tranche d'âge</Text>
-          <View style={styles.ageBadgesContainer}>
-            {ageRangeOptions.map((age) => (
-              <TouchableOpacity
-                key={age}
-                onPress={() => toggleAgeRange(age)}
-              >
-                <AgeBadges
-                  tranchesAge={[getTranslatedLabel(age)]}
-                  badgeColor={ageRanges.includes(age) ? colorButtonFirst : '#ddd'}
-                  containerStyle={styles.ageBadgeContainer}
-                  badgeStyle={styles.ageBadge}
-                  textStyle={styles.ageBadgeText}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {location && (
-          <View style={styles.section}>
-            <Text style={styles.label}>Localisation</Text>
-            <View style={styles.mapContainer}>
-              <MapView
-                style={styles.map}
-                initialRegion={{
-                  ...location,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-              >
-                <Marker coordinate={location}>
-                  <Image
-                    source={placeIcons[placeType]}
-                    style={styles.markerImage}
-                  />
-                </Marker>
-              </MapView>
-            </View>
-          </View>
-        )}
-
-        <View style={styles.section}>
+          {/* Notation */}
           <StarRating
             rating={rating}
             setRating={setRating}
             label="Note (sur 5)"
-            containerStyle={styles.ratingContainer}
           />
-        </View>
 
-        <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+          {/* Bouton de soumission */}
+          <SubmitButton 
+            title="Ajouter le lieu" 
+            onPress={handleSubmit} 
+            disabled={loading}
+          />
 
-      <Navigation />
+          {/* Espace en bas pour éviter de cacher le contenu */}
+          <View style={styles.bottomSpacer} />
+        </ScrollView>
+
+        <Navigation />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
 export default AddPlaceScreen;
-
