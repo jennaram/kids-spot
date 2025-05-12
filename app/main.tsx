@@ -17,6 +17,7 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { useLocation } from '@/context/locate'; // Import du contexte
 import styles from '@/app/style/MapScreen.style'; // Ton style actuel
 import { SwitchMapButton } from '@/components/SwitchMapButton';
+import { Place } from '@/Types/place';
 
 // Icônes personnalisées
 const iconByType = {
@@ -30,7 +31,7 @@ const iconByType = {
 export default function MapScreen() {
   // Utilisation du contexte Location
   const { userLocation, nearbyPlaces, error, refreshLocation } = useLocation();
-  const [selectedPlace, setSelectedPlace] = useState<any | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [showPopup, setShowPopup] = useState(false);
 
   // Mise à jour lorsque le composant reprend le focus
@@ -40,6 +41,11 @@ export default function MapScreen() {
       return () => {};
     }, [])
   );
+
+  // Filtrer les lieux pour exclure les événements
+  const filteredPlaces = (nearbyPlaces ?? []).filter((place: Place) => {
+    return !place.est_evenement;
+  });
 
   // Gestion des erreurs d'obtention de la localisation
   if (error) {
@@ -98,8 +104,8 @@ export default function MapScreen() {
           />
         </Marker>
 
-        {/* Marqueurs pour les lieux */}
-        {nearbyPlaces && nearbyPlaces.length > 0 && nearbyPlaces.map((item) => (
+        {/* Marqueurs pour les lieux filtrés (sans événements) */}
+        {filteredPlaces.length > 0 && filteredPlaces.map((item) => (
           <Marker
             key={item.id}
             coordinate={{
