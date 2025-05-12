@@ -111,7 +111,8 @@ const AddPlaceScreen = () => {
       if (addressResult) {
         const street = addressResult.street || '';
         const city = addressResult.city || '';
-        setAddress(`<span class="math-inline">\{street\}</span>{street && city ? ', ' : ''}${city}`);
+        const fullAddress = `${street}${street && city ? ', ' : ''}${city || 'Paris'}`;
+        setAddress(fullAddress);
       }
     } catch (error) {
       console.error('Error getting location:', error);
