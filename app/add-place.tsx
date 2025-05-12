@@ -9,6 +9,7 @@ import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 
+
 // Composants
 import { Navigation } from '@/components/NavBar/Navigation';
 import { Title } from '@/components/Title';
@@ -104,6 +105,11 @@ const AddPlaceScreen = () => {
   const handleSubmit = useCallback(async () => {
     if (!placeName || !address || !codepostal || !ville) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires (nom, adresse, code postal et ville)');
+      return;
+    }
+
+    if (selectedTypeIds.length === 0) {
+      Alert.alert('Erreur', 'Veuillez sélectionner au moins un type de lieu : Restaurant, Loisirs ou Culture');
       return;
     }
 
@@ -264,9 +270,12 @@ const AddPlaceScreen = () => {
           <FiltreButtons
             selectedTypeIds={selectedTypeIds}
             onPress={(id) => {
-              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
+            setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
+            const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
+            setPlaceType(type);
             }}
           />
+
         </View>
 
         <View style={styles.section}>
@@ -283,8 +292,11 @@ const AddPlaceScreen = () => {
           <FormInput
             label=""
             value={codepostal}
-            onChangeText={setCodepostal}
             placeholder="75000"
+            onChangeText={(text) => {
+              const onlyNumbers = text.replace(/[^0-9]/g, '');
+              setCodepostal(onlyNumbers.slice(0, 5));    
+            }}
           />
         </View>
 
@@ -313,9 +325,12 @@ const AddPlaceScreen = () => {
           <FormInput
             label=""
             value={phoneNumber}
-            onChangeText={setPhoneNumber}
             placeholder="01 23 45 67 89"
             keyboardType="phone-pad"
+            onChangeText={(text) => {
+              const onlyNumbers = text.replace(/[^0-9]/g, '');
+              setPhoneNumber(onlyNumbers.slice(0, 10));    
+            }}
           />
         </View>
 
