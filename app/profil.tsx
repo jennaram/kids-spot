@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,28 +14,65 @@ import { Title } from '@/components/Title';
 import InputField from '@/app/components/Form/InputField'; // Import du composant InputField
 import SubmitButton from '@/app/components/Form/SubmitButton';
 import { styles } from '@/app/style/profil.styles';
+import envelopeIcon from '@expo/vector-icons'
 import { AuthContext } from "@/context/auth/AuthContext";
+import Checkbox from '@/components/Checkbox';
+import { profilUser } from '@/services/userServices';
+import { useRouter } from 'expo-router';
+
 
 export default function ProfileScreen() {
+  const { token } = useContext(AuthContext);
   const [userData, setUserData] = useState({
-    pseudo: 'Utilisateur123',
-    email: 'email@exemple.com',
-    phone: '06 12 34 56 78',
-    password: '••••••••',
-    childrenCount: 2,
-    childrenAges: '5,7,10', // Exemple d'âge des enfants sous forme de chaîne
-    reviewsCount: 10,
+    pseudo: '',
+    email: '',
+    phone: '',
   });
 
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        if (!token) {
+          console.error("Token is null");
+          return;
+        }
+        const response = await profilUser(token);
+  
+        const user = response?.data?.data;
+  
+        if (user) {
+          const { pseudo, mail, telephone } = user;
+  
+          setUserData(prev => ({
+            ...prev,
+            pseudo: pseudo,
+            email: mail,
+            phone: telephone,
+          }));
+        } else {
+          console.error("Données utilisateur non trouvées", response);
+        }
+      } catch (error) {
+        console.error("Erreur API profil", error);
+      }
+    }
+  
+    if (token) {
+      fetchProfile();
+    }
+  }, [token]);
+
+  const router = useRouter();
 
   const handlePasswordChange = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert('Redirection vers la page de changement de mot de passe');
-    }, 2000);
+    router.push('/forgotpassword');
   };
+  
+
+  function setReceiveEmails(arg0: boolean): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -54,14 +91,14 @@ export default function ProfileScreen() {
               
             />
 
-            <InputField
+            {/* <InputField
               label="Mot de passe"
               value={userData.password}
               onChangeText={(text) => setUserData({ ...userData, password: text })}
               placeholder="••••••••"
               secureTextEntry
               
-            />
+            /> */}
 
             <InputField
               label="Adresse mail"
@@ -81,15 +118,20 @@ export default function ProfileScreen() {
               
             />
 
-            <InputField
+            {/* <InputField
               label="Nombre d'avis rédigés"
               value={userData.reviewsCount.toString()}
               onChangeText={(text) => setUserData({ ...userData, reviewsCount: parseInt(text) })}
               placeholder="Nombre d'avis"
               keyboardType="numeric"
               
+            /> */}
+            <Checkbox
+              label="Recevoir des notifications par email"
+              checked
+              onToggle={() => setReceiveEmails}
+              icon={envelopeIcon}
             />
-
             {/* Bouton "Changer de mot de passe" */}
             <SubmitButton
               title="Changer de mot de passe"

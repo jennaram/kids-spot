@@ -32,5 +32,5 @@ export async function loginUser(email: string, password: string):
 export async function profilUser(token: string): 
   Promise<ApiResponse<ProfilUser>> {
     checkToken(token);
-  return apiGet<ProfilUser>('profil/read.php',  token );
+  return apiGet< {data: ProfilUser}>('profil/read.php',  token );
 }
