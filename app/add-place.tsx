@@ -52,6 +52,14 @@ const AddPlaceScreen = () => {
   const [codepostal, setCodepostal] = useState('');
   const [ville, setVille] = useState('');
   const [horaires, setHoraires] = useState('');
+  const formatDate = (date: string | number | Date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+  const [date, setDate] = useState('');
   const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
@@ -175,7 +183,8 @@ const AddPlaceScreen = () => {
       site_web: website.trim(),
       id_type: typeIdMap[placeType],
       equipements: activeEquipments,
-      tranches_age: ageRangeIds
+      tranches_age: ageRangeIds,
+      date : date
     };
 
     //console.log('Tentative d\'ajout du lieu avec les données:', newPlace);
@@ -343,6 +352,29 @@ const AddPlaceScreen = () => {
             placeholder="10h-18h"
           />
         </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Date de l'evenement</Text>
+          <FormInput
+            label=""
+            value={date}
+            placeholder="JJ/MM/AAAA"
+            onChangeText={(text) => {
+              // Retirer tout sauf les chiffres
+              const onlyNumbers = text.replace(/[^0-9]/g, '');
+
+              // Ajouter les / automatiquement
+              let formatted = onlyNumbers;
+              if (onlyNumbers.length >= 3 && onlyNumbers.length <= 4) {
+                formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2)}`;
+              } else if (onlyNumbers.length > 4) {
+                formatted = `${onlyNumbers.slice(0, 2)}/${onlyNumbers.slice(2, 4)}/${onlyNumbers.slice(4, 8)}`;
+              }
+              setDate(formatted);
+              }}
+              />
+          </View>
+
 
         <View style={styles.section}>
           <Text style={styles.label}>Description</Text>
