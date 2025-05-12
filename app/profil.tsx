@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,36 +6,81 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { colorButtonFirst, colorButtonThird, colorFourth, colorButtonSecondary } from './style/styles';
-import { fontTitle } from './style/styles';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from '@/components/Title';
 import InputField from '@/app/components/Form/InputField'; // Import du composant InputField
 import SubmitButton from '@/app/components/Form/SubmitButton';
 import { styles } from '@/app/style/profil.styles';
- 
+import envelopeIcon from '@expo/vector-icons'
+import { AuthContext } from "@/context/auth/AuthContext";
+import CheckSwitch from '@/components/Checkbox';
+import { profilUser } from '@/services/userServices';
+import { useRouter } from 'expo-router';
+
 
 export default function ProfileScreen() {
+  const { token } = useContext(AuthContext);
   const [userData, setUserData] = useState({
-    pseudo: 'Utilisateur123',
-    email: 'email@exemple.com',
-    phone: '06 12 34 56 78',
-    password: '••••••••',
-    childrenCount: 2,
-    childrenAges: '5,7,10', // Exemple d'âge des enfants sous forme de chaîne
-    reviewsCount: 10,
+    pseudo: '',
+    email: '',
+    phone: '',
   });
-
+  const [receiveEmails, setReceiveEmails] = useState(false);
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        if (!token) {
+          console.error("Token is null");
+          return;
+        }
+        const response = await profilUser(token);
+  
+        const user = response?.data?.data;
+  
+        if (user) {
+          const { pseudo, mail, telephone, recevoirMail } = user;
+  
+          setUserData(prev => ({
+            ...prev,
+            pseudo: pseudo,
+            email: mail,
+            phone: telephone,
+            receiveEmails: recevoirMail
+          }));
+          setReceiveEmails(user.recevoirMail);
+        } else {
+          console.error("Données utilisateur non trouvées", response);
+        }
+      } catch (error) {
+        console.error("Erreur API profil", error);
+      }
+    }
+  
+    if (token) {
+      fetchProfile();
+    }
+  }, [token]);
+
+  const router = useRouter();
 
   const handlePasswordChange = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert('Redirection vers la page de changement de mot de passe');
-    }, 2000);
+    router.push('/forgotpassword');
   };
+  
+  const handleToggleReceiveEmails = async () => {
+    const newValue = !receiveEmails;
+    setReceiveEmails(newValue); // mise à jour UI immédiate
+  
+    try {
+      await updateReceiveMailPreference(token, newValue); // fonction à créer
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des préférences", error);
+      setReceiveEmails(!newValue); // rollback en cas d'erreur
+    }
+  };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -46,50 +91,45 @@ export default function ProfileScreen() {
         <View style={styles.content}>
           <View style={styles.formContainer}>
             {/* Remplacement des TextInput par InputField */}
-            <InputField
-              label="Pseudonyme"
-              value={userData.pseudo}
-              onChangeText={(text) => setUserData({ ...userData, pseudo: text })}
-              placeholder="Entrez votre pseudonyme"
-              
-            />
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 4 }}>Pseudonyme</Text>
+              <Text style={{ fontSize: 16 }}>{userData.pseudo}</Text>
+            </View>
 
-            <InputField
+            {/* <InputField
               label="Mot de passe"
               value={userData.password}
               onChangeText={(text) => setUserData({ ...userData, password: text })}
               placeholder="••••••••"
               secureTextEntry
               
-            />
+            /> */}
 
-            <InputField
-              label="Adresse mail"
-              value={userData.email}
-              onChangeText={(text) => setUserData({ ...userData, email: text })}
-              placeholder="email@exemple.com"
-              keyboardType="email-address"
-              
-            />
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 4 }}>Adresse mail</Text>
+              <Text style={{ fontSize: 16 }}>{userData.email}</Text>
+            </View>
 
-            <InputField
-              label="Téléphone"
-              value={userData.phone}
-              onChangeText={(text) => setUserData({ ...userData, phone: text })}
-              placeholder="06 12 34 56 78"
-              keyboardType="phone-pad"
-              
-            />
 
-            <InputField
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 4 }}>Téléphone</Text>
+              <Text style={{ fontSize: 16 }}>{userData.phone}</Text>
+            </View>
+
+
+            {/* <InputField
               label="Nombre d'avis rédigés"
               value={userData.reviewsCount.toString()}
               onChangeText={(text) => setUserData({ ...userData, reviewsCount: parseInt(text) })}
               placeholder="Nombre d'avis"
               keyboardType="numeric"
               
+            /> */}
+            <CheckSwitch
+              label="Recevoir des notifications par email"
+              checked={receiveEmails}
+              onToggle={handleToggleReceiveEmails}
             />
-
             {/* Bouton "Changer de mot de passe" */}
             <SubmitButton
               title="Changer de mot de passe"
@@ -104,4 +144,8 @@ export default function ProfileScreen() {
   );
 }
 
+
+function updateReceiveMailPreference(token: string | null, newValue: boolean) {
+  throw new Error('Function not implemented.');
+}
 

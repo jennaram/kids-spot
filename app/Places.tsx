@@ -17,7 +17,7 @@ import SwitchMapButton from '@/components/SwitchMapButton';
 
 export default function NearbyPlacesScreen() {
     const { userLocation, nearbyPlaces, error } = useLocation();
-    const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]); // Changé pour gérer un tableau d'IDs
+    const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const { fadeAnim, fadeOut } = useFadeInOut();
 
@@ -34,6 +34,9 @@ export default function NearbyPlacesScreen() {
     };
 
     const filteredPlaces = (nearbyPlaces ?? []).filter((place: Place) => {
+        // Exclure les lieux qui sont des événements
+        if (place.est_evenement) return false;
+        
         const matchType = selectedTypeIds.length > 0 
             ? place.type?.some(t => selectedTypeIds.includes(t.id)) 
             : true;
@@ -53,7 +56,7 @@ export default function NearbyPlacesScreen() {
             <Title text={'Liste des lieux à proximité'} />
 
             <FiltreButtons 
-                selectedTypeIds={selectedTypeIds} // Passer le tableau d'IDs sélectionnés
+                selectedTypeIds={selectedTypeIds}
                 onPress={handleFilterPress} 
             />
 
@@ -73,7 +76,6 @@ export default function NearbyPlacesScreen() {
                 </View>
             )}
 
-            
             <SwitchMapButton isMapView={false} /> 
             <Navigation />
         </SafeAreaView>

@@ -4,11 +4,10 @@
  * Créé le : 04/05/2025
  */
 
-import { apiPost } from '@/services/apiClient';
+import { apiGet, apiPost } from '@/services/apiClient';
 import { ApiResponse, ApiResponseSuccessOnly } from '@/types/api-response';
 import { checkToken } from '@/utils/auth';
-import { RegisterUser, AuthResult, ResetPass } from '@/types/user';
-
+import { RegisterUser, AuthResult, ResetPass, ProfilUser } from '@/types/user';
 /**
  * Inscription d'un nouvel utilisateur
  * @param user - Données d'inscription : pseudo, mail, mot_de_passe, téléphone
@@ -40,3 +39,8 @@ export async function resetPass(user: ResetPass):
 }
 
 
+export async function profilUser(token: string): 
+  Promise<ApiResponse<ProfilUser>> {
+    checkToken(token);
+  return apiGet< {data: ProfilUser}>('profil/read.php',  token );
+}

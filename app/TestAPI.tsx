@@ -8,6 +8,8 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { useAddFavorite } from '@/hooks/favorite/useAddFavorite';
 import { useDeleteFavorite } from '@/hooks/favorite/useDeleteFavorite';
 import { useReadAllFavorites } from '@/hooks/favorite/useReadAllFavorites';
+import { useProfilUser } from '@/hooks/user/useProfilUser';
+import { useEffect } from 'react';
 
 export default function PlaceScreen() {
 
@@ -15,6 +17,7 @@ export default function PlaceScreen() {
 
   // Token lors du login
   const { token, setToken } = useAuth();
+  const {profil} = useProfilUser(token ?? '');
 
   async function handleLogin() {
     const email = 'seb.prod@gmail.com';  // Utilisateur d'exemple
@@ -30,6 +33,11 @@ export default function PlaceScreen() {
 
 
 
+useEffect(() => {
+  if(profil) {
+    console.log(profil);
+  }
+}, [profil]);
 
   
 
