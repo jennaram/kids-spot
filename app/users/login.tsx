@@ -110,7 +110,7 @@ export default function LoginScreen() {
           </View>
 
           {/* Titre de l'écran */}
-          <Title text={'Connection'} />
+          <Title text={'Connexion'} />
 
           {/* Contenu principal du formulaire */}
           <View style={styles.content}>
