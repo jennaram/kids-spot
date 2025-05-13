@@ -137,7 +137,7 @@ const AddPlaceScreen = () => {
     }
 
     // Construire l'adresse complète pour le géocodage
-    const fullAddress = `${address.trim()}, ${codepostal.trim()} ${ville.trim()}, France`;
+    const fullAddress = `${address.trim()}, ${codepostal.trim()}, France`;
 
     const coords = await geocode(fullAddress);
 
