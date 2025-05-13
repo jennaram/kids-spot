@@ -1,40 +1,21 @@
 import React from 'react';
-import { Row } from '@/components/Row';
-import { FiltreButton } from '@/components/Filtres/Button';
+import { TouchableOpacity, Text } from 'react-native';
+import styles from 'app/style/add-place.styles';
 
-interface FilterProps {
-    selectedTypeIds: number[]; // Maintenant un tableau d'IDs
-    onPress: (id: number) => void; // La fonction ne gère plus le null
+interface Props {
+  type: string;
+  typeId: number;
+  onPress: (id: number) => void;
+  isSelected: boolean;
 }
 
-const FiltreButtons: React.FC<FilterProps> = ({ selectedTypeIds, onPress }) => {
-    return (
-        <Row style={{ gap: 10 }}>
-            {/* Bouton pour filtrer sur les Restaurants */}
-            <FiltreButton
-                type="Restaurant"
-                typeId={1}
-                onPress={onPress}
-                isSelected={selectedTypeIds.includes(1)}
-            />
-
-            {/* Bouton pour filtrer sur les Loisirs */}
-            <FiltreButton
-                type="Loisirs"
-                typeId={2}
-                onPress={onPress}
-                isSelected={selectedTypeIds.includes(2)}
-            />
-
-            {/* Bouton pour filtrer sur la Culture */}
-            <FiltreButton
-                type="Culture"
-                typeId={3}
-                onPress={onPress}
-                isSelected={selectedTypeIds.includes(3)}
-            />
-        </Row>
-    );
+export const FiltreButton: React.FC<Props> = ({ type, typeId, onPress, isSelected }) => {
+  return (
+    <TouchableOpacity
+      style={[styles.filtreButton, isSelected && { opacity: 0.8 }]}
+      onPress={() => onPress(typeId)}
+    >
+      <Text style={styles.filtreButtonText}>{type}</Text>
+    </TouchableOpacity>
+  );
 };
-
-export default FiltreButtons;

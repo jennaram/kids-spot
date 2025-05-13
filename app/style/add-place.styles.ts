@@ -1,5 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { colorButtonFirst, colorButtonThird } from './styles';
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -17,7 +19,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
     fontWeight: '600',
-    textAlign: 'left', 
+    textAlign: 'left',
   },
   ageBadgesContainer: {
     flexDirection: 'row',
@@ -33,6 +35,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
+    backgroundColor: colorButtonFirst,
+    minWidth: width / 3.2,
+    maxWidth: width / 2,
+    alignItems: 'center',
+    marginBottom: 10,
   },
   ageBadgeText: {
     color: 'white',
@@ -90,8 +97,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   markerImage: {
-    width: 40, 
-    height: 40
+    width: 40,
+    height: 40,
   },
   checkbox: {
     flexDirection: 'row',
@@ -129,7 +136,31 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 60,
-  }
+  },
+
+  // FiltreButtons styles
+  filtreButtonsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    gap: 10,
+    marginBottom: 20,
+  },
+  filtreButton: {
+    backgroundColor: colorButtonFirst,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    minWidth: width / 3.2,
+    maxWidth: width / 2,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  filtreButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });
 
 export default styles;
