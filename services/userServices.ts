@@ -4,7 +4,7 @@
  * Créé le : 04/05/2025
  */
 
-import { apiGet, apiPost } from '@/services/apiClient';
+import { apiGet, apiPost, apiPut } from '@/services/apiClient';
 import { ApiResponse, ApiResponseSuccessOnly } from '@/types/api-response';
 import { checkToken } from '@/utils/auth';
 import { RegisterUser, AuthResult, ResetPass, ProfilUser, FetchProfileResponse } from '@/types/user';
@@ -43,4 +43,10 @@ export async function profilUser(token: string):
   Promise<ApiResponse<FetchProfileResponse>> {
     checkToken(token);
   return apiGet<FetchProfileResponse>('profil/read.php',  token );
+}
+
+export async function updateReceiveMailPreference(token: string, opt_in_email: boolean):
+  Promise<ApiResponse<ApiResponseSuccessOnly>> {
+    return apiPut<ApiResponseSuccessOnly>('users/update.php', { opt_in_email: opt_in_email }, token);
+  
 }

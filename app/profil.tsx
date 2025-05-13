@@ -15,15 +15,17 @@ import { styles } from '@/app/style/profil.styles';
 import envelopeIcon from '@expo/vector-icons'
 import { AuthContext } from "@/context/auth/AuthContext";
 import CheckSwitch from '@/components/Checkbox';
-import { profilUser } from '@/services/userServices';
+import { profilUser, updateReceiveMailPreference } from '@/services/userServices';
 import { useRouter } from 'expo-router';
 import { useProfilUser } from '@/hooks/user/useProfilUser';
+import { useReceiveMail } from '@/hooks/user/useReceiveMail';
+
 
 
 export default function ProfileScreen() {
   const { token } = useContext(AuthContext);
   const {profil} = useProfilUser(token ?? '');
-
+  const {submit, loading: receiveMailLoading, error: receiveMailError, success: receiveMailSuccess} = useReceiveMail();
 
   const [userData, setUserData] = useState({
     pseudo: '',
@@ -47,13 +49,21 @@ useEffect(() => {
 
 
 
-
-
-
+  
+  useEffect(() => {
+    if (receiveMailSuccess) {
+      console.log("Préférences de réception d'emails mises à jour avec succès");
+    }
+  }, [receiveMailSuccess]);
+  
   const router = useRouter();
-
+  useEffect(() => {
+    if (receiveMailError) {
+      console.log("Erreur lors de la mise à jour des préférences de réception d'emails :", receiveMailError);
+    }
+  }, [receiveMailError]);
   const handlePasswordChange = () => {
-    router.push('/forgotpassword');
+    router.push('users/forgotpassword');
   };
   
   const handleToggleReceiveEmails = async () => {
@@ -61,7 +71,11 @@ useEffect(() => {
     setReceiveEmails(newValue); // mise à jour UI immédiate
   
     try {
-      await updateReceiveMailPreference(token, newValue); // fonction à créer
+      if (token) {
+        console.log("Mise à jour des préférences de réception d'emails en cours...");
+        await submit(token, newValue);
+      }
+      // fonction à créer
     } catch (error) {
       console.error("Erreur lors de la mise à jour des préférences", error);
       setReceiveEmails(!newValue); // rollback en cas d'erreur
@@ -132,7 +146,4 @@ useEffect(() => {
 }
 
 
-function updateReceiveMailPreference(token: string | null, newValue: boolean) {
-  throw new Error('Function not implemented.');
-}
 
