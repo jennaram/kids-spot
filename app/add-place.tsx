@@ -220,6 +220,12 @@ const AddPlaceScreen = () => {
         [{ text: 'OK', onPress: () => router.push('main') }]
       );
 }
+  if (error)
+    Alert.alert(
+      'Erreur',
+      'Une erreur est survenue lors de l\'ajout du lieu. Veuillez réessayer.',
+      [{ text: 'OK' }]  
+    );
   }, [loading, error, success, fieldErrors]);
 
 
