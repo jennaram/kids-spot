@@ -129,7 +129,24 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 60,
-  }
+  },
+  // Styles pour le modal de chargement
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Fond semi-transparent
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 30,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 16,
+  },
 });
 
 export default styles;
