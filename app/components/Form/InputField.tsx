@@ -10,6 +10,7 @@ type FormInputProps = {
   secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   multiline?: boolean;
+  maxLength?: number;
   
 };
 
@@ -20,6 +21,7 @@ export function FormInput({
   placeholder,
   secureTextEntry = false,
   keyboardType = 'default',
+  maxLength,
 }: FormInputProps) {
   return (
     <View style={styles.inputGroup}>
@@ -31,6 +33,7 @@ export function FormInput({
         placeholder={placeholder}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
+        maxLength={maxLength}
       />
     </View>
   );
