@@ -83,8 +83,11 @@ const EventCard: React.FC<EventCardProps> = ({
             {lieu.adresse?.adresse}, {lieu.adresse?.code_postal} {lieu.adresse?.ville}
           </Text>
           <Text style={styles.modalText}>Type : {lieu.type.map(t => t.nom).join(', ')}</Text>
-          <Text style={styles.modalText}>
+          {/* <Text style={styles.modalText}>
             Équipements : {lieu.equipements?.map(equipement => equipement.nom).join(', ') || 'Non spécifiés'}
+          </Text> */}
+          <Text style={styles.modalText}>
+            Tranche d'âge : {lieu.ages?.map(age => age.nom).join(', ') || 'Non spécifiée'}
           </Text>
 
           {/* Description avec "Lire plus..." */}

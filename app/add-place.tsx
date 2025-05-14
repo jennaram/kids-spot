@@ -124,6 +124,11 @@ const AddPlaceScreen = () => {
       return;
     }
 
+    if (placeName.length > 35) {
+      Alert.alert('Erreur', 'Le nom du lieu ne peut pas dépasser 35 caractères');
+      return;
+    }
+
     // Construire l'adresse complète pour le géocodage
     const fullAddress = `${address.trim()}, ${codepostal.trim()}, France`;
     const coords = await geocode(fullAddress);
@@ -309,7 +314,12 @@ const AddPlaceScreen = () => {
             value={placeName}
             onChangeText={setPlaceName}
             placeholder="Entrez le nom du lieu"
+            maxLength={35}
           />
+          <PhotoPickerButton onPhotoSelected={(uri) => setImage(uri)} />
+          <Text style={{ alignSelf: 'flex-end', marginTop: 4}}>
+            {placeName.length}/35
+          </Text>
           <PhotoPickerButton onPhotoSelected={(uri) => setImage(uri)} />
         </View>
 
@@ -472,7 +482,7 @@ const AddPlaceScreen = () => {
           </View>
         </View>
 
-        {location && (
+        {/* {location && (
           <View style={styles.section}>
             <Text style={styles.label}>Localisation</Text>
             <View style={styles.mapContainer}>
@@ -493,16 +503,16 @@ const AddPlaceScreen = () => {
               </MapView>
             </View>
           </View>
-        )}
+        )} */}
 
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <StarRating
             rating={rating}
             setRating={setRating}
             label="Note (sur 5)"
             containerStyle={styles.ratingContainer}
           />
-        </View>
+        </View> */}
 
         <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
         <View style={styles.bottomSpacer} />
