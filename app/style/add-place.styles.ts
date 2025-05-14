@@ -19,12 +19,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'left', 
   },
-  ageBadgesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    gap: 10,
-  },
+ 
   ageBadgeContainer: {
     margin: 0,
     marginBottom: 0,

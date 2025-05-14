@@ -16,7 +16,7 @@ import { Title } from '@/components/Title';
 import { FormInput } from './components/Form/InputField';
 import SubmitButton from './components/Form/SubmitButton';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
-import FiltreButtons from '@/components/Filtres/FiltreButtons';
+import FiltreButtons from '@/components/Filtres/FiltreButtons2';
 import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 import AgeBadges from '@/components/Lieux/AgeBadges';
 import StarRating from '@/components/Notation/StarRating';
@@ -103,7 +103,6 @@ const AddPlaceScreen = () => {
         setCodepostal(addressResult.postalCode || '');
       }
     } catch (error) {
-      //console.error('Error getting location:', error);
       Alert.alert('Erreur', 'Impossible d\'obtenir la localisation actuelle');
     }
   }, []);
@@ -124,7 +123,6 @@ const AddPlaceScreen = () => {
       return;
     }
 
-    // Construire l'adresse complète pour le géocodage
     const fullAddress = `${address.trim()}, ${codepostal.trim()}, France`;
     const coords = await geocode(fullAddress);
 
@@ -173,7 +171,6 @@ const AddPlaceScreen = () => {
 
   useEffect(() => {
     if (successSubmit) {
-      // Envoi de mail de confirmation
       const sujet = "Nouveau lieu ajouté";
       const contenueHTML = `
         <h1>Nouveau lieu ajouté</h1>
@@ -209,8 +206,6 @@ const AddPlaceScreen = () => {
     }
   }, [success]);
 
-
-
   const toggleAgeRange = useCallback((age: string) => {
     setAgeRanges((prev) =>
       prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]
@@ -242,7 +237,7 @@ const AddPlaceScreen = () => {
 
   const isStartBeforeEnd = useCallback((start: string, end: string): boolean => {
     if (!start || !end || start.length !== 10 || end.length !== 10) {
-      return true; // Autoriser si les dates ne sont pas complètement saisies
+      return true;
     }
     const [startDay, startMonth, startYear] = start.split("/").map(Number);
     const [endDay, endMonth, endYear] = end.split("/").map(Number);
@@ -252,11 +247,6 @@ const AddPlaceScreen = () => {
 
     return startDateObj < endDateObj;
   }, []);
-
-
-
-
-
 
   const uploadImageToCloudinary = async (imageUri: string, imageName: number) => {
     const cloudName = 'dtovi7wy6';
@@ -281,7 +271,6 @@ const AddPlaceScreen = () => {
       });
 
       const data = await response.json();
-      //console.log('Réponse Cloudinary :', data);
 
       if (data && data.secure_url) {
         setCloudImageUrl(data.secure_url);
@@ -302,178 +291,182 @@ const AddPlaceScreen = () => {
       <Title text={'Ajouter un lieu'} />
 
       <ScrollView style={styles.scrollView}>
-        <View style={styles.section}>
-          <Text style={styles.label}>Nom du lieu</Text>
-          <FormInput
-            label=""
-            value={placeName}
-            onChangeText={setPlaceName}
-            placeholder="Entrez le nom du lieu"
-          />
-          <PhotoPickerButton onPhotoSelected={(uri) => setImage(uri)} />
-        </View>
+        {/* Nom du lieu avec le même style que les autres titres */}
+        <Text style={styles.label}>Nom du lieu</Text>
+        <FormInput
+          value={placeName}
+          onChangeText={setPlaceName}
+          placeholder="Entrez le nom du lieu"
+          label=""
+        />
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Type de lieu</Text>
-          <FiltreButtons
-            selectedTypeIds={selectedTypeIds}
-            onPress={(id) => {
-              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
-              const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
-              setPlaceType(type);
-            }}
-          />
-        </View>
+        <PhotoPickerButton
+          onPhotoSelected={(uri) => setImage(uri)}
+        />
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Adresse</Text>
-          <GeoLocationInput
-            address={address}
-            onAddressChange={setAddress}
-            onGetLocation={handleGetCurrentLocation}
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Code Postal</Text>
-          <FormInput
-            label=""
-            value={codepostal}
-            placeholder="75000"
-            onChangeText={(text) => {
-              const onlyNumbers = text.replace(/[^0-9]/g, '');
-              setCodepostal(onlyNumbers.slice(0, 5));
-            }}
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Ville</Text>
-          <FormInput
-            label=""
-            value={ville}
-            onChangeText={setVille}
-            placeholder="Paris"
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Site web (optionnel)</Text>
-          <FormInput
-            label=""
-            value={website}
-            onChangeText={setWebsite}
-            placeholder="https://www.exemple.com"
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Téléphone (optionnel)</Text>
-          <FormInput
-            label=""
-            value={phoneNumber}
-            placeholder="01 23 45 67 89"
-            keyboardType="phone-pad"
-            onChangeText={(text) => {
-              const onlyNumbers = text.replace(/[^0-9]/g, '');
-              setPhoneNumber(onlyNumbers.slice(0, 10));
-            }}
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Horaires</Text>
-          <FormInput
-            label=""
-            value={horaires}
-            onChangeText={setHoraires}
-            placeholder="10h-18h"
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Est-ce un événement ?</Text>
-          <Switch value={isEvent} onValueChange={setIsEvent} />
-        </View>
-
-        {isEvent && (
-          <>
-            <View style={styles.section}>
-              <Text style={styles.label}>Date de début de l'événement</Text>
-              <FormInput
-                label=""
-                value={startDate}
-                placeholder="JJ/MM/AAAA"
-                onChangeText={(text) => {
-                  formatEventDate(text, setStartDate);
-                  if (text.length === 10 && endDate.length === 10) {
-                    if (!isStartBeforeEnd(text, endDate)) {
-                      alert("La date de début doit être antérieure à la date de fin.");
-                    }
-                  }
-                }}
-              />
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Date de fin de l'événement</Text>
-              <FormInput
-                label=""
-                value={endDate}
-                placeholder="JJ/MM/AAAA"
-                onChangeText={(text) => {
-                  formatEventDate(text, setEndDate);
-                  if (startDate.length === 10 && text.length === 10) {
-                    if (!isStartBeforeEnd(startDate, text)) {
-                      alert("La date de début doit être antérieure à la date de fin.");
-                    }
-                  }
-                }}
-              />
-            </View>
-          </>
-        )}
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={styles.multilineInput}
-            placeholder="Entrez une description"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-          />
-        </View>
-
-        <View style={styles.section}>
-          <AvailableEquipments
-            equipments={equipments}
-            toggleEquipment={toggleEquipment}
-          />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Tranche d'âge</Text>
-          <View style={styles.ageBadgesContainer}>
-            {ageRangeOptions.map((age) => (
+        <Text style={styles.label}>Type de lieu</Text>
+        <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+          {[1, 2, 3].map((id) => {
+            const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
+            return (
               <TouchableOpacity
-                key={age}
-                onPress={() => toggleAgeRange(age)}
+                key={id}
+                onPress={() => {
+                  setSelectedTypeIds([id]);
+                  setPlaceType(type);
+                }}
+                style={{ marginRight: 8 }}
               >
                 <AgeBadges
-                  tranchesAge={[getTranslatedLabel(age)]}
-                  badgeColor={ageRanges.includes(age) ? colorButtonFirst : '#ddd'}
+                  tranchesAge={[type]}
+                  badgeColor={selectedTypeIds.includes(id) ? colorButtonFirst : '#ddd'}
                   containerStyle={styles.ageBadgeContainer}
                   badgeStyle={styles.ageBadge}
                   textStyle={styles.ageBadgeText}
                 />
               </TouchableOpacity>
-            ))}
-          </View>
+            );
+          })}
+        </View>
+
+        <Text style={styles.label}>Adresse</Text>
+        <GeoLocationInput
+          address={address}
+          onAddressChange={setAddress}
+          onGetLocation={handleGetCurrentLocation}
+        />
+
+        <Text style={styles.label}>Code Postal</Text>
+        <FormInput
+          label=""
+          value={codepostal}
+          placeholder="75000"
+          keyboardType="numeric"
+          maxLength={5}
+          onChangeText={(text) => {
+            const onlyNumbers = text.replace(/[^0-9]/g, '');
+            setCodepostal(onlyNumbers.slice(0, 5));
+          }}
+        />
+
+        <Text style={styles.label}>Ville</Text>
+        <FormInput
+          label=""
+          value={ville}
+          onChangeText={setVille}
+          placeholder="Paris"
+        />
+
+        <Text style={styles.label}>Site web (optionnel)</Text>
+        <FormInput
+          label=""
+          value={website}
+          onChangeText={setWebsite}
+          placeholder="https://www.exemple.com"
+        />
+
+        <Text style={styles.label}>Téléphone (optionnel)</Text>
+        <FormInput
+          label=""
+          value={phoneNumber}
+          placeholder="01 23 45 67 89"
+          keyboardType="phone-pad"
+          onChangeText={(text) => {
+            const onlyNumbers = text.replace(/[^0-9]/g, '');
+            setPhoneNumber(onlyNumbers.slice(0, 10));
+          }}
+        />
+
+        <Text style={styles.label}>Horaires</Text>
+        <FormInput
+          label=""
+          value={horaires}
+          onChangeText={setHoraires}
+          placeholder="10h-18h"
+        />
+
+        {/* Espace avant Description */}
+        <View style={{ marginBottom: 20 }} />
+
+        <Text style={styles.label}>Description</Text>
+        <TextInput
+          style={styles.multilineInput}
+          placeholder="Entrez une description"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+        />
+
+        {/* Espace après Description et avant Equipements */}
+        <View style={{ marginBottom: 20 }} />
+
+        <Text style={styles.label}>Équipements disponibles</Text>
+        <AvailableEquipments
+          equipments={equipments}
+          toggleEquipment={toggleEquipment}
+        />
+
+        {/* Espace avant "Est-ce un événement ?" */}
+        <View style={{ marginBottom: 20 }} />
+
+        <Text style={styles.label}>Est-ce un événement ?</Text>
+        <Switch value={isEvent} onValueChange={setIsEvent} />
+
+        {isEvent && (
+          <>
+            <Text style={styles.label}>Date de début de l'événement</Text>
+            <FormInput
+              label=""
+              value={startDate}
+              placeholder="JJ/MM/AAAA"
+              onChangeText={(text) => {
+                formatEventDate(text, setStartDate);
+                if (text.length === 10 && endDate.length === 10) {
+                  if (!isStartBeforeEnd(text, endDate)) {
+                    alert("La date de début doit être antérieure à la date de fin.");
+                  }
+                }
+              }}
+            />
+
+            <Text style={styles.label}>Date de fin de l'événement</Text>
+            <FormInput
+              label=""
+              value={endDate}
+              placeholder="JJ/MM/AAAA"
+              onChangeText={(text) => {
+                formatEventDate(text, setEndDate);
+                if (startDate.length === 10 && text.length === 10) {
+                  if (!isStartBeforeEnd(startDate, text)) {
+                    alert("La date de début doit être antérieure à la date de fin.");
+                  }
+                }
+              }}
+            />
+          </>
+        )}
+
+        <Text style={styles.label}>Tranche d'âge</Text>
+        <View style={styles.ageBadgesContainer}>
+          {ageRangeOptions.map((age) => (
+            <TouchableOpacity
+              key={age}
+              onPress={() => toggleAgeRange(age)}
+              style={{flexShrink: 1}}  // Ajout d'un style inline pour flexible sizing
+            >
+              <AgeBadges
+                tranchesAge={[getTranslatedLabel(age)]}
+                badgeColor={ageRanges.includes(age) ? colorButtonFirst : '#ddd'}
+                containerStyle={styles.ageBadgeContainer}
+                badgeStyle={styles.ageBadge}
+                textStyle={styles.ageBadgeText}
+              />
+            </TouchableOpacity>
+          ))}
         </View>
 
         {location && (
-          <View style={styles.section}>
+          <>
             <Text style={styles.label}>Localisation</Text>
             <View style={styles.mapContainer}>
               <MapView
@@ -492,23 +485,20 @@ const AddPlaceScreen = () => {
                 </Marker>
               </MapView>
             </View>
-          </View>
+          </>
         )}
 
-        <View style={styles.section}>
-          <StarRating
-            rating={rating}
-            setRating={setRating}
-            label="Note (sur 5)"
-            containerStyle={styles.ratingContainer}
-          />
-        </View>
+        <StarRating
+          rating={rating}
+          setRating={setRating}
+          label="Note (sur 5)"
+          containerStyle={styles.ratingContainer}
+        />
 
         <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      {/* Modal de chargement pendant l'ajout du lieu */}
       <Modal
         visible={loading}
         transparent
