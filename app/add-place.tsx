@@ -233,15 +233,45 @@ const AddPlaceScreen = () => {
   };
 
   const formatEventDate = useCallback((text: string, setter: (val: string) => void): void => {
-    const cleanedText = text.replace(/\D/g, "").slice(0, 8);
-    let formatted = "";
-    if (cleanedText.length <= 2) {
-      formatted = cleanedText;
-    } else if (cleanedText.length <= 4) {
-      formatted = `<span class="math-inline">\{cleanedText\.slice\(0, 2\)\}/</span>{cleanedText.slice(2)}`;
-    } else {
-      formatted = `<span class="math-inline">\{cleanedText\.slice\(0, 2\)\}/</span>{cleanedText.slice(2, 4)}/${cleanedText.slice(4)}`;
+    // Nettoie le texte pour ne garder que les chiffres
+    const cleanedText = text.replace(/\D/g, '').slice(0, 8);
+  
+    let day = cleanedText.slice(0, 2);
+    let month = cleanedText.slice(2, 4);
+    let year = cleanedText.slice(4, 8);
+  
+    // Valide le jour
+    if (day.length === 2) {
+      const dayInt = parseInt(day, 10);
+      if (dayInt < 1 || dayInt > 31) {
+        day = '31';
+      }
     }
+  
+    // Valide le mois
+    if (month.length === 2) {
+      const monthInt = parseInt(month, 10);
+      if (monthInt < 1 || monthInt > 12) {
+        month = '12';
+      }
+    }
+
+     // Valider l'année
+  if (year.length === 4) {
+    let yearInt = parseInt(year, 10);
+    if (yearInt < 2024) year = '2024';
+    else if (yearInt > 2030) year = '2030';
+  }
+  
+    let formatted = '';
+    if (cleanedText.length <= 2) {
+      formatted = day;
+    } else if (cleanedText.length <= 4) {
+      formatted = `${day}/${month}`;
+    } else {
+      formatted = `${day}/${month}/${year}`;
+    }
+  
     setter(formatted);
   }, []);
 
