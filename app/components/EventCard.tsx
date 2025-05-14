@@ -1,9 +1,10 @@
-import React, {  } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { eventCardStyles as styles } from '../style/EventCardStyles';
 import { fontSubtitle } from '../style/styles';
 import { ButtonStyle } from '../style/styles';
 import { Place } from '@/types/place';
+import { IMAGE_BASE_URL } from '@/api/apiConfig';
 // Interface pour les propriétés du composant EventCard
 interface EventCardProps {
   lieu: Place;
@@ -34,6 +35,8 @@ const EventCard: React.FC<EventCardProps> = ({
 
   const isFlipped = flippedCardId === lieu.id;
 
+  const imageUrl = `${IMAGE_BASE_URL}${lieu.id}.jpg`; 
+  const [ imageError, setImageError ] = useState(false);
   return (
     <View key={lieu.id} style={styles.cardContainer}>
       {/* Face avant */}
@@ -46,8 +49,13 @@ const EventCard: React.FC<EventCardProps> = ({
       >
         <View style={styles.cardContent}>
           <Image
-            source={require('../../assets/images/parc_montsouris.jpg')}
+            source={
+              imageError
+                ? require('@/assets/images/carte.png') // Placeholder image
+                : { uri: imageUrl }
+            }
             style={styles.image}
+            onError={() => setImageError(true)}
             resizeMode="cover"
           />
           <View style={styles.infoContainer}>
