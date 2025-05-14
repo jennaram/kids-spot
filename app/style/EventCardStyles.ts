@@ -141,6 +141,7 @@ export const eventCardStyles = StyleSheet.create({
   modalHeaderTitle: {
     color: 'black',
     flex: 1,
+    marginTop: 40,
   },
   modalBody: {
     flex: 1,
