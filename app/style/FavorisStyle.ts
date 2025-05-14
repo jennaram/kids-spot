@@ -95,6 +95,7 @@ export const FavoriteStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   noFavorisText: {
     fontSize: 18,
