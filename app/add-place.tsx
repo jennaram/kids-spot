@@ -3,9 +3,8 @@ import { useAuth } from '@/context/auth';
 import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
   View, Text, Switch, TextInput, ScrollView, TouchableOpacity,
-  Image, Alert, SafeAreaView, Modal, ActivityIndicator
+  Alert, SafeAreaView, Modal, ActivityIndicator, StyleSheet
 } from 'react-native';
-import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
@@ -16,16 +15,12 @@ import { Title } from '@/components/Title';
 import { FormInput } from './components/Form/InputField';
 import SubmitButton from './components/Form/SubmitButton';
 import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
-import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { PhotoPickerButton } from '@/components/PhotoPickerButton';
-import AgeBadges from '@/components/Lieux/AgeBadges';
-import StarRating from '@/components/Notation/StarRating';
 import { AvailableEquipments, EquipmentKeys, EquipmentType } from '@/components/Lieux/AvailableEquipments';
 import GeoLocationInput from '@/components/Lieux/GeoLocationInput';
 
 // Styles
 import { colorButtonFirst } from './style/styles';
-import styles from '@/app/style/add-place.styles';
 import { useGeocodeAddress } from '@/hooks/location/useGeocodeAddress';
 import { useSendMail } from '@/hooks/place/useSendMail';
 
@@ -33,31 +28,20 @@ import { useSendMail } from '@/hooks/place/useSendMail';
 import { AddPlaceOrEventPayload } from '@/types/place';
 
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
-type LocationType = LatLng | null;
 
 const AddPlaceScreen = () => {
   const router = useRouter();
   const { token } = useAuth();
 
+  // États
   const [image, setImage] = useState<string>();
   const [cloudImageUrl, setCloudImageUrl] = useState<string>();
-
-  const { submitPlaceOrEvent, loading: loadingSubmit, error, success: successSubmit, fieldErrors, id } = useAddPlaceOrEvent();
-  const { submitMail, loading: loadingMail, error: errorMail, success: successMail } = useSendMail();
-  const [uploading, setUploading] = useState(false);
-  const loading = loadingSubmit || loadingMail || uploading;
-  const success = successSubmit && successMail && cloudImageUrl;
-
-  const { geocode } = useGeocodeAddress();
-
   const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [placeName, setPlaceName] = useState('');
   const [address, setAddress] = useState('');
-  const [location, setLocation] = useState<LocationType>(null);
   const [description, setDescription] = useState('');
   const [ageRanges, setAgeRanges] = useState<string[]>(['0-2']);
-  const [rating, setRating] = useState(3);
   const [website, setWebsite] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [codepostal, setCodepostal] = useState('');
@@ -75,15 +59,113 @@ const AddPlaceScreen = () => {
     parking: false,
   });
 
-  const placeIcons = useMemo(() => ({
-    restaurant: require('@/assets/images/user-location-restaurant.png'),
-    culture: require('@/assets/images/user-location-culture.png'),
-    leisure: require('@/assets/images/user-location-loisir.png'),
-  }), []);
+  // Hooks
+  const { submitPlaceOrEvent, loading: loadingSubmit, error, success: successSubmit, id } = useAddPlaceOrEvent();
+  const { submitMail, loading: loadingMail, success: successMail } = useSendMail();
+  const [uploading, setUploading] = useState(false);
+  const { geocode } = useGeocodeAddress();
 
-  const ageRangeOptions = useMemo(() => ['0-2', '3-6', '7+'], []);
+  const loading = loadingSubmit || loadingMail || uploading;
+  const success = successSubmit && successMail && cloudImageUrl;
+  const ageRangeOptions = ['0-2', '3-6', '7+'];
 
-  const handleGetCurrentLocation = useCallback(async () => {
+  // Styles
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    scrollView: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    section: {
+      marginBottom: 20,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 8,
+      color: '#333',
+    },
+    filterContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginBottom: 15,
+    },
+    filterBadge: {
+      paddingVertical: 8,
+      paddingHorizontal: 15,
+      borderRadius: 20,
+      marginRight: 10,
+      marginBottom: 10,
+    },
+    filterBadgeSelected: {
+      backgroundColor: '#FF7F4B',
+    },
+    filterBadgeUnselected: {
+      backgroundColor: '#E0E0E0',
+    },
+    filterBadgeText: {
+      color: 'white',
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
+    multilineInput: {
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRadius: 8,
+      padding: 12,
+      minHeight: 100,
+      textAlignVertical: 'top',
+    },
+    bottomSpacer: {
+      height: 100,
+    },
+    modalOverlay: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+      backgroundColor: 'white',
+      padding: 20,
+      borderRadius: 10,
+      alignItems: 'center',
+    },
+    modalText: {
+      marginTop: 10,
+      fontSize: 16,
+    },
+    selectionContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginTop: 8,
+      marginBottom: 8,
+    },
+    selectionBadge: {
+      paddingVertical: 8,
+      paddingHorizontal: 15,
+      borderRadius: 20,
+      marginRight: 10,
+      marginBottom: 10,
+    },
+    badgeSelected: {
+      backgroundColor: '#FF7F4B',
+    },
+    badgeUnselected: {
+      backgroundColor: '#E0E0E0',
+    },
+    badgeText: {
+      color: 'white',
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
+  });
+
+  // Fonctions
+  const handleGetCurrentLocation = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -91,11 +173,8 @@ const AddPlaceScreen = () => {
         return;
       }
 
-      const currentLocation = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = currentLocation.coords;
-      setLocation({ latitude, longitude });
-
-      const [addressResult] = await Location.reverseGeocodeAsync({ latitude, longitude });
+      const location = await Location.getCurrentPositionAsync({});
+      const [addressResult] = await Location.reverseGeocodeAsync(location.coords);
 
       if (addressResult) {
         setAddress(addressResult.street || '');
@@ -103,430 +182,313 @@ const AddPlaceScreen = () => {
         setCodepostal(addressResult.postalCode || '');
       }
     } catch (error) {
-      //console.error('Error getting location:', error);
-      Alert.alert('Erreur', 'Impossible d\'obtenir la localisation actuelle');
+      Alert.alert('Erreur', 'Impossible d\'obtenir la localisation');
     }
-  }, []);
+  };
 
-  const handleSubmit = useCallback(async () => {
-    if (!placeName || !address || !codepostal || !ville) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires (nom, adresse, code postal et ville)');
+  const handleSubmit = async () => {
+    if (!placeName || !address || !codepostal || !ville || selectedTypeIds.length === 0) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires');
       return;
     }
 
-    if (selectedTypeIds.length === 0) {
-      Alert.alert('Erreur', 'Veuillez sélectionner au moins un type de lieu : Restaurant, Loisirs ou Culture');
-      return;
-    }
-
-    if (!token) {
-      Alert.alert('Erreur', 'Vous devez être connecté pour ajouter un lieu');
-      return;
-    }
-
-    if (placeName.length > 35) {
-      Alert.alert('Erreur', 'Le nom du lieu ne peut pas dépasser 35 caractères');
-      return;
-    }
-
-    // Construire l'adresse complète pour le géocodage
     const fullAddress = `${address.trim()}, ${codepostal.trim()}, France`;
     const coords = await geocode(fullAddress);
 
     if (!coords) {
-      Alert.alert(
-        'Erreur de géolocalisation',
-        'Impossible de récupérer les coordonnées GPS de cette adresse. Vérifiez que l\'adresse est correcte et réessayez.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Erreur', 'Adresse introuvable');
       return;
     }
 
-    const typeIdMap: Record<PlaceType, number> = { restaurant: 1, leisure: 2, culture: 3 };
-    const equipmentIdMap: Record<EquipmentKeys, number> = {
-      strollerAccess: 1, playArea: 2, microwave: 3,
-      highChair: 4, changingTable: 5, parking: 6
-    };
-    const ageRangeIdMap: Record<string, number> = { '0-2': 1, '3-6': 2, '7+': 3 };
-
-    const equipements: number[] = Object.keys(equipments)
-      .filter(key => equipments[key as EquipmentKeys])
-      .map(key => equipmentIdMap[key as EquipmentKeys]);
-
-    const tranches_age: number[] = ageRanges.map(age => ageRangeIdMap[age]);
-
     const newPlace: AddPlaceOrEventPayload = {
       nom: placeName,
-      description: description,
-      horaires: horaires,
+      description,
+      horaires,
       adresse: address,
-      ville: ville,
+      ville,
       code_postal: codepostal,
       longitude: coords.lon,
       latitude: coords.lat,
       telephone: phoneNumber.trim(),
       site_web: website.trim(),
-      id_type: typeIdMap[placeType],
-      equipements: equipements,
-      tranches_age: tranches_age,
+      id_type: selectedTypeIds[0],
+      equipements: Object.entries(equipments)
+        .filter(([_, value]) => value)
+        .map(([key]) => {
+          const equipmentMap: Record<string, number> = {
+            strollerAccess: 1, playArea: 2, microwave: 3,
+            highChair: 4, changingTable: 5, parking: 6
+          };
+          return equipmentMap[key];
+        }),
+      tranches_age: ageRanges.map(age => {
+        const ageMap: Record<string, number> = { '0-2': 1, '3-6': 2, '7+': 3 };
+        return ageMap[age];
+      }),
       ...(isEvent && { date_debut: startDate, date_fin: endDate }),
     };
 
-    await submitPlaceOrEvent(newPlace, token);
-
-  }, [placeName, placeType, address, description, ageRanges, equipments, website, phoneNumber, ville, codepostal, horaires, isEvent, startDate, endDate, token, submitPlaceOrEvent, geocode]);
-
-  useEffect(() => {
-    if (successSubmit) {
-      // Envoi de mail de confirmation
-      const sujet = "Nouveau lieu ajouté";
-      const contenueHTML = `
-        <h1>Nouveau lieu ajouté</h1>
-        <p><strong>${placeName}</strong> a été ajouté avec succès par un utilisateur.</p>
-        <p>Ville : ${ville}</p>
-        <p>Adresse : ${address}</p>`;
-      submitMail(sujet, contenueHTML, token ?? '');
-    }
-    if (error)
-      Alert.alert(
-        'Erreur',
-        'Une erreur est survenue lors de l\'ajout du lieu. Veuillez réessayer.',
-        [{ text: 'OK' }]
-      );
-  }, [error, successSubmit]);
-
-  useEffect(() => {
-    if (id && image && !cloudImageUrl) {
-      uploadImageToCloudinary(image, id);
-    }
-    if (id && !image) {
-      setCloudImageUrl('rien');
-    }
-  }, [id]);
-
-  useEffect(() => {
-    if (success) {
-      Alert.alert(
-        'Succès',
-        'Le lieu a été ajouté avec succès',
-        [{ text: 'OK', onPress: () => router.push('main') }]
-      );
-    }
-  }, [success]);
-
-
-
-  const toggleAgeRange = useCallback((age: string) => {
-    setAgeRanges((prev) =>
-      prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]
-    );
-  }, []);
-
-  const toggleEquipment = useCallback((key: EquipmentKeys) => {
-    setEquipments(prev => ({ ...prev, [key]: !prev[key] }));
-  }, []);
-
-  const getTranslatedLabel = (key: string) => {
-    return key === '0-2' ? '0-2 ans' :
-      key === '3-6' ? '3-6 ans' :
-        '7 ans et plus';
+    await submitPlaceOrEvent(newPlace, token || '');
   };
 
-  const formatEventDate = useCallback((text: string, setter: (val: string) => void): void => {
-    const cleanedText = text.replace(/\D/g, "").slice(0, 8);
-    let formatted = "";
-    if (cleanedText.length <= 2) {
-      formatted = cleanedText;
-    } else if (cleanedText.length <= 4) {
-      formatted = `<span class="math-inline">\{cleanedText\.slice\(0, 2\)\}/</span>{cleanedText.slice(2)}`;
-    } else {
-      formatted = `<span class="math-inline">\{cleanedText\.slice\(0, 2\)\}/</span>{cleanedText.slice(2, 4)}/${cleanedText.slice(4)}`;
-    }
-    setter(formatted);
-  }, []);
+  const toggleAgeRange = (age: string) => {
+    setAgeRanges(prev => 
+      prev.includes(age) ? prev.filter(a => a !== age) : [...prev, age]
+    );
+  };
 
-  const isStartBeforeEnd = useCallback((start: string, end: string): boolean => {
-    if (!start || !end || start.length !== 10 || end.length !== 10) {
-      return true; // Autoriser si les dates ne sont pas complètement saisies
-    }
-    const [startDay, startMonth, startYear] = start.split("/").map(Number);
-    const [endDay, endMonth, endYear] = end.split("/").map(Number);
-
-    const startDateObj = new Date(startYear, startMonth - 1, startDay);
-    const endDateObj = new Date(endYear, endMonth - 1, endDay);
-
-    return startDateObj < endDateObj;
-  }, []);
-
-
-
-
-
+  const toggleEquipment = (key: EquipmentKeys) => {
+    setEquipments(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const uploadImageToCloudinary = async (imageUri: string, imageName: number) => {
-    const cloudName = 'dtovi7wy6';
-    const uploadPreset = 'kids-spot';
-    const apiUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-
     try {
       setUploading(true);
-
       const base64 = await FileSystem.readAsStringAsync(imageUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
 
       const formData = new FormData();
       formData.append('file', `data:image/jpeg;base64,${base64}`);
-      formData.append('upload_preset', uploadPreset);
+      formData.append('upload_preset', 'kids-spot');
       formData.append('public_id', imageName.toString());
 
-      const response = await fetch(apiUrl, {
+      const response = await fetch('https://api.cloudinary.com/v1_1/dtovi7wy6/image/upload', {
         method: 'POST',
         body: formData,
       });
 
       const data = await response.json();
-      //console.log('Réponse Cloudinary :', data);
-
-      if (data && data.secure_url) {
+      if (data?.secure_url) {
         setCloudImageUrl(data.secure_url);
-      } else {
-        Alert.alert('Erreur', 'Le téléversement a échoué.');
       }
     } catch (error) {
-      console.error('Erreur lors du téléversement vers Cloudinary :', error);
-      Alert.alert('Erreur', 'Une erreur est survenue pendant le téléversement.');
+      console.error('Upload error:', error);
     } finally {
       setUploading(false);
     }
   };
 
+  // Effets
+  useEffect(() => {
+    if (successSubmit) {
+      submitMail(
+        "Nouveau lieu ajouté",
+        `<h1>${placeName}</h1><p>${address}, ${ville}</p>`,
+        token || ''
+      );
+    }
+  }, [successSubmit]);
+
+  useEffect(() => {
+    if (id && image) {
+      uploadImageToCloudinary(image, id);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (success) {
+      Alert.alert('Succès', 'Lieu ajouté', [
+        { text: 'OK', onPress: () => router.push('main') }
+      ]);
+    }
+  }, [success]);
+
   return (
     <SafeAreaView style={styles.container}>
       <BurgerMenu />
-      <Title text={'Ajouter un lieu'} />
+      <Title text="Ajouter un lieu" />
 
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.section}>
-          <Text style={styles.label}>Nom du lieu</Text>
-          <FormInput
-            label=""
-            value={placeName}
-            onChangeText={setPlaceName}
-            placeholder="Entrez le nom du lieu"
-            maxLength={35}
-          />
-          <Text style={{ alignSelf: 'flex-end', marginTop: 4}}>
-            {placeName.length}/35
-          </Text>
-          <PhotoPickerButton onPhotoSelected={(uri) => setImage(uri)} />
-        </View>
+<ScrollView style={styles.scrollView}>
+  {/* Section Nom + Photo */}
+  <View style={styles.section}>
+    <Text style={styles.label}>Nom du lieu</Text>
+    <FormInput
+      value={placeName}
+      onChangeText={setPlaceName}
+      placeholder="Nom du lieu"
+      maxLength={35} label={''}          />
+    <Text style={{ alignSelf: 'flex-end' }}>{placeName.length}/35</Text>
+    <PhotoPickerButton onPhotoSelected={setImage} />
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Type de lieu</Text>
-          <FiltreButtons
-            selectedTypeIds={selectedTypeIds}
-            onPress={(id) => {
-              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
-              const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
-              setPlaceType(type);
-            }}
-          />
-        </View>
+  {/* Section Type de lieu */}
+  <View style={styles.section}>
+    <Text style={styles.label}>Type de lieu</Text>
+    <View style={styles.filterContainer}>
+      {[
+        { id: 1, label: 'Restaurant' },
+        { id: 2, label: 'Loisirs' },
+        { id: 3, label: 'Culture' }
+      ].map(item => (
+        <TouchableOpacity
+          key={item.id}
+          onPress={() => {
+            setSelectedTypeIds([item.id]);
+            setPlaceType(
+              item.id === 1 ? 'restaurant' : 
+              item.id === 2 ? 'leisure' : 'culture'
+            );
+          }}
+          style={[
+            styles.filterBadge,
+            selectedTypeIds.includes(item.id)
+              ? styles.filterBadgeSelected
+              : styles.filterBadgeUnselected
+          ]}
+        >
+          <Text style={styles.filterBadgeText}>{item.label}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Adresse</Text>
-          <GeoLocationInput
-            address={address}
-            onAddressChange={setAddress}
-            onGetLocation={handleGetCurrentLocation}
-          />
-        </View>
+  {/* Section Adresse */}
+  <View style={styles.section}>
+    <Text style={styles.label}>Adresse</Text>
+    <GeoLocationInput
+      address={address}
+      onAddressChange={setAddress}
+      onGetLocation={handleGetCurrentLocation}
+    />
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Code Postal</Text>
-          <FormInput
-            label=""
+  {/* Section Code Postal + Ville */}
+  <View style={styles.section}>
+    <Text style={styles.label}>Code Postal</Text>
+    <FormInput
             value={codepostal}
+            onChangeText={text => setCodepostal(text.replace(/[^0-9]/g, '').slice(0, 5))}
             placeholder="75000"
-            onChangeText={(text) => {
-              const onlyNumbers = text.replace(/[^0-9]/g, '');
-              setCodepostal(onlyNumbers.slice(0, 5));
-            }}
-          />
-        </View>
+            keyboardType="numeric" label={''}    />
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Ville</Text>
-          <FormInput
-            label=""
+  <View style={styles.section}>
+    <Text style={styles.label}>Ville</Text>
+    <FormInput
             value={ville}
             onChangeText={setVille}
-            placeholder="Paris"
-          />
-        </View>
+            placeholder="Paris" label={''}    />
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Site web (optionnel)</Text>
-          <FormInput
-            label=""
+  {/* Section Contact */}
+  <View style={styles.section}>
+    <Text style={styles.label}>Site web (optionnel)</Text>
+    <FormInput
             value={website}
             onChangeText={setWebsite}
-            placeholder="https://www.exemple.com"
-          />
-        </View>
+            placeholder="https://www.exemple.com" label={''}    />
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Téléphone (optionnel)</Text>
-          <FormInput
-            label=""
+  <View style={styles.section}>
+    <Text style={styles.label}>Téléphone (optionnel)</Text>
+    <FormInput
             value={phoneNumber}
-            placeholder="01 23 45 67 89"
-            keyboardType="phone-pad"
-            onChangeText={(text) => {
-              const onlyNumbers = text.replace(/[^0-9]/g, '');
-              setPhoneNumber(onlyNumbers.slice(0, 10));
-            }}
-          />
-        </View>
+            onChangeText={text => setPhoneNumber(text.replace(/[^0-9]/g, '').slice(0, 10))}
+            placeholder="0123456789"
+            keyboardType="phone-pad" label={''}    />
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Horaires</Text>
-          <FormInput
-            label=""
+  {/* Section Horaires */}
+  <View style={styles.section}>
+    <Text style={styles.label}>Horaires</Text>
+    <FormInput
             value={horaires}
             onChangeText={setHoraires}
-            placeholder="10h-18h"
-          />
-        </View>
+            placeholder="10h-18h" label={''}    />
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Est-ce un événement ?</Text>
-          <Switch value={isEvent} onValueChange={setIsEvent} />
-        </View>
+  {/* Section Événement */}
+  <View style={styles.section}>
+    <Text style={styles.label}>Est-ce un événement ?</Text>
+    <Switch value={isEvent} onValueChange={setIsEvent} />
+  </View>
 
-        {isEvent && (
-          <>
-            <View style={styles.section}>
-              <Text style={styles.label}>Date de début de l'événement</Text>
-              <FormInput
-                label=""
+  {isEvent && (
+    <>
+      <View style={styles.section}>
+        <Text style={styles.label}>Date de début</Text>
+        <FormInput
                 value={startDate}
-                placeholder="JJ/MM/AAAA"
-                onChangeText={(text) => {
-                  formatEventDate(text, setStartDate);
-                  if (text.length === 10 && endDate.length === 10) {
-                    if (!isStartBeforeEnd(text, endDate)) {
-                      alert("La date de début doit être antérieure à la date de fin.");
-                    }
-                  }
-                }}
-              />
-            </View>
+                onChangeText={text => {
+                  const cleaned = text.replace(/\D/g, '');
+                  let formatted = cleaned.slice(0, 2);
+                  if (cleaned.length > 2) formatted += `/${cleaned.slice(2, 4)}`;
+                  if (cleaned.length > 4) formatted += `/${cleaned.slice(4, 8)}`;
+                  setStartDate(formatted);
+                } }
+                placeholder="JJ/MM/AAAA" label={''}        />
+      </View>
 
-            <View style={styles.section}>
-              <Text style={styles.label}>Date de fin de l'événement</Text>
-              <FormInput
-                label=""
+      <View style={styles.section}>
+        <Text style={styles.label}>Date de fin</Text>
+        <FormInput
                 value={endDate}
-                placeholder="JJ/MM/AAAA"
-                onChangeText={(text) => {
-                  formatEventDate(text, setEndDate);
-                  if (startDate.length === 10 && text.length === 10) {
-                    if (!isStartBeforeEnd(startDate, text)) {
-                      alert("La date de début doit être antérieure à la date de fin.");
-                    }
-                  }
-                }}
-              />
-            </View>
-          </>
-        )}
+                onChangeText={text => {
+                  const cleaned = text.replace(/\D/g, '');
+                  let formatted = cleaned.slice(0, 2);
+                  if (cleaned.length > 2) formatted += `/${cleaned.slice(2, 4)}`;
+                  if (cleaned.length > 4) formatted += `/${cleaned.slice(4, 8)}`;
+                  setEndDate(formatted);
+                } }
+                placeholder="JJ/MM/AAAA" label={''}        />
+      </View>
+    </>
+  )}
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={styles.multilineInput}
-            placeholder="Entrez une description"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-          />
-        </View>
+  {/* Section Description */}
+  <View style={styles.section}>
+    <Text style={styles.label}>Description</Text>
+    <TextInput
+      style={styles.multilineInput}
+      value={description}
+      onChangeText={setDescription}
+      placeholder="Description du lieu"
+      multiline
+    />
+  </View>
 
-        <View style={styles.section}>
-          <AvailableEquipments
-            equipments={equipments}
-            toggleEquipment={toggleEquipment}
-          />
-        </View>
+  {/* Section Équipements */}
+  <View style={styles.section}>
+    <AvailableEquipments
+      equipments={equipments}
+      toggleEquipment={toggleEquipment}
+    />
+  </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Tranche d'âge</Text>
-          <View style={styles.ageBadgesContainer}>
-            {ageRangeOptions.map((age) => (
-              <TouchableOpacity
-                key={age}
-                onPress={() => toggleAgeRange(age)}
-              >
-                <AgeBadges
-                  tranchesAge={[getTranslatedLabel(age)]}
-                  badgeColor={ageRanges.includes(age) ? colorButtonFirst : '#ddd'}
-                  containerStyle={styles.ageBadgeContainer}
-                  badgeStyle={styles.ageBadge}
-                  textStyle={styles.ageBadgeText}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* {location && (
-          <View style={styles.section}>
-            <Text style={styles.label}>Localisation</Text>
-            <View style={styles.mapContainer}>
-              <MapView
-                style={styles.map}
-                initialRegion={{
-                  ...location,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-              >
-                <Marker coordinate={location}>
-                  <Image
-                    source={placeIcons[placeType]}
-                    style={styles.markerImage}
-                  />
-                </Marker>
-              </MapView>
-            </View>
-          </View>
-        )} */}
-
-        {/* <View style={styles.section}>
-          <StarRating
-            rating={rating}
-            setRating={setRating}
-            label="Note (sur 5)"
-            containerStyle={styles.ratingContainer}
-          />
-        </View> */}
-
-        <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
-
-      {/* Modal de chargement pendant l'ajout du lieu */}
-      <Modal
-        visible={loading}
-        transparent
-        animationType="fade"
+  {/* Section Tranche d'âge */}
+  <View style={styles.section}>
+  <Text style={styles.label}>Tranche d'âge</Text>
+  <View style={styles.selectionContainer}>
+    {['0-2', '3-6', '7+'].map((age) => (
+      <TouchableOpacity
+        key={age}
+        onPress={() => toggleAgeRange(age)}
+        style={[
+          styles.selectionBadge,
+          ageRanges.includes(age)
+            ? styles.badgeSelected
+            : styles.badgeUnselected
+        ]}
       >
+        <Text style={styles.badgeText}>
+          {age === '0-2' ? '0-2 ans' : 
+           age === '3-6' ? '3-6 ans' : '7 ans et plus'}
+        </Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+</View>
+
+  <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
+  <View style={styles.bottomSpacer} />
+</ScrollView>
+
+      <Modal visible={loading} transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <ActivityIndicator size="large" color="#007AFF" />
-            <Text style={styles.modalText}>Ajout du lieu en cours...</Text>
+            <ActivityIndicator size="large" color="#FF7F4B" />
+            <Text style={styles.modalText}>Enregistrement en cours...</Text>
           </View>
         </View>
       </Modal>
