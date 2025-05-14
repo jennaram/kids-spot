@@ -64,7 +64,7 @@ export function BurgerMenu() {
         { imageName: "information-circle", text: "À propos", link: "/about" },
         { imageName: "mail", text: "Contact", link: "/contact" },
         { imageName: "code", text: "Page test API", link: "/TestAPI" },
-        { imageName: "code", text: "Liste des pages", link: "/indexHold" },
+        { imageName: "code", text: "Ajout images à un lieu", link: "/AddImage" },
     ];
 
     return (
