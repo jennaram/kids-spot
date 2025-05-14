@@ -94,7 +94,13 @@ export interface Place {
     image_url?: string;
 }
 
+export interface PlaceId{
+    id:number;
+    errors?: Record<string, string>
+}
+
 export type FetchAllPlaces =  ({status: "success"} & {data: Place[]});
 
 export type FetchPlace =  ({status: "success"} & {data: Place});
 
+export type GetPlaceId = ({status: "success"} & {data:PlaceId} );
