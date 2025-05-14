@@ -316,7 +316,6 @@ const AddPlaceScreen = () => {
             placeholder="Entrez le nom du lieu"
             maxLength={35}
           />
-          <PhotoPickerButton onPhotoSelected={(uri) => setImage(uri)} />
           <Text style={{ alignSelf: 'flex-end', marginTop: 4}}>
             {placeName.length}/35
           </Text>
