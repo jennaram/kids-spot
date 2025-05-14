@@ -288,14 +288,19 @@ const AddPlaceScreen = () => {
 
         <View style={styles.section}>
           <Text style={styles.label}>Type de lieu</Text>
-          <FiltreButtons
-            selectedTypeIds={selectedTypeIds}
-            onPress={(id) => {
-              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
-              const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
-              setPlaceType(type);
-            }}
-          />
+         <View style={styles.section}>
+  <Text style={styles.label}>Type de lieu</Text>
+  <View style={styles.filterRow}>
+    <FiltreButtons
+      selectedTypeIds={selectedTypeIds}
+      onPress={(id) => {
+        setSelectedTypeIds([id]);
+        const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
+        setPlaceType(type);
+      }}
+    />
+  </View>
+</View>
         </View>
 
         <View style={styles.section}>

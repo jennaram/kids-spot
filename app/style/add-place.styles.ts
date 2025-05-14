@@ -1,5 +1,6 @@
-import { StyleSheet } from 'react-native';
+
 import { colorButtonFirst, colorButtonThird } from './styles';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
   bottomSpacer: {
     height: 60,
   },
-  // Styles pour le modal de chargement
+// Styles pour le modal de chargement
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
