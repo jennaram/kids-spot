@@ -64,7 +64,7 @@ export default function NearbyPlacesScreen() {
 
             {filteredPlaces.length > 0 ? (
                 <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
-                    <ScrollView>
+                    <ScrollView style={{ marginBottom: 50 }}>
                         {filteredPlaces.map((item) => (
                             <Card key={item.id.toString()} place={item} />
                         ))}

@@ -238,9 +238,9 @@ const AddPlaceScreen = () => {
     if (cleanedText.length <= 2) {
       formatted = cleanedText;
     } else if (cleanedText.length <= 4) {
-      formatted = `<span class="math-inline">\{cleanedText\.slice\(0, 2\)\}/</span>{cleanedText.slice(2)}`;
+      formatted = `${cleanedText.slice(0, 2)}/${cleanedText.slice(2)}`;
     } else {
-      formatted = `<span class="math-inline">\{cleanedText\.slice\(0, 2\)\}/</span>{cleanedText.slice(2, 4)}/${cleanedText.slice(4)}`;
+      formatted = `${cleanedText.slice(0, 2)}/${cleanedText.slice(2, 4)}/${cleanedText.slice(4)}`;
     }
     setter(formatted);
   }, []);

@@ -21,6 +21,7 @@ import { useAuth } from '@/context/auth/AuthContext';
 import { useDeleteFavorite } from '@/hooks/favorite/useDeleteFavorite';
 import { Navigation } from '@/components/NavBar/Navigation';
 import FavoriteStyles from '../app/style/FavorisStyle';
+import { IMAGE_BASE_URL } from '@/api/apiConfig';
 
 const Favoris = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -36,7 +37,7 @@ const Favoris = () => {
     reset: resetDeleteFavorite,
   } = useDeleteFavorite();
 
-  const IMAGE_BASE_URL = 'https://ton-site.com/images/';
+  
   const [imageError, setImageError] = useState(false);
 
   const handleRemoveFavori = async (id: string) => {
@@ -61,7 +62,7 @@ const Favoris = () => {
   });
 
   const renderItem = ({ item }: { item: any }) => (
-    <TouchableOpacity
+    <TouchableOpacity 
       onPress={() => navigation.navigate('details_lieu', { id: item.id })}
       activeOpacity={0.9}
     >
@@ -124,7 +125,7 @@ const Favoris = () => {
         />
         {filteredFavoris.length > 0 ? (
           <FlatList
-            style={{ padding: 10 }}
+            style={{ padding: 10, marginBottom: 220 }}
             data={filteredFavoris}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
