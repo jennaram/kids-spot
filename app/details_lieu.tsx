@@ -31,6 +31,7 @@ import BottomModal from "../components/ModalRedirection";
 import { useIsFavorite } from "@/hooks/favorite/useIsFavorite";
 import BackButton from "./components/BackButton";
 import { useReadPlace } from "@/hooks/place/useReadPlace";
+import { IMAGE_BASE_URL } from '@/api/apiConfig';
 
 const DetailsLieu = () => {
   const params = useLocalSearchParams() as { id: string };
@@ -45,6 +46,8 @@ const DetailsLieu = () => {
 
   const { isFavorite } = useIsFavorite();
   const EstFavori = isFavorite(lieuId);
+
+  const [imageError, setImageError] = useState(false);
 
   const handleShare = async () => {
     if (!place) return;
@@ -149,7 +152,8 @@ const DetailsLieu = () => {
   }
 
   const tranchesAge = place.ages.map(age => age.nom);
-  const imageUrl = place.image_url || require("../assets/images/parc_montsouris.jpg");
+  const imageUrl = `${IMAGE_BASE_URL}${place.id}.jpg` || require("../assets/images/parc_montsouris.jpg");
+  console.log(imageUrl);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -158,8 +162,13 @@ const DetailsLieu = () => {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.imageContainer}>
             <Image
-              source={typeof imageUrl === 'string' ? { uri: imageUrl } : imageUrl}
+              source={
+                imageError
+                  ? require('@/assets/images/carte.png')
+                  : { uri: `${IMAGE_BASE_URL}${place.id}.jpg` }
+              }
               style={styles.headerImage}
+              onError={() => setImageError(true)}
               resizeMode="cover"
             />
             <FavoriteButton
@@ -201,8 +210,8 @@ const DetailsLieu = () => {
                   nomLieu={place.nom}
                   lieuId={place.id.toString()}
                   onBeforeAction={handleDonnerAvis}
-                  
-                  
+
+
                 />
                 <AvisButton
                   type="voir"

@@ -26,7 +26,7 @@ export function PhotoPickerButton({ onPhotoSelected }: Props) {
                     mediaTypes: ImagePicker.MediaTypeOptions.Images,
                     allowsEditing: true,
                     aspect: [4, 3],
-                    quality: 0.8,
+                    quality: 0.1,
                 });
             } else {
                 const libraryPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -38,7 +38,7 @@ export function PhotoPickerButton({ onPhotoSelected }: Props) {
                     mediaTypes: ImagePicker.MediaTypeOptions.Images,
                     allowsEditing: true,
                     aspect: [4, 3],
-                    quality: 0.8,
+                    quality: 0.1,
                 });
             }
 

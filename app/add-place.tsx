@@ -50,8 +50,6 @@ const AddPlaceScreen = () => {
 
   const { geocode } = useGeocodeAddress();
 
-
-
   const [selectedTypeIds, setSelectedTypeIds] = useState<number[]>([]);
   const [placeType, setPlaceType] = useState<PlaceType>('restaurant');
   const [placeName, setPlaceName] = useState('');

@@ -3,9 +3,9 @@ import { Link } from "expo-router";
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import { useState } from "react";
 import { Place } from '@/types/place';
-
+import { IMAGE_BASE_URL } from '@/api/apiConfig';
 // URL de base pour charger les images depuis internet
-const IMAGE_BASE_URL = 'https://res.cloudinary.com/dtovi7wy6/image/upload/v1747166430/';
+
 
 type Props = {
     place: Place;
@@ -14,7 +14,6 @@ type Props = {
 export function Card({ place }: Props) {
     // Gère l'erreur de chargement d'image
     const [imageError, setImageError] = useState(false);
-    //https://res.cloudinary.com/dtovi7wy6/image/upload/v1747166430/151.jpg
     return (
         <Link href={{ pathname: "/details_lieu", params: { id: place.id } }} asChild>
             <Pressable>
