@@ -58,6 +58,7 @@ export function useAddPlaceOrEvent() {
   const [error, setError] = useState<string | null>(null); // erreur globale
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}); // erreurs par champ
   const [success, setSuccess] = useState(false);
+  const [id, setId] = useState<number | null>(null);
 
   /**
    * Soumet les données du lieu ou de l'événement à l'API.
@@ -93,11 +94,15 @@ export function useAddPlaceOrEvent() {
 
       if (response.statusCode === 201 || response.statusCode === 200) {
         setSuccess(true);
+        if(response.data && response.data.data){
+          setId(response.data.data.id);
+        }
+        
       } else if (isApiError(response)) {
         setSuccess(false);
         setError(getApiMessage(response));
-        if (response.data?.errors) {
-          setFieldErrors(response.data.errors);
+        if (response.data?.data.errors) {
+          setFieldErrors(response.data.data.errors);
         }
       } else {
         setSuccess(false);
@@ -111,5 +116,5 @@ export function useAddPlaceOrEvent() {
     }
   };
 
-  return { submitPlaceOrEvent, loading, error, fieldErrors, success };
+  return { submitPlaceOrEvent, loading, error, fieldErrors, success, id };
 }

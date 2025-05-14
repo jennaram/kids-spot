@@ -6,7 +6,7 @@
 import { ApiResponse, ApiResponseSuccessOnly } from "@/types/api-response";
 import { checkToken } from "@/utils/auth";
 import { apiDelete, apiGet, apiPost, apiPut } from "./apiClient";
-import { AddPlaceOrEventPayload, FetchAllPlaces, FetchPlace, UpdatePlaceOrEventPayload } from "@/types/place";
+import { AddPlaceOrEventPayload, FetchAllPlaces, FetchPlace, GetPlaceId, UpdatePlaceOrEventPayload } from "@/types/place";
 
 /**
  * Soumet les données du lieu ou de l'événement a ajouter à l'API.
@@ -31,9 +31,9 @@ import { AddPlaceOrEventPayload, FetchAllPlaces, FetchPlace, UpdatePlaceOrEventP
  * @param token - Le token d'authentification.
  * @returns {Promise<ApiResponse<ApiResponseSuccessOnly>>} Une promesse qui résoudra avec la réponse de l'API.
  */
-export async function addPlaceOrEvent(data: AddPlaceOrEventPayload, token: string): Promise<ApiResponse<ApiResponseSuccessOnly>> {
+export async function addPlaceOrEvent(data: AddPlaceOrEventPayload, token: string): Promise<ApiResponse<GetPlaceId>> {
     checkToken(token);
-    return apiPost<ApiResponseSuccessOnly>('lieux/ajout', data, token);
+    return apiPost<GetPlaceId>('lieux/ajout', data, token);
 }
 
 /**
