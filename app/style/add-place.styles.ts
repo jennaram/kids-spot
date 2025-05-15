@@ -69,6 +69,7 @@ export default StyleSheet.create({
     width: '100%', // Prend toute la largeur disponible
     alignItems: 'center', // Centre les éléments enfants horizontalement
     marginTop: 8,
+    textAlign: 'center',
   },
   dateInput: {
     borderWidth: 1,
@@ -90,8 +91,11 @@ export default StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     marginTop: 8,
-    backgroundColor: '#fff',
+    backgroundColor: 'red',
     alignSelf: 'center', // Centrer horizontalement
     width: '100%', // Prendre toute la largeur disponible
+    alignItems: 'center', // Centre les éléments enfants horizontalement  
+    textAlign: 'center',
+  
   },
 });
