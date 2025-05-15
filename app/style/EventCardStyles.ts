@@ -146,6 +146,7 @@ export const eventCardStyles = StyleSheet.create({
   modalBody: {
     flex: 1,
     padding: 20,
+    justifyContent: 'space-between',
   },
   fullDescriptionText: {
     fontSize: 16,
@@ -157,5 +158,18 @@ export const eventCardStyles = StyleSheet.create({
   exitButtonCustom: {
     top: 5, 
   },
-
+ 
+  descriptionScroll: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  
+  modalFooter: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderColor: '#e0e0e0',
+    backgroundColor: '#fff',
+  },
+  
 });

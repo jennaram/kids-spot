@@ -9,7 +9,10 @@ import { Navigation } from '@/components/NavBar/Navigation';
 import { ExitButton } from './components/ExitButton';
 import { useLocation } from '@/context/locate';
 import { Place } from '@/types/place';
-
+import AgeBadges  from '../components/Lieux/AgeBadges';
+import LieuActionButtons from '@/components/Lieux/LieuActionButtons';
+import { IconesLieux } from '@/components/IconesLieux';
+import { Alert, Linking, Platform } from 'react-native';
 const Evenement = () => {
   // Récupérer la liste des lieux à partir du contexte
   const { nearbyPlaces, error, refreshLocation } = useLocation();
@@ -23,6 +26,10 @@ const Evenement = () => {
   const [currentDescription, setCurrentDescription] = useState('');
   // État pour stocker le nom du lieu de la description
   const [currentNom, setCurrentNom] = useState('');
+  // Extraire le lieu sélectionné pour la modale
+  const currentLieu = lieux.find(lieu => lieu.nom === currentNom);
+
+  
 
   // Référence pour les animations
   const flipAnimations = useRef<{ [key: number]: Animated.Value }>({}).current;
@@ -67,6 +74,65 @@ const Evenement = () => {
       setLieux(validEvents);
     }
   }, [nearbyPlaces]);
+  const handleGpsPress = () => {
+    if (!currentLieu || !currentLieu.position) return;
+  
+    const { latitude, longitude } = currentLieu.position;
+  
+    Alert.alert(
+      "Choisissez une application",
+      "Quelle application voulez-vous utiliser pour l'itinéraire ?",
+      [
+        {
+          text: "Google Maps",
+          onPress: () => {
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Waze",
+          onPress: () => {
+            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Apple Plans",
+          onPress: () => {
+            const url = `http://maps.apple.com/?daddr=${latitude},${longitude}`;
+            Linking.openURL(url);
+          },
+          style: Platform.OS === "ios" ? "default" : "cancel",
+        },
+        {
+          text: "Annuler",
+          style: "cancel"
+        }
+      ]
+    );
+  };
+
+  const handleCall = () => {
+    if (!currentLieu || !currentLieu.adresse?.telephone) return;
+  
+    const phoneNumber = currentLieu.adresse.telephone.replace(/\s/g, '');
+  
+    Linking.openURL(`tel:${phoneNumber}`);
+  };
+  const handleWebsite = () => {
+    if (!currentLieu || !currentLieu.adresse?.site_web) return;
+  
+    let url = currentLieu.adresse.site_web.trim();
+  
+    // Ajoute "https://" si manquant
+    if (!/^https?:\/\//i.test(url)) {
+      url = `https://${url}`;
+    }
+  
+    Linking.openURL(url);
+  };
+  
 
   const flipCard = (id: number) => {
     if (flippedCardId !== null && flippedCardId !== id) {
@@ -157,9 +223,28 @@ const Evenement = () => {
             <Text style={[fontTitle, styles.modalHeaderTitle]}>{currentNom}</Text>
             <ExitButton onPress={() => setModalVisible(false)} style={styles.exitButtonCustom} />
           </View>
-          <ScrollView style={styles.modalBody}>
-            <Text style={styles.fullDescriptionText}>{currentDescription}</Text>
-          </ScrollView>
+          <View style={styles.modalBody}>
+  <ScrollView style={styles.descriptionScroll}>
+    <Text style={styles.fullDescriptionText}>{currentDescription}</Text>
+  </ScrollView>
+
+  <View style={styles.modalFooter}>
+    {currentLieu && (
+      <>
+        <IconesLieux equipements={currentLieu.equipements} />
+        <AgeBadges tranchesAge={currentLieu.ages.map(age => age.nom)} />
+        <LieuActionButtons
+          onCall={handleCall}
+          onWebsite={handleWebsite}
+          onGps={handleGpsPress}
+          telephone={currentLieu.adresse?.telephone || null}
+          siteWeb={currentLieu.adresse?.site_web || null}
+        />
+      </>
+    )}
+  </View>
+</View>
+
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
