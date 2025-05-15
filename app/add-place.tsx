@@ -203,11 +203,14 @@ const AddPlaceScreen = () => {
       submitMail(sujet, contenueHTML, token ?? '');
     }
     if (error)
-      Alert.alert(
-        'Erreur',
-        'Une erreur est survenue lors de l\'ajout du lieu. Veuillez réessayer.',
-        [{ text: 'OK' }]
-      );
+     if (fieldErrors) {
+        // Formater et afficher les erreurs de validation pour chaque champ
+        const errorMessages = Object.entries(fieldErrors)
+          .map(([field, message]) => `${field} : ${message}`)
+          .join('\n');
+
+        Alert.alert('Erreur(s) de validation', errorMessages);
+      }
   }, [error, successSubmit]);
 
   useEffect(() => {
