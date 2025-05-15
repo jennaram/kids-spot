@@ -23,7 +23,7 @@ export function Card({ place }: Props) {
                     <Image
                         source={
                             imageError
-                                ? require('@/assets/images/carte.png')
+                                ? require('@/assets/images/Logo.png') // Utilise le logo comme image par défaut
                                 : { uri: `${IMAGE_BASE_URL}${place.id}.jpg` }
                         }
                         style={styles.image}

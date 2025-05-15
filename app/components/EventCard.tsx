@@ -51,7 +51,7 @@ const EventCard: React.FC<EventCardProps> = ({
           <Image
             source={
               imageError
-                ? require('@/assets/images/carte.png') // Placeholder image
+                ? require('@/assets/images/Logo.png') // Utilise le logo comme image par défaut
                 : { uri: imageUrl }
             }
             style={styles.image}
