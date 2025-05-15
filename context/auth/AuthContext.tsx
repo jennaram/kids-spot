@@ -5,14 +5,18 @@ import { router } from 'expo-router';
 
 type AuthContextType = {
   token: string | null;
-  setToken: (token: string | null, expirationDuration?: number | null) => void;
+  grade: number | 0;
+  pseudo: string | '';
+  setToken: (token: string | null, grade?: number, pseudo?: string, expirationDuration?: number | null) => void;
   loading: boolean;
-  
+
 };
 
 const AuthContext = createContext<AuthContextType>({
   token: null,
-  setToken: () => {},
+  grade: 0,
+  pseudo: '',
+  setToken: () => { },
   loading: true,
 });
 
@@ -20,6 +24,8 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setTokenState] = useState<string | null>(null);
+  const [grade, setGradeState] = useState<number>(0);
+  const [pseudo, setPseudo] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const logoutTimeout = useRef<number | null>(null);
 
@@ -36,11 +42,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const remainingTime = expirationTime - currentTime;
           setTokenState(storedToken);
 
-          console.log("Date de fin du token (restauré) :", new Date(expirationTime).toLocaleString());
+          //console.log("Date de fin du token (restauré) :", new Date(expirationTime).toLocaleString());
 
           logoutTimeout.current = setTimeout(() => {
             console.log("Token expiré automatiquement");
             setToken(null);
+            setGradeState(0);
+            setPseudo('');
           }, remainingTime);
         } else {
           await AsyncStorage.removeItem('token');
@@ -60,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const setToken = async (newToken: string | null, expirationDuration: number | null = null) => {
+  const setToken = async (newToken: string | null, newGrade: number = 0, newPseudo: string = '', expirationDuration: number | null = null) => {
     if (logoutTimeout.current) clearTimeout(logoutTimeout.current);
 
     if (newToken) {
@@ -71,26 +79,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await AsyncStorage.setItem('token', newToken);
       await AsyncStorage.setItem('tokenExpirationDate', expirationISOString);
 
-      console.log("Date de fin du token (défini) :", expirationDate.toLocaleString());
+      //console.log("Date de fin du token (défini) :", expirationDate.toLocaleString());
 
       logoutTimeout.current = setTimeout(() => {
-        console.log("Token expiré automatiquement (via setToken)");
+        //console.log("Token expiré automatiquement (via setToken)");
         router.push('accueil');
         setToken(null);
-
+        setGradeState(0);
+        setPseudo('');
       }, duration);
 
       setTokenState(newToken);
+      setGradeState(newGrade);
+      setPseudo(newPseudo);
     } else {
-      console.log("Suppression du token");
+      //console.log("Suppression du token");
       await AsyncStorage.removeItem('token');
       await AsyncStorage.removeItem('tokenExpirationDate');
+      await AsyncStorage.removeItem('grade');
+      await AsyncStorage.removeItem('pseudo');
       setTokenState(null);
+      setGradeState(0)
+      setPseudo('');
     }
   };
 
+
   return (
-    <AuthContext.Provider value={{ token, setToken, loading }}>
+    <AuthContext.Provider value={{ token, setToken, loading, grade, pseudo }}>
       {children}
     </AuthContext.Provider>
   );

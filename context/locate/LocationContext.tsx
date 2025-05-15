@@ -65,14 +65,19 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     fetchLocation();
   }, []);
 
-  const { places, loading: loadingPlaces, error: placesError } = useReadAllPlaces(
-    userLocation?.latitude ?? 0,
-    userLocation?.longitude ?? 0
+  // Récupère les lieux à proximité uniquement lorsque la localisation est prête
+  const {
+    places,
+    loading: loadingPlaces,
+    error: placesError
+  } = useReadAllPlaces(
+    locationReady && userLocation?.latitude ? userLocation.latitude : 38.85,
+    locationReady && userLocation?.longitude ? userLocation.longitude : 2.34
   );
 
   const { favoris, loading: loadingFavorites, error: favError } = useReadAllFavorites(
-    userLocation?.latitude ?? 0,
-    userLocation?.longitude ?? 0,
+    userLocation?.latitude ?? 38.85,
+    userLocation?.longitude ?? 2.34,
     token ?? '',
     refreshFavoritesTrigger
   );

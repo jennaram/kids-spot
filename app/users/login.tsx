@@ -52,7 +52,8 @@ export default function LoginScreen() {
    */
   useEffect(() => {
     if (data?.token) {
-      setToken(data.token, data.expiresIn * 1000);
+      console.log(data.grade)
+      setToken(data.token, data.grade, data.pseudo, data.expiresIn * 1000);
       Alert.alert('Succès', 'Connexion réussie');
       router.replace('/main');
     }

@@ -25,6 +25,8 @@ export interface RegisterUser {
   export interface AuthResult {
     token: string;
     expiresIn: number;
+    grade:number;
+    pseudo:string;
     user?: {
       id: number;
       username: string;

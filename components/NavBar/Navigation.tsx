@@ -7,7 +7,7 @@ export function Navigation() {
     const route = useRoute();
 
     useEffect(() => {
-        console.log('Nom de la page actuelle :', route.name);
+        //console.log('Nom de la page actuelle :', route.name);
     }, [route]);
     
 
