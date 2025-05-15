@@ -13,6 +13,10 @@ export default StyleSheet.create({
   section: {
     marginBottom: 20,
   },
+  section2: {
+    justifyContent: "center",
+    flexDirection:'row',
+  },
   label: {
     fontSize: 16,
     fontWeight: 'bold',

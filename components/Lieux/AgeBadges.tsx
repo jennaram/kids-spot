@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexWrap: "wrap",
     marginBottom: 25,
-    paddingLeft: 15,
+    paddingLeft: 0,
   },
   ageBadge: {
     paddingVertical: 8,

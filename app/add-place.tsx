@@ -98,7 +98,7 @@ const AddPlaceScreen = () => {
       const [addressResult] = await Location.reverseGeocodeAsync({ latitude, longitude });
 
       if (addressResult) {
-        setAddress(addressResult.street || '');
+        setAddress(`${addressResult.streetNumber} ${addressResult.street}` || '');
         setVille(addressResult.city || '');
         setCodepostal(addressResult.postalCode || '');
       }
@@ -493,7 +493,7 @@ const AddPlaceScreen = () => {
 
         <View style={styles.section}>
           <Text style={styles.label}>Tranche d'âge</Text>
-          <View style={styles.ageBadgesContainer}>
+          <View style={styles.section2}>
             {ageRangeOptions.map((age) => (
               <TouchableOpacity
                 key={age}
@@ -502,9 +502,6 @@ const AddPlaceScreen = () => {
                 <AgeBadges
                   tranchesAge={[getTranslatedLabel(age)]}
                   badgeColor={ageRanges.includes(age) ? colorButtonFirst : '#ddd'}
-                  containerStyle={styles.ageBadgeContainer}
-                  badgeStyle={styles.ageBadge}
-                  textStyle={styles.ageBadgeText}
                 />
               </TouchableOpacity>
             ))}

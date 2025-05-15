@@ -178,9 +178,9 @@ const Evenement = () => {
       <SafeAreaView style={styles.container}>
         <BurgerMenu />
         <Title text={'Événements'} />
-        <View style={styles.noEventsContainer}>
-          <Text style={styles.noEventsText}>
-            {nearbyPlaces?.length > 0 
+        <View>
+          <Text >
+            {nearbyPlaces 
               ? "Aucun événement à venir actuellement" 
               : "Chargement des événements..."}
           </Text>
