@@ -31,7 +31,7 @@ import { useGeocodeAddress } from '@/hooks/location/useGeocodeAddress';
 import { useSendMail } from '@/hooks/place/useSendMail';
 
 // Types
-import { AddPlaceOrEventPayload } from '@/types/place';
+import { AddPlaceOrEventPayload } from '@/Types/place';
 
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
 type LocationType = LatLng | null;

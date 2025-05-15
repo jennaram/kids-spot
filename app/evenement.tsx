@@ -8,7 +8,7 @@ import { Title } from '@/components/Title';
 import { Navigation } from '@/components/NavBar/Navigation';
 import { ExitButton } from './components/ExitButton';
 import { useLocation } from '@/context/locate';
-import { Place } from '@/types/place';
+import { Place } from '@/Types/place';
 import AgeBadges  from '../components/Lieux/AgeBadges';
 import LieuActionButtons from '@/components/Lieux/LieuActionButtons';
 import { IconesLieux } from '@/components/IconesLieux';

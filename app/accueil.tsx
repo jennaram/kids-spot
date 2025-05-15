@@ -1,15 +1,17 @@
 import { Image, Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from 'expo-router';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { colorButtonFirst, colorButtonSecondary, colorButtonThird, colorFourth, fontSubtitle } from './style/styles';
-import { fontTitle, loadFonts } from './style/styles';
+import { fontTitle } from './style/styles';
 import { styles } from '@/app/style/accueil.styles';
+import { useAuth } from "@/context/auth";
 
-const Stack = createNativeStackNavigator();
+
 
 export default function Index() {
   const router = useRouter();
-
+  const { pseudo, grade } = useAuth();
+  console.log(pseudo)
+  console.log(grade)
   const handleConnexion = () => {
     // Rediriger vers la page de connexion
     router.push('/users/login');
@@ -38,10 +40,15 @@ export default function Index() {
         </Text>
 
         {/* Boutons Connexion et À propos */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleConnexion}>
-          <Text style={styles.submitButtonText}>Se Connecter</Text>
-        </TouchableOpacity>
-
+        {pseudo ? (
+          <Text style={{ fontSize: 18, marginBottom: 15 }}>
+            Bonjour {pseudo}
+          </Text>
+        ) : (
+          <TouchableOpacity style={styles.submitButton} onPress={handleConnexion}>
+            <Text style={styles.submitButtonText}>Se Connecter</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={styles.submitButton} onPress={handleAPropos}>
           <Text style={styles.submitButtonText}>À propos</Text>
         </TouchableOpacity>
@@ -50,7 +57,7 @@ export default function Index() {
       {/* Bouton Mode invité en bas */}
       <View style={{ alignItems: 'center', padding: 20 }}>
         <TouchableOpacity style={styles.submitButton} onPress={handleModeInvite}>
-          <Text style={styles.submitButtonText}>Mode invité</Text>
+          <Text style={styles.submitButtonText}>{pseudo ? "Allons y" : "Mode invité"}</Text>
         </TouchableOpacity>
       </View>
     </View>

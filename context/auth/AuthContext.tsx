@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 type AuthContextType = {
   token: string | null;
   grade: number | 0;
-  pseudo: string | '';
+  pseudo: string | null;
   setToken: (token: string | null, grade?: number, pseudo?: string, expirationDuration?: number | null) => void;
   loading: boolean;
 
@@ -15,7 +15,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   token: null,
   grade: 0,
-  pseudo: '',
+  pseudo: null,
   setToken: () => { },
   loading: true,
 });
@@ -25,7 +25,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setTokenState] = useState<string | null>(null);
   const [grade, setGradeState] = useState<number>(0);
-  const [pseudo, setPseudo] = useState<string>('');
+  const [pseudo, setPseudo] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const logoutTimeout = useRef<number | null>(null);
 
@@ -33,6 +33,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const storedToken = await AsyncStorage.getItem('token');
       const expirationDate = await AsyncStorage.getItem('tokenExpirationDate');
+      const storedGrade = await AsyncStorage.getItem('grade');
+      const storedPseudo = await AsyncStorage.getItem('pseudo');
 
       if (storedToken && expirationDate) {
         const expirationTime = new Date(expirationDate).getTime();
@@ -41,6 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (currentTime < expirationTime) {
           const remainingTime = expirationTime - currentTime;
           setTokenState(storedToken);
+          setGradeState(Number(storedGrade));
+          setPseudo(storedPseudo);
+
 
           //console.log("Date de fin du token (restauré) :", new Date(expirationTime).toLocaleString());
 
@@ -53,6 +58,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           await AsyncStorage.removeItem('token');
           await AsyncStorage.removeItem('tokenExpirationDate');
+          await AsyncStorage.removeItem('grade');
+          await AsyncStorage.removeItem('pseudo');
         }
       }
     } catch (error) {
@@ -78,6 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       await AsyncStorage.setItem('token', newToken);
       await AsyncStorage.setItem('tokenExpirationDate', expirationISOString);
+      await AsyncStorage.setItem('grade', newGrade.toString());
+      await AsyncStorage.setItem('pseudo', newPseudo);
 
       //console.log("Date de fin du token (défini) :", expirationDate.toLocaleString());
 
