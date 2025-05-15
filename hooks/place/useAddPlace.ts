@@ -101,8 +101,10 @@ export function useAddPlaceOrEvent() {
       } else if (isApiError(response)) {
         setSuccess(false);
         setError(getApiMessage(response));
-        if (response.data?.data.errors) {
-          setFieldErrors(response.data.data.errors);
+        if (response.data?.errors) {
+          console.log("erreurs ???")
+          console.log(response.data.errors)
+          setFieldErrors(response.data.errors);
         }
       } else {
         setSuccess(false);

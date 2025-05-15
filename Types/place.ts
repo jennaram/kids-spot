@@ -103,4 +103,4 @@ export type FetchAllPlaces =  ({status: "success"} & {data: Place[]});
 
 export type FetchPlace =  ({status: "success"} & {data: Place});
 
-export type GetPlaceId = ({status: "success"} & {data:PlaceId} );
+export type GetPlaceId = ({status: "success"} & {data:PlaceId} & {errors?: Record<string, string>} );
