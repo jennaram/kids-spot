@@ -25,7 +25,7 @@ import { useGeocodeAddress } from '@/hooks/location/useGeocodeAddress';
 import { useSendMail } from '@/hooks/place/useSendMail';
 
 // Types
-import { AddPlaceOrEventPayload } from '@/types/place';
+import { AddPlaceOrEventPayload } from '@/Types/place';
 
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
 
@@ -69,100 +69,91 @@ const AddPlaceScreen = () => {
   const success = successSubmit && successMail && cloudImageUrl;
   const ageRangeOptions = ['0-2', '3-6', '7+'];
 
-  // Styles
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-    scrollView: {
-      flex: 1,
-      paddingHorizontal: 20,
-    },
-    section: {
-      marginBottom: 20,
-    },
-    label: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginBottom: 8,
-      color: '#333',
-    },
-    filterContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      marginBottom: 15,
-    },
-    filterBadge: {
-      paddingVertical: 8,
-      paddingHorizontal: 15,
-      borderRadius: 20,
-      marginRight: 10,
-      marginBottom: 10,
-    },
-    filterBadgeSelected: {
-      backgroundColor: '#FF7F4B',
-    },
-    filterBadgeUnselected: {
-      backgroundColor: '#E0E0E0',
-    },
-    filterBadgeText: {
-      color: 'white',
-      fontSize: 14,
-      fontWeight: 'bold',
-    },
-    multilineInput: {
-      borderWidth: 1,
-      borderColor: '#ddd',
-      borderRadius: 8,
-      padding: 12,
-      minHeight: 100,
-      textAlignVertical: 'top',
-    },
-    bottomSpacer: {
-      height: 100,
-    },
-    modalOverlay: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalContent: {
-      backgroundColor: 'white',
-      padding: 20,
-      borderRadius: 10,
-      alignItems: 'center',
-    },
-    modalText: {
-      marginTop: 10,
-      fontSize: 16,
-    },
-    selectionContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      marginTop: 8,
-      marginBottom: 8,
-    },
-    selectionBadge: {
-      paddingVertical: 8,
-      paddingHorizontal: 15,
-      borderRadius: 20,
-      marginRight: 10,
-      marginBottom: 10,
-    },
-    badgeSelected: {
-      backgroundColor: '#FF7F4B',
-    },
-    badgeUnselected: {
-      backgroundColor: '#E0E0E0',
-    },
-    badgeText: {
-      color: 'white',
-      fontSize: 14,
-      fontWeight: 'bold',
-    },
-  });
+  // Couleurs
+  const ORANGE = '#D37230';  // Nouvelle couleur orange
+  const LIGHT_GRAY = '#F0F0F0';
+  const WHITE = '#FFFFFF';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  section: {
+    marginBottom: 20,
+    width: '100%'
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#333'
+  },
+  multilineInput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    minHeight: 100,
+    textAlignVertical: 'top',
+  },
+  bottomSpacer: {
+    height: 100,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 16,
+  },
+  // Styles unifiés pour les badges
+  badgeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 10,
+    marginBottom: 15,
+  },
+  badge: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#DDD'
+  },
+  selectedBadge: {
+    backgroundColor: '#FF7F4B', // Orange
+    borderWidth: 0,
+  },
+  unselectedBadge: {
+    backgroundColor: '#E0E0E0', // Gris
+  },
+  badgeText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  selectedBadgeText: {
+    color: 'white',
+  },
+  unselectedBadgeText: {
+    color: '#666',
+  }
+});
+  
 
   // Fonctions
   const handleGetCurrentLocation = async () => {
@@ -295,120 +286,121 @@ const AddPlaceScreen = () => {
   }, [success]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <><SafeAreaView style={styles.container}>
       <BurgerMenu />
       <Title text="Ajouter un lieu" />
 
-<ScrollView style={styles.scrollView}>
-  {/* Section Nom + Photo */}
-  <View style={styles.section}>
-    <Text style={styles.label}>Nom du lieu</Text>
-    <FormInput
-      value={placeName}
-      onChangeText={setPlaceName}
-      placeholder="Nom du lieu"
-      maxLength={35} label={''}          />
-    <Text style={{ alignSelf: 'flex-end' }}>{placeName.length}/35</Text>
-    <PhotoPickerButton onPhotoSelected={setImage} />
-  </View>
+      <ScrollView style={styles.scrollView}>
+        {/* Section Nom + Photo */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Nom du lieu</Text>
+          <FormInput
+            value={placeName}
+            onChangeText={setPlaceName}
+            placeholder="Nom du lieu"
+            maxLength={35} label={''} />
+          <Text style={{ alignSelf: 'flex-end' }}>{placeName.length}/35</Text>
+          <PhotoPickerButton onPhotoSelected={setImage} />
+        </View>
 
-  {/* Section Type de lieu */}
-  <View style={styles.section}>
-    <Text style={styles.label}>Type de lieu</Text>
-    <View style={styles.filterContainer}>
-      {[
-        { id: 1, label: 'Restaurant' },
-        { id: 2, label: 'Loisirs' },
-        { id: 3, label: 'Culture' }
-      ].map(item => (
-        <TouchableOpacity
-          key={item.id}
-          onPress={() => {
-            setSelectedTypeIds([item.id]);
-            setPlaceType(
-              item.id === 1 ? 'restaurant' : 
-              item.id === 2 ? 'leisure' : 'culture'
-            );
-          }}
-          style={[
-            styles.filterBadge,
-            selectedTypeIds.includes(item.id)
-              ? styles.filterBadgeSelected
-              : styles.filterBadgeUnselected
-          ]}
-        >
-          <Text style={styles.filterBadgeText}>{item.label}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  </View>
+        {/* Section Type de lieu */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Type de lieu</Text>
+          <View style={styles.badgeContainer}>
+            {[
+              { id: 1, label: 'Restaurant' },
+              { id: 2, label: 'Loisirs' },
+              { id: 3, label: 'Culture' }
+            ].map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                onPress={() => setSelectedTypeIds([item.id])}
+                style={[
+                  styles.badge,
+                  {
+                    backgroundColor: selectedTypeIds.includes(item.id) ? ORANGE : LIGHT_GRAY,
+                    borderWidth: selectedTypeIds.includes(item.id) ? 0 : 1,
+                    borderColor: '#DDD'
+                  }
+                ]}
+              >
+                <Text style={[
+                  styles.badgeText,
+                  { color: selectedTypeIds.includes(item.id) ? WHITE : '#666' }
+                ]}>
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
-  {/* Section Adresse */}
-  <View style={styles.section}>
-    <Text style={styles.label}>Adresse</Text>
-    <GeoLocationInput
-      address={address}
-      onAddressChange={setAddress}
-      onGetLocation={handleGetCurrentLocation}
-    />
-  </View>
 
-  {/* Section Code Postal + Ville */}
-  <View style={styles.section}>
-    <Text style={styles.label}>Code Postal</Text>
-    <FormInput
+        {/* Section Adresse */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Adresse</Text>
+          <GeoLocationInput
+            address={address}
+            onAddressChange={setAddress}
+            onGetLocation={handleGetCurrentLocation} />
+        </View>
+
+        {/* Section Code Postal + Ville */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Code Postal</Text>
+          <FormInput
             value={codepostal}
             onChangeText={text => setCodepostal(text.replace(/[^0-9]/g, '').slice(0, 5))}
             placeholder="75000"
-            keyboardType="numeric" label={''}    />
-  </View>
+            keyboardType="numeric" label={''} />
+        </View>
 
-  <View style={styles.section}>
-    <Text style={styles.label}>Ville</Text>
-    <FormInput
+        <View style={styles.section}>
+          <Text style={styles.label}>Ville</Text>
+          <FormInput
             value={ville}
             onChangeText={setVille}
-            placeholder="Paris" label={''}    />
-  </View>
+            placeholder="Paris" label={''} />
+        </View>
 
-  {/* Section Contact */}
-  <View style={styles.section}>
-    <Text style={styles.label}>Site web (optionnel)</Text>
-    <FormInput
+        {/* Section Contact */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Site web (optionnel)</Text>
+          <FormInput
             value={website}
             onChangeText={setWebsite}
-            placeholder="https://www.exemple.com" label={''}    />
-  </View>
+            placeholder="https://www.exemple.com" label={''} />
+        </View>
 
-  <View style={styles.section}>
-    <Text style={styles.label}>Téléphone (optionnel)</Text>
-    <FormInput
+        <View style={styles.section}>
+          <Text style={styles.label}>Téléphone (optionnel)</Text>
+          <FormInput
             value={phoneNumber}
             onChangeText={text => setPhoneNumber(text.replace(/[^0-9]/g, '').slice(0, 10))}
             placeholder="0123456789"
-            keyboardType="phone-pad" label={''}    />
-  </View>
+            keyboardType="phone-pad" label={''} />
+        </View>
 
-  {/* Section Horaires */}
-  <View style={styles.section}>
-    <Text style={styles.label}>Horaires</Text>
-    <FormInput
+        {/* Section Horaires */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Horaires</Text>
+          <FormInput
             value={horaires}
             onChangeText={setHoraires}
-            placeholder="10h-18h" label={''}    />
-  </View>
+            placeholder="10h-18h" label={''} />
+        </View>
 
-  {/* Section Événement */}
-  <View style={styles.section}>
-    <Text style={styles.label}>Est-ce un événement ?</Text>
-    <Switch value={isEvent} onValueChange={setIsEvent} />
-  </View>
+        {/* Section Événement */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Est-ce un événement ?</Text>
+          <Switch value={isEvent} onValueChange={setIsEvent} />
+        </View>
 
-  {isEvent && (
-    <>
-      <View style={styles.section}>
-        <Text style={styles.label}>Date de début</Text>
-        <FormInput
+        {isEvent && (
+          <>
+            <View style={styles.section}>
+              <Text style={styles.label}>Date de début</Text>
+              <FormInput
                 value={startDate}
                 onChangeText={text => {
                   const cleaned = text.replace(/\D/g, '');
@@ -417,12 +409,12 @@ const AddPlaceScreen = () => {
                   if (cleaned.length > 4) formatted += `/${cleaned.slice(4, 8)}`;
                   setStartDate(formatted);
                 } }
-                placeholder="JJ/MM/AAAA" label={''}        />
-      </View>
+                placeholder="JJ/MM/AAAA" label={''} />
+            </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Date de fin</Text>
-        <FormInput
+            <View style={styles.section}>
+              <Text style={styles.label}>Date de fin</Text>
+              <FormInput
                 value={endDate}
                 onChangeText={text => {
                   const cleaned = text.replace(/\D/g, '');
@@ -431,71 +423,79 @@ const AddPlaceScreen = () => {
                   if (cleaned.length > 4) formatted += `/${cleaned.slice(4, 8)}`;
                   setEndDate(formatted);
                 } }
-                placeholder="JJ/MM/AAAA" label={''}        />
-      </View>
-    </>
-  )}
+                placeholder="JJ/MM/AAAA" label={''} />
+            </View>
+          </>
+        )}
 
-  {/* Section Description */}
-  <View style={styles.section}>
-    <Text style={styles.label}>Description</Text>
-    <TextInput
-      style={styles.multilineInput}
-      value={description}
-      onChangeText={setDescription}
-      placeholder="Description du lieu"
-      multiline
-    />
-  </View>
+        {/* Section Description */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Description</Text>
+          <TextInput
+            style={styles.multilineInput}
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Description du lieu"
+            multiline />
+        </View>
 
-  {/* Section Équipements */}
-  <View style={styles.section}>
-    <AvailableEquipments
-      equipments={equipments}
-      toggleEquipment={toggleEquipment}
-    />
-  </View>
+        {/* Section Équipements */}
+        <View style={styles.section}>
+          <AvailableEquipments
+            equipments={equipments}
+            toggleEquipment={toggleEquipment} />
+        </View>
 
-  {/* Section Tranche d'âge */}
-  <View style={styles.section}>
+       
+    {/* Section Tranche d'âge - Version identique à "Type de lieu" */}
+<View style={styles.section}>
   <Text style={styles.label}>Tranche d'âge</Text>
-  <View style={styles.selectionContainer}>
-    {['0-2', '3-6', '7+'].map((age) => (
+  <View style={[styles.badgeContainer, { justifyContent: 'center' }]}>
+    {[
+      { id: '0-2', label: '0-2 ans' },
+      { id: '3-6', label: '3-6 ans' },
+      { id: '7+', label: '7 ans et plus' }
+    ].map((item) => (
       <TouchableOpacity
-        key={age}
-        onPress={() => toggleAgeRange(age)}
+        key={item.id}
+        onPress={() => toggleAgeRange(item.id)}
         style={[
-          styles.selectionBadge,
-          ageRanges.includes(age)
-            ? styles.badgeSelected
-            : styles.badgeUnselected
+          styles.badge,
+          {
+            backgroundColor: ageRanges.includes(item.id) ? ORANGE : LIGHT_GRAY,
+            borderWidth: ageRanges.includes(item.id) ? 0 : 1,
+            borderColor: '#DDD'
+          }
         ]}
       >
-        <Text style={styles.badgeText}>
-          {age === '0-2' ? '0-2 ans' : 
-           age === '3-6' ? '3-6 ans' : '7 ans et plus'}
+        <Text style={[
+          styles.badgeText,
+          { color: ageRanges.includes(item.id) ? WHITE : '#666' }
+        ]}>
+          {item.label}
         </Text>
       </TouchableOpacity>
     ))}
   </View>
 </View>
 
-  <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
-  <View style={styles.bottomSpacer} />
-</ScrollView>
-
-      <Modal visible={loading} transparent>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <ActivityIndicator size="large" color="#FF7F4B" />
-            <Text style={styles.modalText}>Enregistrement en cours...</Text>
-          </View>
+      {/* Section Bouton d'ajout */}
+      <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
+      <View style={styles.bottomSpacer} />
+    </ScrollView>
+    <Modal visible={loading} transparent>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <ActivityIndicator size="large" color="#FF7F4B" />
+          <Text style={styles.modalText}>Enregistrement en cours...</Text>
         </View>
-      </Modal>
-
-      <Navigation />
-    </SafeAreaView>
+      </View>
+    </Modal>
+    <Navigation />
+  </SafeAreaView>
+  </>
   );
-};
+
+}
 
 export default AddPlaceScreen;
