@@ -59,4 +59,69 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     marginBottom: 0,
   },
+
+});
+// Styles pour le modal des mentions légales
+export const modalStyles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalView: {
+    width: "90%",
+    maxHeight: "80%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    padding: 5,
+  },
+  modalScrollView: {
+    maxHeight: "70%",
+  },
+  legalText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#040101",
+  },
+  modalFooter: {
+    marginTop: 15,
+    alignItems: "center",
+  },
+  closeButtonFooter: {
+    backgroundColor: "#D37230",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 12,
+  },
+  closeButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    borderRadius: 5,
+    marginBottom: 0,
+  },
 });
