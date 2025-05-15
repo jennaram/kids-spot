@@ -5,34 +5,35 @@ import { useEffect, useState } from "react";
 
 /**
  * Hook pour gérer l'état et la logique de la lecture de tous les lieux
- * @version 1.0
- * @date 2025-05-01
- * 
+ * @version 1.1
+ * @date 2025-05-15 (Modifié pour inclure refreshTrigger)
+ *
  * @param lat - Latitude du point central pour la recherche des lieux
  * @param lng - Longitude du point central pour la recherche des lieux
+ * @param refreshTrigger - Déclencheur pour forcer le rechargement des lieux
  * @returns Un objet contenant les lieux, l'état de chargement et les erreurs éventuelles
- * 
+ *
  * @example
  * ```jsx
- * const { places, loading, error } = useReadAllPlaces(48.85, 2.35);
- * 
+ * const { places, loading, error } = useReadAllPlaces(48.85, 2.35, refreshTrigger);
+ *
  * if (loading) {
- *    console.log("Chargement des lieux...");
- *    return <LoadingSpinner />;
+ * console.log("Chargement des lieux...");
+ * return <LoadingSpinner />;
  * }
- * 
+ *
  * if (error) {
- *    console.log("Erreur:", error);
- *    return <ErrorMessage message={error} />;
+ * console.log("Erreur:", error);
+ * return <ErrorMessage message={error} />;
  * }
- * 
+ *
  * console.log(`${places.length} lieux trouvés`);
  * return (
- *    <PlacesList places={places} />
+ * <PlacesList places={places} />
  * );
  * ```
  */
-export function useReadAllPlaces(lat: number, lng: number) {
+export function useReadAllPlaces(lat: number, lng: number, refreshTrigger: number) {
     const [places, setPlaces] = useState<Place[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export function useReadAllPlaces(lat: number, lng: number) {
                 setLoading(true);
                 setError(null);
                 const response = await getAllPlaces(lat, lng);
-    
+
                 if (
                     response.statusCode === 200 &&
                     response.data &&
@@ -63,9 +64,9 @@ export function useReadAllPlaces(lat: number, lng: number) {
                 setLoading(false);
             }
         };
-    
+
         load();
-    }, [lat, lng]);
-    
+    }, [lat, lng, refreshTrigger]); // Ajout de refreshTrigger comme dépendance
+
     return { places, loading, error };
 }

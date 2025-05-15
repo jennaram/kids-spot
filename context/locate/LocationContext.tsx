@@ -15,6 +15,7 @@ type LocationContextType = {
   favorites: any[] | null;
   loading: boolean;
   error: string | null;
+  refreshTrigger: number;
   refreshLocation: () => void;
   refreshFavorites: () => void;
 };
@@ -25,6 +26,7 @@ const LocationContext = createContext<LocationContextType>({
   favorites: null,
   loading: true,
   error: null,
+  refreshTrigger: 0,
   refreshLocation: () => {},
   refreshFavorites: () => {},
 });
@@ -37,6 +39,8 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [locationReady, setLocationReady] = useState(false);
   const [refreshFavoritesTrigger, setRefreshFavoritesTrigger] = useState(0);
   const { token } = useAuth();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
 
   // Récupère la géolocalisation et met à jour l'état
   const fetchLocation = async () => {
@@ -57,6 +61,10 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const refreshLocation = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   const refreshFavorites = () => {
     setRefreshFavoritesTrigger(prev => prev + 1);
   };
@@ -72,7 +80,8 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     error: placesError
   } = useReadAllPlaces(
     locationReady && userLocation?.latitude ? userLocation.latitude : 38.85,
-    locationReady && userLocation?.longitude ? userLocation.longitude : 2.34
+    locationReady && userLocation?.longitude ? userLocation.longitude : 2.34,
+    refreshTrigger // Ajout de refreshTrigger comme dépendance
   );
 
   const { favoris, loading: loadingFavorites, error: favError } = useReadAllFavorites(
@@ -90,8 +99,9 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         favorites: token && locationReady ? favoris : null,
         loading: !locationReady || loadingPlaces || (token ? loadingFavorites : false),
         error: localError || placesError || favError,
-        refreshLocation: fetchLocation,
-        refreshFavorites,
+        refreshTrigger, // Exposer refreshTrigger dans le contexte (bien que pas directement utilisé par les consommateurs)
+        refreshLocation,
+        refreshFavorites
       }}
     >
       {children}

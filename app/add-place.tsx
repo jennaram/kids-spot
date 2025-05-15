@@ -28,8 +28,11 @@ import GeoLocationInput from '@/components/Lieux/GeoLocationInput';
 // Styles
 import { colorButtonFirst } from './style/styles';
 import styles from '@/app/style/add-place.styles';
+
+
 import { useGeocodeAddress } from '@/hooks/location/useGeocodeAddress';
 import { useSendMail } from '@/hooks/place/useSendMail';
+import { useLocation } from '@/context/locate/LocationContext';
 
 // Types
 import { AddPlaceOrEventPayload } from '@/Types/place';
@@ -49,6 +52,7 @@ const AddPlaceScreen = () => {
   const [uploading, setUploading] = useState(false);
   const loading = loadingSubmit || loadingMail || uploading;
   const success = successSubmit && successMail && cloudImageUrl;
+  const { refreshLocation } = useLocation();
 
   const { geocode } = useGeocodeAddress();
 
@@ -224,6 +228,7 @@ const AddPlaceScreen = () => {
 
   useEffect(() => {
     if (success) {
+      refreshLocation();
       Alert.alert(
         'Succès',
         'Le lieu a été ajouté avec succès',
