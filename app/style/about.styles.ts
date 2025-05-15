@@ -12,10 +12,11 @@ export const styles = StyleSheet.create({
     position: "relative",
   },
   scrollContent: {
-    paddingBottom: 60,
+    
+    paddingTop: 0
   },
   container: {
-    padding: 20,
+    padding: 5,
     backgroundColor: colorButtonThird,
   },
   textContainer: {

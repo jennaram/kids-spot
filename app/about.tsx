@@ -47,12 +47,12 @@ const About = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <BurgerMenu />
+      <Title text="À propos" />
       <View style={styles.outerContainer}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.container}>
-            <Title text="À propos" />
-
-            <View style={styles.textContainer}>
+            
+             <View style={styles.textContainer}>
               <Text style={styles.description}>
                 "Une app pensée <Text style={styles.bold}>PAR</Text> des parents,{" "}
                 <Text style={styles.bold}>POUR</Text> des parents !"
@@ -140,33 +140,33 @@ const About = () => {
                     MENTIONS LÉGALES{"\n\n"}
                     
                     1. PRÉSENTATION DU SITE{"\n"}
-                    Conformément aux dispositions des articles 6-III et 19 de la Loi n° 2004-575 du 21 juin 2004 pour la Confiance dans l'économie numérique, dite L.C.E.N., nous portons à la connaissance des utilisateurs et visiteurs du site les informations suivantes :{"\n\n"}
+                    Conformément aux dispositions des articles 6-III et 19 de la Loi n° 2004-575 du 21 juin 2004 pour la Confiance dans l'économie numérique, dite L.C.E.N., nous portons à la connaissance des utilisateurs et visiteurs de l'application les informations suivantes :{"\n\n"}
                     
                     Propriétaire : Team Kids Spot{"\n\n"}
-                    Email : contact@kidspot.fr{"\n\n"}
+                    Email : kidspottp@gmail.com{"\n\n"}
                    
                     2. CONDITIONS GÉNÉRALES D'UTILISATION{"\n"}
-                    L'utilisation du site implique l'acceptation pleine et entière des conditions générales d'utilisation décrites ci-après. Ces conditions d'utilisation sont susceptibles d'être modifiées ou complétées à tout moment.{"\n\n"}
-                    
+                    L'utilisation de l'application implique l'acceptation pleine et entière des conditions générales d'utilisation décrites ci-après. Ces conditions d'utilisation sont susceptibles d'être modifiées ou complétées à tout moment.{"\n\n"}
+
                     3. DONNÉES PERSONNELLES{"\n"}
-                    Les informations recueillies font l'objet d'un traitement informatique destiné à [améliorer l'expérience utilisateur]. Conformément à la loi « informatique et libertés » du 6 janvier 1978 modifiée en 2004, vous bénéficiez d'un droit d'accès et de rectification aux informations qui vous concernent. Vous pouvez exercer ce droit en vous adressant à [Team Kidspot].{"\n\n"}
+                    Les informations recueillies font l'objet d'un traitement informatique destiné à améliorer l'expérience utilisateur. Conformément à la loi « informatique et libertés » du 6 janvier 1978 modifiée en 2004, vous bénéficiez d'un droit d'accès et de rectification aux informations qui vous concernent. Vous pouvez exercer ce droit en vous adressant à Team Kidspot.{"\n\n"}
 
                     4. PROPRIÉTÉ INTELLECTUELLE{"\n"}
                     Tous les éléments de l'application mobile Kids Spot (textes, images, graphismes, logo, icônes, sons, logiciels, etc.) sont la propriété exclusive de la société à l'exception des marques, logos ou contenus appartenant à d'autres sociétés partenaires ou auteurs.{"\n\n"}
                     
                     5. LIENS HYPERTEXTES ET COOKIES{"\n"}
-                    Le site Kids Spot contient un certain nombre de liens hypertextes vers d'autres sites. Cependant, Kids Spot n'a pas la possibilité de vérifier le contenu des sites ainsi visités, et n'assumera en conséquence aucune responsabilité de ce fait.{"\n\n"}
+                    L'application Kids Spot contient un certain nombre de liens hypertextes vers d'autres sites. Cependant, Kids Spot n'a pas la possibilité de vérifier le contenu ainsi visités, et n'assumera en conséquence aucune responsabilité de ce fait.{"\n\n"}
                     
                     6. RESPONSABILITÉ{"\n"}
-                    Les sources des informations diffusées sur le site sont réputées fiables. Toutefois, le site se réserve la faculté d'une non-garantie de la fiabilité des sources. Les informations données sur le site le sont à titre purement informatif. Ainsi, l'utilisateur assume seul l'entière responsabilité de l'utilisation des informations et contenus du présent site.{"\n\n"}
-                    
+                    Les sources des informations diffusées sur l'application sont réputées fiables. Toutefois, l'application se réserve la faculté d'une non-garantie de la fiabilité des sources. Les informations données sur l'application le sont à titre purement informatif. Ainsi, l'utilisateur assume seul l'entière responsabilité de l'utilisation des informations et contenus de l'application.{"\n\n"}
+
                     7. DROIT APPLICABLE ET JURIDICTION COMPÉTENTE{"\n"}
-                    Les présentes conditions du site sont régies par les lois françaises et toute contestation ou litiges qui pourraient naître de l'interprétation ou de l'exécution de celles-ci seront de la compétence exclusive des tribunaux dont dépend le siège social de la société. La langue de référence, pour le règlement de contentieux éventuels, est le français.{"\n\n"}
-                    
+                    Les présentes conditions de l'application sont régies par les lois françaises et toute contestation ou litiges qui pourraient naître de l'interprétation ou de l'exécution de celles-ci seront de la compétence exclusive des tribunaux dont dépend le siège social de la société. La langue de référence, pour le règlement de contentieux éventuels, est le français.{"\n\n"}
+
                     8. CONTACT{"\n"}
-                    Pour toute question relative à l'application des présentes mentions légales ou pour toute demande concernant le site, vous pouvez nous contacter via notre formulaire de contact ou à l'adresse email : contact@kidspot.fr.{"\n\n"}
+                    Pour toute question relative à l'application des présentes mentions légales ou pour toute demande concernant l'application, vous pouvez nous contacter via notre formulaire de contact ou à l'adresse email : kidspottp@gmail.com .{"\n\n"}
                    
-                    9. PROPRIETE PRIVEE - UTILISATION RESTREINTE{"\n"}
+                    9. PROPRIETE PRIVEE - UTILISATION RESTREINTE{"\n\n"}
 
                     Ce projet, incluant son code source, ses ressources visuelles, ses documents et toute autre composante, est la propriété exclusive de TEAM KIDSPOT.{"\n\n"}
 
@@ -191,10 +191,10 @@ const About = () => {
           </Modal>
 
         </ScrollView>
-
+      </View>
         {/* Navbar toujours collée en bas */}
         <Navigation />
-      </View>
+      
     </SafeAreaView>
   );
 };
