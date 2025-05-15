@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-
 import { StyleProp, ViewStyle, TextStyle } from 'react-native';
-import { colorButtonSecondary } from '../../app/style/styles'; // Assurez-vous que le chemin est correct
+import { colorButtonSecondary } from '../../app/style/styles';
 
 interface AgeBadgesProps {
   tranchesAge?: string[];
@@ -36,7 +35,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexWrap: "wrap",
     marginBottom: 25,
-    paddingLeft: 15, // Décalage vers la droite
+    paddingLeft: 15,
   },
   ageBadge: {
     paddingVertical: 8,
