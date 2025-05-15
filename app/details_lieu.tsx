@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
@@ -12,7 +12,8 @@ import {
   Share,
   Alert,
   Platform,
-  Linking
+  Linking,
+  StyleSheet
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -26,21 +27,27 @@ import ShareButton from "../components/Lieux/ShareButton";
 import FavoriteButton from "@/components/Lieux/FavoriteButton";
 import AgeBadges from "@/components/Lieux/AgeBadges";
 import styles from "./style/DetailLieuxStyles";
-import { useAuth } from "@/context/auth";
+import { useAuth, } from "@/context/auth";
 import BottomModal from "../components/ModalRedirection";
 import { useIsFavorite } from "@/hooks/favorite/useIsFavorite";
 import BackButton from "./components/BackButton";
 import { useReadPlace } from "@/hooks/place/useReadPlace";
 import { IMAGE_BASE_URL } from '@/api/apiConfig';
+import { Row } from "@/components/Row";
+import { Button } from "@/components/Button";
+import { useDeletePlaceOrEvent } from "@/hooks/place/useDeletePlace";
+import { useLocation } from '@/context/locate/LocationContext';
 
 const DetailsLieu = () => {
+  const { removePlaceOrEvent, error: errorDel, success: successDel } = useDeletePlaceOrEvent();
   const params = useLocalSearchParams() as { id: string };
   const lieuId = Number(params.id?.toString() || "2");
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { refreshLocation } = useLocation();
 
   const { place, loading, error } = useReadPlace(lieuId);
 
-  const { token } = useAuth();
+  const { token, grade } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState("Connectez-vous pour continuer");
 
@@ -114,7 +121,43 @@ const DetailsLieu = () => {
         }
       ]
     );
-  };
+  }
+
+  const handleDelete = () => {
+    Alert.alert(
+      'Confirmation',
+      'Êtes-vous sûr de vouloir supprimer ce lieu ?',
+      [
+        {
+          text: 'Non',
+        },
+        {
+          text: 'Oui',
+          onPress: async () => {
+            if (token) {
+              await removePlaceOrEvent(lieuId, token);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  }
+
+  useEffect(() => {
+    if (successDel) {
+      refreshLocation();
+      Alert.alert(
+        'Succès',
+        'Le lieu a été supprimé avec succès',
+        [{ text: 'OK' }]
+      );
+      router.back();
+    }
+    if (errorDel) {
+      Alert.alert('Erreur', 'Erreur lors de la suppression du lieu');
+    }
+  }, [successDel, errorDel]);
 
   const handleCall = () => {
     if (!place || !place.adresse.telephone) return;
@@ -153,11 +196,20 @@ const DetailsLieu = () => {
 
   const tranchesAge = place.ages.map(age => age.nom);
   const imageUrl = `${IMAGE_BASE_URL}${place.id}.jpg` || require("../assets/images/parc_montsouris.jpg");
-  console.log(imageUrl);
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BackButton style={styles.backButton} />
+      <Row style={{ marginLeft: 0 }}>
+        <BackButton style={styles.backButton} />
+        {grade == 4 ? (
+  <View style={stylesBt.deleteButtonContainer}>
+    <View style={stylesBt.buttonWrapper}>
+      <Button imageName={""} onPress={handleDelete} />
+    </View>
+  </View>
+) : null}
+      </Row>
+
       <View style={styles.mainContainer}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.imageContainer}>
@@ -242,5 +294,16 @@ const DetailsLieu = () => {
     </SafeAreaView>
   );
 };
+
+const stylesBt = StyleSheet.create({
+  deleteButtonContainer: {
+    position: 'absolute',
+    right: 10,
+    // Vous pouvez ajouter top, bottom, etc., selon le positionnement vertical souhaité
+  },
+  buttonWrapper: {
+    // Styles supplémentaires pour l'enveloppe du bouton si nécessaire
+  },
+});
 
 export default DetailsLieu;
