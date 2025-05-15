@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
 
   const toggleEquipment = (key: EquipmentKeys) => {
     setEquipments(prev => ({ ...prev, [key]: !prev[key] }));
-  }, []);
+  };
 
   const getTranslatedLabel = (key: string) => {
     return key === '0-2' ? '0-2 ans' :
