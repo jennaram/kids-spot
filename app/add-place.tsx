@@ -3,12 +3,14 @@ import { useAuth } from '@/context/auth';
 import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
   View, Text, Switch, TextInput, ScrollView, TouchableOpacity,
-  Image, Alert, SafeAreaView, Modal, ActivityIndicator
+  Image, Alert, SafeAreaView, Modal, ActivityIndicator, Platform
 } from 'react-native';
 import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+
 
 // Composants
 import { Navigation } from '@/components/NavBar/Navigation';
@@ -19,7 +21,6 @@ import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
 import FiltreButtons from '@/components/Filtres/FiltreButtons';
 import { PhotoPickerButton } from '@/components/PhotoPickerButton';
 import AgeBadges from '@/components/Lieux/AgeBadges';
-import StarRating from '@/components/Notation/StarRating';
 import { AvailableEquipments, EquipmentKeys, EquipmentType } from '@/components/Lieux/AvailableEquipments';
 import GeoLocationInput from '@/components/Lieux/GeoLocationInput';
 
@@ -66,6 +67,10 @@ const AddPlaceScreen = () => {
   const [isEvent, setIsEvent] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [tempStartDate, setTempStartDate] = useState(new Date());
+  const [tempEndDate, setTempEndDate] = useState(new Date());
   const [equipments, setEquipments] = useState<EquipmentType>({
     strollerAccess: false,
     playArea: false,
@@ -103,7 +108,6 @@ const AddPlaceScreen = () => {
         setCodepostal(addressResult.postalCode || '');
       }
     } catch (error) {
-      //console.error('Error getting location:', error);
       Alert.alert('Erreur', 'Impossible d\'obtenir la localisation actuelle');
     }
   }, []);
@@ -129,7 +133,11 @@ const AddPlaceScreen = () => {
       return;
     }
 
-    // Construire l'adresse complète pour le géocodage
+    if (isEvent && (!startDate || !endDate)) {
+      Alert.alert('Erreur', 'Veuillez sélectionner les dates de début et de fin pour l\'événement');
+      return;
+    }
+
     const fullAddress = `${address.trim()}, ${codepostal.trim()}, France`;
     const coords = await geocode(fullAddress);
 
@@ -178,7 +186,6 @@ const AddPlaceScreen = () => {
 
   useEffect(() => {
     if (successSubmit) {
-      // Envoi de mail de confirmation
       const sujet = "Nouveau lieu ajouté";
       const contenueHTML = `
         <h1>Nouveau lieu ajouté</h1>
@@ -214,8 +221,6 @@ const AddPlaceScreen = () => {
     }
   }, [success]);
 
-
-
   const toggleAgeRange = useCallback((age: string) => {
     setAgeRanges((prev) =>
       prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]
@@ -232,66 +237,52 @@ const AddPlaceScreen = () => {
         '7 ans et plus';
   };
 
-  const formatEventDate = useCallback((text: string, setter: (val: string) => void): void => {
-    // Nettoie le texte pour ne garder que les chiffres
-    const cleanedText = text.replace(/\D/g, '').slice(0, 8);
-  
-    let day = cleanedText.slice(0, 2);
-    let month = cleanedText.slice(2, 4);
-    let year = cleanedText.slice(4, 8);
-  
-    // Valide le jour
-    if (day.length === 2) {
-      const dayInt = parseInt(day, 10);
-      if (dayInt < 1 || dayInt > 31) {
-        day = '31';
+  const formatDateForDisplay = (dateString: string) => {
+    if (!dateString) return '';
+    const [day, month, year] = dateString.split('/');
+    return `${day}/${month}/${year}`;
+  };
+
+  const formatDateForAPI = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleStartDateChange = (event: any, selectedDate?: Date) => {
+    setShowStartDatePicker(false);
+    if (selectedDate) {
+      setTempStartDate(selectedDate);
+      const formattedDate = formatDateForAPI(selectedDate);
+      setStartDate(formattedDate);
+      
+      // Si la date de fin est avant la nouvelle date de début, on met à jour la date de fin
+      if (endDate) {
+        const [endDay, endMonth, endYear] = endDate.split('/').map(Number);
+        const endDateObj = new Date(endYear, endMonth - 1, endDay);
+        if (selectedDate > endDateObj) {
+          const newEndDate = new Date(selectedDate);
+          newEndDate.setDate(newEndDate.getDate() + 1);
+          setTempEndDate(newEndDate);
+          setEndDate(formatDateForAPI(newEndDate));
+        }
       }
     }
-  
-    // Valide le mois
-    if (month.length === 2) {
-      const monthInt = parseInt(month, 10);
-      if (monthInt < 1 || monthInt > 12) {
-        month = '12';
+  };
+
+  const handleEndDateChange = (event: any, selectedDate?: Date) => {
+    setShowEndDatePicker(false);
+    if (selectedDate) {
+      // Vérifier que la date de fin est après la date de début
+      if (selectedDate < tempStartDate) {
+        Alert.alert('Erreur', 'La date de fin doit être après la date de début');
+        return;
       }
+      setTempEndDate(selectedDate);
+      setEndDate(formatDateForAPI(selectedDate));
     }
-
-     // Valider l'année
-  if (year.length === 4) {
-    let yearInt = parseInt(year, 10);
-    if (yearInt < 2024) year = '2024';
-    else if (yearInt > 2030) year = '2030';
-  }
-  
-    let formatted = '';
-    if (cleanedText.length <= 2) {
-      formatted = day;
-    } else if (cleanedText.length <= 4) {
-      formatted = `${day}/${month}`;
-    } else {
-      formatted = `${day}/${month}/${year}`;
-    }
-  
-    setter(formatted);
-  }, []);
-
-  const isStartBeforeEnd = useCallback((start: string, end: string): boolean => {
-    if (!start || !end || start.length !== 10 || end.length !== 10) {
-      return true; // Autoriser si les dates ne sont pas complètement saisies
-    }
-    const [startDay, startMonth, startYear] = start.split("/").map(Number);
-    const [endDay, endMonth, endYear] = end.split("/").map(Number);
-
-    const startDateObj = new Date(startYear, startMonth - 1, startDay);
-    const endDateObj = new Date(endYear, endMonth - 1, endDay);
-
-    return startDateObj < endDateObj;
-  }, []);
-
-
-
-
-
+  };
 
   const uploadImageToCloudinary = async (imageUri: string, imageName: number) => {
     const cloudName = 'dtovi7wy6';
@@ -316,8 +307,6 @@ const AddPlaceScreen = () => {
       });
 
       const data = await response.json();
-      //console.log('Réponse Cloudinary :', data);
-
       if (data && data.secure_url) {
         setCloudImageUrl(data.secure_url);
       } else {
@@ -357,7 +346,7 @@ const AddPlaceScreen = () => {
           <FiltreButtons
             selectedTypeIds={selectedTypeIds}
             onPress={(id) => {
-              setSelectedTypeIds([id]); // Un seul ID sélectionné à la fois
+              setSelectedTypeIds([id]);
               const type = id === 1 ? 'restaurant' : id === 2 ? 'leisure' : 'culture';
               setPlaceType(type);
             }}
@@ -439,36 +428,40 @@ const AddPlaceScreen = () => {
           <>
             <View style={styles.section}>
               <Text style={styles.label}>Date de début de l'événement</Text>
-              <FormInput
-                label=""
-                value={startDate}
-                placeholder="JJ/MM/AAAA"
-                onChangeText={(text) => {
-                  formatEventDate(text, setStartDate);
-                  if (text.length === 10 && endDate.length === 10) {
-                    if (!isStartBeforeEnd(text, endDate)) {
-                      alert("La date de début doit être antérieure à la date de fin.");
-                    }
-                  }
-                }}
-              />
+              <TouchableOpacity
+                onPress={() => setShowStartDatePicker(true)}
+                style={styles.dateInput}
+              >
+                <Text>{startDate ? formatDateForDisplay(startDate) : 'Sélectionner une date'}</Text>
+              </TouchableOpacity>
+              {showStartDatePicker && (
+                <DateTimePicker
+                  value={tempStartDate}
+                  mode="date"
+                  display='default'
+                  onChange={handleStartDateChange}
+                  minimumDate={new Date()}
+                />
+              )}
             </View>
 
             <View style={styles.section}>
               <Text style={styles.label}>Date de fin de l'événement</Text>
-              <FormInput
-                label=""
-                value={endDate}
-                placeholder="JJ/MM/AAAA"
-                onChangeText={(text) => {
-                  formatEventDate(text, setEndDate);
-                  if (startDate.length === 10 && text.length === 10) {
-                    if (!isStartBeforeEnd(startDate, text)) {
-                      alert("La date de début doit être antérieure à la date de fin.");
-                    }
-                  }
-                }}
-              />
+              <TouchableOpacity
+                onPress={() => setShowEndDatePicker(true)}
+                style={styles.dateInput}
+              >
+                <Text>{endDate ? formatDateForDisplay(endDate) : 'Sélectionner une date'}</Text>
+              </TouchableOpacity>
+              {showEndDatePicker && (
+                <DateTimePicker
+                  value={tempEndDate}
+                  mode="date"
+                  display='default'
+                  onChange={handleEndDateChange}
+                  minimumDate={tempStartDate}
+                />
+              )}
             </View>
           </>
         )}
@@ -508,43 +501,10 @@ const AddPlaceScreen = () => {
           </View>
         </View>
 
-        {/* {location && (
-          <View style={styles.section}>
-            <Text style={styles.label}>Localisation</Text>
-            <View style={styles.mapContainer}>
-              <MapView
-                style={styles.map}
-                initialRegion={{
-                  ...location,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-              >
-                <Marker coordinate={location}>
-                  <Image
-                    source={placeIcons[placeType]}
-                    style={styles.markerImage}
-                  />
-                </Marker>
-              </MapView>
-            </View>
-          </View>
-        )} */}
-
-        {/* <View style={styles.section}>
-          <StarRating
-            rating={rating}
-            setRating={setRating}
-            label="Note (sur 5)"
-            containerStyle={styles.ratingContainer}
-          />
-        </View> */}
-
         <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      {/* Modal de chargement pendant l'ajout du lieu */}
       <Modal
         visible={loading}
         transparent

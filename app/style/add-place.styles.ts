@@ -50,6 +50,31 @@ export default StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
   },
+  
+  datePicker: {
+    backgroundColor: 'white',
+  },
+  datePickerText: {
+    color: 'black',
+    fontSize: 16,
+  },
+  datePickerContainer: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 15,
+  },
+  dateInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 8,
+    backgroundColor: 'white',
+  },
+  dateInputText: {
+    color: 'black',
+  },
+
 
  
   
