@@ -3,7 +3,8 @@ import { useAuth } from '@/context/auth';
 import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
   View, Text, Switch, TextInput, ScrollView, TouchableOpacity,
-  Image, Alert, SafeAreaView, Modal, ActivityIndicator, Platform
+  Image, Alert, SafeAreaView, Modal, ActivityIndicator, Platform,
+  StyleSheet
 } from 'react-native';
 import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -79,6 +80,13 @@ const AddPlaceScreen = () => {
     changingTable: false,
     parking: false,
   });
+
+  // Style du DateTimePicker pour iOS
+  const datePickerIosStyles = {
+    textColor: '#000', // Texte noir pour meilleure visibilité
+    backgroundColor: '#f8f8f8', // Fond légèrement grisé pour faire ressortir les bordures
+    accentColor: colorButtonFirst, // Utilisation de la couleur primaire de l'application
+  };
 
   const placeIcons = useMemo(() => ({
     restaurant: require('@/assets/images/user-location-restaurant.png'),
@@ -250,8 +258,13 @@ const AddPlaceScreen = () => {
     return `${day}/${month}/${year}`;
   };
 
+  // Fonctions modifiées pour gérer le DateTimePicker
   const handleStartDateChange = (event: any, selectedDate?: Date) => {
-    setShowStartDatePicker(false);
+    // Sur iOS, on ne ferme pas automatiquement le picker
+    if (Platform.OS === 'android') {
+      setShowStartDatePicker(false);
+    }
+    
     if (selectedDate) {
       setTempStartDate(selectedDate);
       const formattedDate = formatDateForAPI(selectedDate);
@@ -268,11 +281,20 @@ const AddPlaceScreen = () => {
           setEndDate(formatDateForAPI(newEndDate));
         }
       }
+      
+      // Sur iOS, on ferme le picker une fois la sélection faite
+      if (Platform.OS === 'ios') {
+        setShowStartDatePicker(false);
+      }
     }
   };
 
   const handleEndDateChange = (event: any, selectedDate?: Date) => {
-    setShowEndDatePicker(false);
+    // Sur iOS, on ne ferme pas automatiquement le picker
+    if (Platform.OS === 'android') {
+      setShowEndDatePicker(false);
+    }
+    
     if (selectedDate) {
       // Vérifier que la date de fin est après la date de début
       if (selectedDate < tempStartDate) {
@@ -281,6 +303,11 @@ const AddPlaceScreen = () => {
       }
       setTempEndDate(selectedDate);
       setEndDate(formatDateForAPI(selectedDate));
+      
+      // Sur iOS, on ferme le picker une fois la sélection faite
+      if (Platform.OS === 'ios') {
+        setShowEndDatePicker(false);
+      }
     }
   };
 
@@ -319,6 +346,33 @@ const AddPlaceScreen = () => {
       setUploading(false);
     }
   };
+
+  // Styles personnalisés pour les éléments de date
+  const dateStyles = StyleSheet.create({
+    dateContainer: {
+      marginBottom: 10,
+    },
+    dateInput: {
+      borderWidth: 1,
+      borderColor: '#333', // Bordure plus foncée
+      borderRadius: 8,
+      padding: 12,
+      backgroundColor: 'white',
+    },
+    dateText: {
+      color: '#000', // Texte noir
+      fontSize: 16,
+      fontWeight: '500', // Un peu plus gras
+    },
+    pickerContainer: {
+      marginTop: 10,
+      borderWidth: Platform.OS === 'ios' ? 1 : 0,
+      borderColor: '#ccc',
+      borderRadius: 8,
+      backgroundColor: Platform.OS === 'ios' ? '#fff' : 'transparent',
+      overflow: 'hidden',
+    }
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -430,18 +484,27 @@ const AddPlaceScreen = () => {
               <Text style={styles.label}>Date de début de l'événement</Text>
               <TouchableOpacity
                 onPress={() => setShowStartDatePicker(true)}
-                style={styles.dateInput}
+                style={dateStyles.dateInput}
               >
-                <Text>{startDate ? formatDateForDisplay(startDate) : 'Sélectionner une date'}</Text>
+                <Text style={dateStyles.dateText}>
+                  {startDate ? formatDateForDisplay(startDate) : 'Sélectionner une date'}
+                </Text>
               </TouchableOpacity>
+              
               {showStartDatePicker && (
-                <DateTimePicker
-                  value={tempStartDate}
-                  mode="date"
-                  display='default'
-                  onChange={handleStartDateChange}
-                  minimumDate={new Date()}
-                />
+                <View style={dateStyles.pickerContainer}>
+                  <DateTimePicker
+                    value={tempStartDate}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    onChange={handleStartDateChange}
+                    minimumDate={new Date()}
+                    textColor="#000" // Texte noir pour iOS
+                    accentColor={colorButtonFirst} // Couleur d'accent pour iOS
+                    themeVariant="light" // Thème clair pour meilleure visibilité
+                    style={{backgroundColor: Platform.OS === 'ios' ? '#fff' : 'transparent'}}
+                  />
+                </View>
               )}
             </View>
 
@@ -449,18 +512,27 @@ const AddPlaceScreen = () => {
               <Text style={styles.label}>Date de fin de l'événement</Text>
               <TouchableOpacity
                 onPress={() => setShowEndDatePicker(true)}
-                style={styles.dateInput}
+                style={dateStyles.dateInput}
               >
-                <Text>{endDate ? formatDateForDisplay(endDate) : 'Sélectionner une date'}</Text>
+                <Text style={dateStyles.dateText}>
+                  {endDate ? formatDateForDisplay(endDate) : 'Sélectionner une date'}
+                </Text>
               </TouchableOpacity>
+              
               {showEndDatePicker && (
-                <DateTimePicker
-                  value={tempEndDate}
-                  mode="date"
-                  display='default'
-                  onChange={handleEndDateChange}
-                  minimumDate={tempStartDate}
-                />
+                <View style={dateStyles.pickerContainer}>
+                  <DateTimePicker
+                    value={tempEndDate}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    onChange={handleEndDateChange}
+                    minimumDate={tempStartDate}
+                    textColor="#000" // Texte noir pour iOS
+                    accentColor={colorButtonFirst} // Couleur d'accent pour iOS
+                    themeVariant="light" // Thème clair pour meilleure visibilité
+                    style={{backgroundColor: Platform.OS === 'ios' ? '#fff' : 'transparent'}}
+                  />
+                </View>
               )}
             </View>
           </>

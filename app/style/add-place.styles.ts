@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colorButtonFirst } from '../style/styles';
+import { colorButtonFirst } from './styles';
 
 export default StyleSheet.create({
   container: {
@@ -51,33 +51,47 @@ export default StyleSheet.create({
     fontSize: 16,
   },
   
+  // Styles améliorés pour le DateTimePicker
   datePicker: {
     backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#333',
+    alignSelf: 'center', // Centrer horizontalement
+    alignItems: 'center',
   },
   datePickerText: {
-    color: 'black',
+    color: '#000',
     fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center', // Centrer le texte
   },
   datePickerContainer: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
+    width: '100%', // Prend toute la largeur disponible
+    alignItems: 'center', // Centre les éléments enfants horizontalement
+    marginTop: 8,
   },
   dateInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#333', // Bordure plus foncée
     borderRadius: 8,
     padding: 12,
     marginTop: 8,
     backgroundColor: 'white',
   },
   dateInputText: {
-    color: 'black',
+    color: '#000', // Texte noir
+    fontSize: 16,
+    fontWeight: '500', // Un peu plus prononcé
+    textAlign: 'center', // Centrer le texte
   },
-
-
- 
-  
-  // Les styles suivants peuvent être supprimés car remplacés :
-  // ageBadgesContainer, ageBadgeContainer, ageBadge, ageBadgeText
+  calendarContainer: {
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginTop: 8,
+    backgroundColor: '#fff',
+    alignSelf: 'center', // Centrer horizontalement
+    width: '100%', // Prendre toute la largeur disponible
+  },
 });
