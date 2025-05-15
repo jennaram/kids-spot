@@ -492,7 +492,7 @@ const AddPlaceScreen = () => {
               </TouchableOpacity>
               
               {showStartDatePicker && (
-                <View style={dateStyles.pickerContainer}>
+                <View style={[dateStyles.pickerContainer, { alignItems: 'center' }]}>
                   <DateTimePicker
                     value={tempStartDate}
                     mode="date"
@@ -520,7 +520,7 @@ const AddPlaceScreen = () => {
               </TouchableOpacity>
               
               {showEndDatePicker && (
-                <View style={dateStyles.pickerContainer}>
+                <View style={[dateStyles.pickerContainer, { alignItems: 'center' }]}>
                   <DateTimePicker
                     value={tempEndDate}
                     mode="date"
