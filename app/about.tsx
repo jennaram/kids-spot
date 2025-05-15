@@ -47,12 +47,12 @@ const About = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <BurgerMenu />
+      <Title text="À propos" />
       <View style={styles.outerContainer}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.container}>
-            <Title text="À propos" />
-
-            <View style={styles.textContainer}>
+            
+             <View style={styles.textContainer}>
               <Text style={styles.description}>
                 "Une app pensée <Text style={styles.bold}>PAR</Text> des parents,{" "}
                 <Text style={styles.bold}>POUR</Text> des parents !"
@@ -155,7 +155,7 @@ const About = () => {
                     Tous les éléments de l'application mobile Kids Spot (textes, images, graphismes, logo, icônes, sons, logiciels, etc.) sont la propriété exclusive de la société à l'exception des marques, logos ou contenus appartenant à d'autres sociétés partenaires ou auteurs.{"\n\n"}
                     
                     5. LIENS HYPERTEXTES ET COOKIES{"\n"}
-                    L'application Kids Spot contient un certain nombre de liens hypertextes vers d'autres sites. Cependant, Kids Spot n'a pas la possibilité de vérifier le contenu des sites ainsi visités, et n'assumera en conséquence aucune responsabilité de ce fait.{"\n\n"}
+                    L'application Kids Spot contient un certain nombre de liens hypertextes vers d'autres sites. Cependant, Kids Spot n'a pas la possibilité de vérifier le contenu ainsi visités, et n'assumera en conséquence aucune responsabilité de ce fait.{"\n\n"}
                     
                     6. RESPONSABILITÉ{"\n"}
                     Les sources des informations diffusées sur l'application sont réputées fiables. Toutefois, l'application se réserve la faculté d'une non-garantie de la fiabilité des sources. Les informations données sur l'application le sont à titre purement informatif. Ainsi, l'utilisateur assume seul l'entière responsabilité de l'utilisation des informations et contenus de l'application.{"\n\n"}
@@ -166,7 +166,7 @@ const About = () => {
                     8. CONTACT{"\n"}
                     Pour toute question relative à l'application des présentes mentions légales ou pour toute demande concernant l'application, vous pouvez nous contacter via notre formulaire de contact ou à l'adresse email : kidspottp@gmail.com .{"\n\n"}
                    
-                    9. PROPRIETE PRIVEE - UTILISATION RESTREINTE{"\n"}
+                    9. PROPRIETE PRIVEE - UTILISATION RESTREINTE{"\n\n"}
 
                     Ce projet, incluant son code source, ses ressources visuelles, ses documents et toute autre composante, est la propriété exclusive de TEAM KIDSPOT.{"\n\n"}
 
@@ -191,10 +191,10 @@ const About = () => {
           </Modal>
 
         </ScrollView>
-
+      </View>
         {/* Navbar toujours collée en bas */}
         <Navigation />
-      </View>
+      
     </SafeAreaView>
   );
 };
