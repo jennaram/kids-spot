@@ -214,7 +214,6 @@ const ReviewPage = () => {
               keyboardType="default"
               secureTextEntry={false}
               multiline={true}
-              style={styles.textAreaInput}
             />
             <Text style={styles.charCount}>
               {comment.length} / {MAX_CHARACTERS}
@@ -226,7 +225,6 @@ const ReviewPage = () => {
                 title={getButtonText()}
                 onPress={handleSubmit}
                 loading={loading}
-                disabled={!token}
               />
             </View>
           </View>

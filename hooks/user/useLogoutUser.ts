@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { authService } from '@/services/authService';
+//import { authService } from '@/services/authService';
 import { useAuth } from '@/context/auth/AuthContext';
 
 export function useLogoutUser() {
@@ -11,7 +11,7 @@ export function useLogoutUser() {
     setLoading(true);
     setError(null);
     try {
-      await authService.logout();
+      //await authService.logout();
       setToken(null); // Supprime le token du contexte
     } catch (err: any) {
       setError(err.message || 'Erreur inconnue');

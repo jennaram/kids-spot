@@ -39,7 +39,7 @@ type LocationType = LatLng | null;
 
 const AddPlaceScreen = () => {
   const router = useRouter();
-  const { token } = useAuth();
+  const { token, grade } = useAuth();
 
   const [image, setImage] = useState<string>();
   const [cloudImageUrl, setCloudImageUrl] = useState<string>();
@@ -203,7 +203,7 @@ const AddPlaceScreen = () => {
       submitMail(sujet, contenueHTML, token ?? '');
     }
     if (error)
-     if (fieldErrors) {
+      if (fieldErrors) {
         // Formater et afficher les erreurs de validation pour chaque champ
         const errorMessages = Object.entries(fieldErrors)
           .map(([field, message]) => `${field} : ${message}`)
@@ -267,12 +267,12 @@ const AddPlaceScreen = () => {
     if (Platform.OS === 'android') {
       setShowStartDatePicker(false);
     }
-    
+
     if (selectedDate) {
       setTempStartDate(selectedDate);
       const formattedDate = formatDateForAPI(selectedDate);
       setStartDate(formattedDate);
-      
+
       // Si la date de fin est avant la nouvelle date de début, on met à jour la date de fin
       if (endDate) {
         const [endDay, endMonth, endYear] = endDate.split('/').map(Number);
@@ -284,7 +284,7 @@ const AddPlaceScreen = () => {
           setEndDate(formatDateForAPI(newEndDate));
         }
       }
-      
+
       // Sur iOS, on ferme le picker une fois la sélection faite
       if (Platform.OS === 'ios') {
         setShowStartDatePicker(false);
@@ -297,7 +297,7 @@ const AddPlaceScreen = () => {
     if (Platform.OS === 'android') {
       setShowEndDatePicker(false);
     }
-    
+
     if (selectedDate) {
       // Vérifier que la date de fin est après la date de début
       if (selectedDate < tempStartDate) {
@@ -306,7 +306,7 @@ const AddPlaceScreen = () => {
       }
       setTempEndDate(selectedDate);
       setEndDate(formatDateForAPI(selectedDate));
-      
+
       // Sur iOS, on ferme le picker une fois la sélection faite
       if (Platform.OS === 'ios') {
         setShowEndDatePicker(false);
@@ -377,6 +377,16 @@ const AddPlaceScreen = () => {
     }
   });
 
+  if (grade < 1) {
+    return (
+      <View>
+        <SafeAreaView>
+          <Text>Pas le droit</Text>
+        </SafeAreaView>
+      </View>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <BurgerMenu />
@@ -392,7 +402,7 @@ const AddPlaceScreen = () => {
             placeholder="Entrez le nom du lieu"
             maxLength={35}
           />
-          <Text style={{ alignSelf: 'flex-end', marginTop: 4}}>
+          <Text style={{ alignSelf: 'flex-end', marginTop: 4 }}>
             {placeName.length}/35
           </Text>
           <PhotoPickerButton onPhotoSelected={(uri) => setImage(uri)} />
@@ -493,7 +503,7 @@ const AddPlaceScreen = () => {
                   {startDate ? formatDateForDisplay(startDate) : 'Sélectionner une date'}
                 </Text>
               </TouchableOpacity>
-              
+
               {showStartDatePicker && (
                 <View style={[dateStyles.pickerContainer, { alignItems: 'center' }]}>
                   <DateTimePicker
@@ -505,7 +515,7 @@ const AddPlaceScreen = () => {
                     textColor="#000" // Texte noir pour iOS
                     accentColor={colorButtonFirst} // Couleur d'accent pour iOS
                     themeVariant="light" // Thème clair pour meilleure visibilité
-                    style={{backgroundColor: Platform.OS === 'ios' ? '#fff' : 'transparent'}}
+                    style={{ backgroundColor: Platform.OS === 'ios' ? '#fff' : 'transparent' }}
                   />
                 </View>
               )}
@@ -521,7 +531,7 @@ const AddPlaceScreen = () => {
                   {endDate ? formatDateForDisplay(endDate) : 'Sélectionner une date'}
                 </Text>
               </TouchableOpacity>
-              
+
               {showEndDatePicker && (
                 <View style={[dateStyles.pickerContainer, { alignItems: 'center' }]}>
                   <DateTimePicker
@@ -533,7 +543,7 @@ const AddPlaceScreen = () => {
                     textColor="#000" // Texte noir pour iOS
                     accentColor={colorButtonFirst} // Couleur d'accent pour iOS
                     themeVariant="light" // Thème clair pour meilleure visibilité
-                    style={{backgroundColor: Platform.OS === 'ios' ? '#fff' : 'transparent'}}
+                    style={{ backgroundColor: Platform.OS === 'ios' ? '#fff' : 'transparent' }}
                   />
                 </View>
               )}
