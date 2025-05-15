@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { loginUser } from '@/services/userServices';
-import { AuthResult } from '@/types/user';
+import { AuthResult } from '@/Types/user';
 import { handleApiError } from '@/utils/handleApiError';
 import { getApiMessage } from '@/utils/apiResponseHelpers';
 

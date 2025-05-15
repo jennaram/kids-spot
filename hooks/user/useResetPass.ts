@@ -1,5 +1,5 @@
 import { resetPass } from "@/services/userServices";
-import { ResetPass } from "@/types/user";
+import { ResetPass } from "@/Types/user";
 import { getApiMessage, isApiError } from "@/utils/apiResponseHelpers";
 import { useState } from "react";
 

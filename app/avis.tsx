@@ -17,7 +17,7 @@ import BackButton from "@/app/components/BackButton";
 import { Navigation } from "@/components/NavBar/Navigation";
 import { Title } from "@/components/Title";
 import { useAddComment } from "@/hooks/comments/useAddComment";
-import { AddComment } from "@/types/comment";
+import { AddComment } from "@/Types/comment";
 import { AuthContext } from "@/context/auth/AuthContext";
 import StarRating from "@/components/Notation/StarRating";
 import FormInput from "@/app/components/Form/InputField";

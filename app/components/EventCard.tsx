@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { eventCardStyles as styles } from '../style/EventCardStyles';
 import { fontSubtitle } from '../style/styles';
 import { ButtonStyle } from '../style/styles';
-import { Place } from '@/types/place';
+import { Place } from '@/Types/place';
 import { IMAGE_BASE_URL } from '@/api/apiConfig';
 // Interface pour les propriétés du composant EventCard
 interface EventCardProps {

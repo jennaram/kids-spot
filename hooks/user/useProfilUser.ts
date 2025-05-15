@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ProfilUser } from '@/types/user';
+import { ProfilUser } from '@/Types/user';
 import { profilUser } from '@/services/userServices';
 export function useProfilUser(token: string) {
     const [loading, setLoading] = useState(false);

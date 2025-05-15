@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { RegisterUser } from '@/types/user';
+import { RegisterUser } from '@/Types/user';
 import { registerUser } from '@/services/userServices';
-import { ApiResponseSuccessOnly } from '@/types/api-response';
+import { ApiResponseSuccessOnly } from '@/Types/api-response';
 import { getApiMessage, isApiError } from '@/utils/apiResponseHelpers';
 
 export function useRegisterUser() {

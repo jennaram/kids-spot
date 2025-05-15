@@ -4,8 +4,8 @@
  */
 
 import { apiDelete, apiGet, apiPost } from "@/services/apiClient";
-import { ApiResponse, ApiResponseSuccessOnly } from "@/types/api-response";
-import { FetchAllPlaces } from "@/types/place";
+import { ApiResponse, ApiResponseSuccessOnly } from "@/Types/api-response";
+import { FetchAllPlaces } from "@/Types/place";
 import { checkToken } from "@/utils/auth";
 
 

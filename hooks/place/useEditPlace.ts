@@ -1,5 +1,5 @@
 import { editPlaceOrEvent } from '@/services/placeServices';
-import { UpdatePlaceOrEventPayload } from '@/types/place';
+import { UpdatePlaceOrEventPayload } from '@/Types/place';
 import { getApiMessage, isApiError } from '@/utils/apiResponseHelpers';
 import { handleApiError } from '@/utils/handleApiError';
 import { useState } from "react";

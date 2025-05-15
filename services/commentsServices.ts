@@ -4,8 +4,8 @@
  */
 
 import { apiDelete, apiGet, apiPost, apiPut } from "@/services/apiClient";
-import { FetchCommentResponse, FetchAllCommentsResponse, AddComment } from "@/types/comment";
-import { ApiResponse, ApiResponseSuccessOnly } from "@/types/api-response";
+import { FetchCommentResponse, FetchAllCommentsResponse, AddComment } from "@/Types/comment";
+import { ApiResponse, ApiResponseSuccessOnly } from "@/Types/api-response";
 import { checkToken } from "@/utils/auth";
 
 /**

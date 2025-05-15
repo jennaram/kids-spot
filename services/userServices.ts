@@ -5,9 +5,9 @@
  */
 
 import { apiGet, apiPost, apiPut } from '@/services/apiClient';
-import { ApiResponse, ApiResponseSuccessOnly } from '@/types/api-response';
+import { ApiResponse, ApiResponseSuccessOnly } from '@/Types/api-response';
 import { checkToken } from '@/utils/auth';
-import { RegisterUser, AuthResult, ResetPass, ProfilUser, FetchProfileResponse } from '@/types/user';
+import { RegisterUser, AuthResult, ResetPass, ProfilUser, FetchProfileResponse } from '@/Types/user';
 /**
  * Inscription d'un nouvel utilisateur
  * @param user - Données d'inscription : pseudo, mail, mot_de_passe, téléphone

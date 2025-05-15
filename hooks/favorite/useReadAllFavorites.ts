@@ -1,5 +1,5 @@
 import { fetchNearbyFavorites } from "@/services/favoritesServices";
-import { Place } from "@/types/place";
+import { Place } from "@/Types/place";
 import { useEffect, useState } from "react";
 
 export function useReadAllFavorites(lat: number, lgt: number, token: string, trigger: number) {

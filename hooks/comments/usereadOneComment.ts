@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchComment } from "@/services/commentsServices";
-import type { Comment } from "@/types/comment";
+import type { Comment } from "@/Types/comment";
 
 /**
  * Hook pour gérer l'état et la logique de la lecture d'un commentaire

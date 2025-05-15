@@ -1,5 +1,5 @@
 import { getAllPlaces } from "@/services/placeServices";
-import { Place } from "@/types/place";
+import { Place } from "@/Types/place";
 import { handleApiError } from "@/utils/handleApiError";
 import { useEffect, useState } from "react";
 

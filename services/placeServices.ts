@@ -3,10 +3,10 @@
  * @date 2025-05-01
  */
 
-import { ApiResponse, ApiResponseSuccessOnly } from "@/types/api-response";
+import { ApiResponse, ApiResponseSuccessOnly } from "@/Types/api-response";
 import { checkToken } from "@/utils/auth";
 import { apiDelete, apiGet, apiPost, apiPut } from "./apiClient";
-import { AddPlaceOrEventPayload, FetchAllPlaces, FetchPlace, GetPlaceId, UpdatePlaceOrEventPayload } from "@/types/place";
+import { AddPlaceOrEventPayload, FetchAllPlaces, FetchPlace, GetPlaceId, UpdatePlaceOrEventPayload } from "@/Types/place";
 
 /**
  * Soumet les données du lieu ou de l'événement a ajouter à l'API.
