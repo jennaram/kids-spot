@@ -1,8 +1,0 @@
-implementation 'com.google.android.gms:play-services-location:21.0.1'
-buildscript {
-  dependencies {
-    // ...
-    classpath 'com.google.gms:google-services:4.3.15' // Version la plus récente
-  }
-}
-apply plugin: 'com.google.gms.google-services'
