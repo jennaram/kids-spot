@@ -39,6 +39,9 @@ import { AddPlaceOrEventPayload } from '@/Types/place';
 import { useReadPlace } from '@/hooks/place/useReadPlace';
 import { IMAGE_BASE_URL } from '@/api/apiConfig';
 import { useEditPlaceOrEvent } from '@/hooks/place/useEditPlace';
+import { Row } from '@/components/Row';
+import BackButton from './components/BackButton';
+import { Logo } from '@/components/Logo';
 
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
 type LocationType = LatLng | null;
@@ -56,7 +59,7 @@ const AddPlaceScreen = () => {
 
   const { submitPlaceOrEvent, loading: loadingSubmit, error, success: successSubmit, fieldErrors, id } = useAddPlaceOrEvent();
 
-  const { updatePlaceOrEvent, error:errorEdit, success:successEdit, fieldErrors:fieldErrorsEdit } = useEditPlaceOrEvent();
+  const { updatePlaceOrEvent, error: errorEdit, success: successEdit, fieldErrors: fieldErrorsEdit } = useEditPlaceOrEvent();
 
   const { submitMail, loading: loadingMail, error: errorMail, success: successMail } = useSendMail();
   const [uploading, setUploading] = useState(false);
@@ -523,7 +526,7 @@ const AddPlaceScreen = () => {
                 };
 
                 await updatePlaceOrEvent(updatedData, token);
-                
+
               } catch (errorEdit) {
                 console.error("Erreur lors de la mise à jour du lieu :", error);
                 Alert.alert('Erreur', 'Une erreur est survenue lors de la mise à jour.');
@@ -538,15 +541,15 @@ const AddPlaceScreen = () => {
     );
   };
 
-  useEffect(()=>{
-    if(successEdit){
+  useEffect(() => {
+    if (successEdit) {
       refreshLocation();
       Alert.alert(
         'Succès',
         'Le lieu a été modifié avec succès',
         [{ text: 'OK', onPress: () => router.push('main') }]
       );
-    }else if(errorEdit){
+    } else if (errorEdit) {
       if (fieldErrorsEdit) {
         // Formater et afficher les erreurs de validation pour chaque champ
         const errorMessages = Object.entries(fieldErrorsEdit)
@@ -558,13 +561,25 @@ const AddPlaceScreen = () => {
     }
   }, [errorEdit, successEdit])
 
-  if (grade < 1) {
+  if (grade < 2) {
     return (
-      <View>
-        <SafeAreaView>
-          <Text>Pas le droit</Text>
-        </SafeAreaView>
-      </View>
+      <>
+        <Row style={{ marginLeft: 0 }}>
+          <BackButton />
+        </Row>
+        <View style={styles.scrollView}>
+          <View style={{ alignItems: "center", marginTop: 35 }}>
+            <Logo />
+            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' }}>
+              Accès réservé
+            </Text>
+            <Text style={{ fontSize: 16, textAlign: 'center', color: 'gray' }}>
+              Cette page est exclusivement réservée aux membres <Text style={{ fontWeight: 'bold', color: '#007AFF' }}>Premium</Text> et aux administrateurs.
+            </Text>
+          </View>
+        </View>
+      </>
+
     )
   }
 
