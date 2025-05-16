@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import MapView, { Marker, LatLng } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
@@ -36,6 +36,9 @@ import { useLocation } from '@/context/locate/LocationContext';
 
 // Types
 import { AddPlaceOrEventPayload } from '@/Types/place';
+import { useReadPlace } from '@/hooks/place/useReadPlace';
+import { IMAGE_BASE_URL } from '@/api/apiConfig';
+import { useEditPlaceOrEvent } from '@/hooks/place/useEditPlace';
 
 type PlaceType = 'restaurant' | 'culture' | 'leisure';
 type LocationType = LatLng | null;
@@ -43,11 +46,18 @@ type LocationType = LatLng | null;
 const AddPlaceScreen = () => {
   const router = useRouter();
   const { token, grade } = useAuth();
+  const params = useLocalSearchParams() as { id: string };
+  const lieuId = Number(params.id?.toString() || null);
+  const { place, loading: loadingRead, error: errorRead } = useReadPlace(lieuId);
+
 
   const [image, setImage] = useState<string>();
   const [cloudImageUrl, setCloudImageUrl] = useState<string>();
 
   const { submitPlaceOrEvent, loading: loadingSubmit, error, success: successSubmit, fieldErrors, id } = useAddPlaceOrEvent();
+
+  const { updatePlaceOrEvent, error:errorEdit, success:successEdit, fieldErrors:fieldErrorsEdit } = useEditPlaceOrEvent();
+
   const { submitMail, loading: loadingMail, error: errorMail, success: successMail } = useSendMail();
   const [uploading, setUploading] = useState(false);
   const loading = loadingSubmit || loadingMail || uploading;
@@ -319,6 +329,7 @@ const AddPlaceScreen = () => {
     }
   };
 
+  // Upload de l'image
   const uploadImageToCloudinary = async (imageUri: string, imageName: number) => {
     const cloudName = 'dtovi7wy6';
     const uploadPreset = 'kids-spot';
@@ -382,6 +393,171 @@ const AddPlaceScreen = () => {
     }
   });
 
+  // Charge les information d'un lieu (mode edition)
+  useEffect(() => {
+    if (place?.id) {
+      const imageUrl = `${IMAGE_BASE_URL}${place.id}.jpg`;
+      setCloudImageUrl(imageUrl);
+      setImage(imageUrl);
+    } else {
+      setImage(undefined);
+      setCloudImageUrl(undefined);
+    }
+
+    if (place) {
+      setPlaceName(place.nom || '');
+      setDescription(place.description || '');
+      setHoraires(place.horaires || '');
+      setAddress(place.adresse?.adresse || '');
+      setVille(place.adresse?.ville || '');
+      setCodepostal(place.adresse?.code_postal || '');
+      setPhoneNumber(place.adresse?.telephone || '');
+      setWebsite(place.adresse?.site_web || '');
+
+      // Le type est un tableau, on prend le premier (si il existe)
+      setSelectedTypeIds(place.type?.[0]?.id ? [place.type[0].id] : []);
+      const placeTypeFromId = place.type?.[0]?.id === 1 ? 'restaurant' : place.type?.[0]?.id === 2 ? 'leisure' : place.type?.[0]?.id === 3 ? 'culture' : 'restaurant'; // Valeur par défaut
+      setPlaceType(placeTypeFromId);
+
+      // Gérer les équipements (en supposant que place.equipements est un tableau d'objets équipement)
+      const initialEquipments: EquipmentType = {
+        strollerAccess: false,
+        playArea: false,
+        microwave: false,
+        highChair: false,
+        changingTable: false,
+        parking: false,
+      };
+
+      place.equipements?.forEach(equip => {
+        switch (equip.id) {
+          case 1: initialEquipments.strollerAccess = true; break;
+          case 2: initialEquipments.playArea = true; break;
+          case 3: initialEquipments.microwave = true; break;
+          case 4: initialEquipments.highChair = true; break;
+          case 5: initialEquipments.changingTable = true; break;
+          case 6: initialEquipments.parking = true; break;
+          default: break;
+        }
+      });
+      setEquipments(initialEquipments);
+
+      // Gérer les tranches d'âge
+      setAgeRanges(place.ages?.map(age => {
+        switch (age.id) {
+          case 1: return '0-2';
+          case 2: return '3-6';
+          case 3: return '7+';
+          default: return '';
+        }
+      }).filter(age => age !== ''));
+
+      if (place.date_evenement?.debut && place.date_evenement?.fin) {
+        setStartDate(formatDateForDisplay(place.date_evenement.debut));
+        setEndDate(formatDateForDisplay(place.date_evenement.fin));
+        setTempStartDate(new Date(place.date_evenement.debut.split('/').reverse().join('-')));
+        setTempEndDate(new Date(place.date_evenement.fin.split('/').reverse().join('-')));
+        setIsEvent(true);
+      } else {
+        setIsEvent(false);
+      }
+
+    }
+  }, [place]);
+
+  // Edite le lieux
+  const handleEdite = async () => {
+    Alert.alert(
+      'Confirmation',
+      'Êtes-vous sûr de vouloir enregistrer les modifications de ce lieu ?',
+      [
+        {
+          text: 'Non',
+        },
+        {
+          text: 'Oui',
+          onPress: async () => {
+            if (token && lieuId) {
+              try {
+                const typeIdMap: Record<PlaceType, number> = { restaurant: 1, leisure: 2, culture: 3 };
+                const equipmentIdMap: Record<EquipmentKeys, number> = {
+                  strollerAccess: 1, playArea: 2, microwave: 3,
+                  highChair: 4, changingTable: 5, parking: 6
+                };
+                const ageRangeIdMap: Record<string, number> = { '0-2': 1, '3-6': 2, '7+': 3 };
+
+                const equipements: number[] = Object.keys(equipments)
+                  .filter(key => equipments[key as EquipmentKeys])
+                  .map(key => equipmentIdMap[key as EquipmentKeys]);
+
+                const tranches_age: number[] = ageRanges.map(age => ageRangeIdMap[age]);
+
+                const fullAddress = `${address.trim()}, ${codepostal.trim()}, France`;
+                const coords = await geocode(fullAddress);
+
+                if (!coords) {
+                  Alert.alert(
+                    'Erreur de géolocalisation',
+                    'Impossible de récupérer les coordonnées GPS de cette adresse. Vérifiez que l\'adresse est correcte et réessayez.',
+                    [{ text: 'OK' }]
+                  );
+                  return;
+                }
+
+                const updatedData = {
+                  id: lieuId,
+                  nom: placeName,
+                  description: description,
+                  horaires: horaires,
+                  adresse: address,
+                  ville: ville,
+                  code_postal: codepostal,
+                  longitude: coords.lon,
+                  latitude: coords.lat,
+                  telephone: phoneNumber.trim(),
+                  site_web: website.trim(),
+                  id_type: typeIdMap[placeType],
+                  equipements: equipements,
+                  tranches_age: tranches_age,
+                  ...(isEvent && { date_debut: startDate, date_fin: endDate }),
+                };
+
+                await updatePlaceOrEvent(updatedData, token);
+                
+              } catch (errorEdit) {
+                console.error("Erreur lors de la mise à jour du lieu :", error);
+                Alert.alert('Erreur', 'Une erreur est survenue lors de la mise à jour.');
+              }
+            } else {
+              Alert.alert('Erreur', 'Vous devez être connecté pour modifier un lieu.');
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  useEffect(()=>{
+    if(successEdit){
+      refreshLocation();
+      Alert.alert(
+        'Succès',
+        'Le lieu a été modifié avec succès',
+        [{ text: 'OK', onPress: () => router.push('main') }]
+      );
+    }else if(errorEdit){
+      if (fieldErrorsEdit) {
+        // Formater et afficher les erreurs de validation pour chaque champ
+        const errorMessages = Object.entries(fieldErrorsEdit)
+          .map(([field, message]) => `${field} : ${message}`)
+          .join('\n');
+
+        Alert.alert('Erreur(s) de validation', errorMessages);
+      }
+    }
+  }, [errorEdit, successEdit])
+
   if (grade < 1) {
     return (
       <View>
@@ -395,7 +571,12 @@ const AddPlaceScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <BurgerMenu />
-      <Title text={'Ajouter un lieu'} />
+      {lieuId ? (
+        <Title text={'Editer un lieu'} />
+      ) :
+        (<Title text={'Ajouter un lieu'} />)
+      }
+
 
       <ScrollView style={styles.scrollView}>
         <View style={styles.section}>
@@ -410,7 +591,7 @@ const AddPlaceScreen = () => {
           <Text style={{ alignSelf: 'flex-end', marginTop: 4 }}>
             {placeName.length}/35
           </Text>
-          <PhotoPickerButton onPhotoSelected={(uri) => setImage(uri)} />
+          <PhotoPickerButton onPhotoSelected={(uri) => setImage(uri)} initialImage={image} />
         </View>
 
         <View style={styles.section}>
@@ -591,7 +772,13 @@ const AddPlaceScreen = () => {
           </View>
         </View>
 
-        <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
+        {lieuId ? (
+          <SubmitButton title="Editer le lieu" onPress={handleEdite} />
+        ) :
+          (
+            <SubmitButton title="Ajouter le lieu" onPress={handleSubmit} />
+          )}
+
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
