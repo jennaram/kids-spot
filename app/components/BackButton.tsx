@@ -30,7 +30,7 @@ export function BackButton({ navigateTo, onPress, style, imageStyle }: BackButto
         } else if (navigateTo) {
             router.replace(navigateTo);
         } else {
-            router.back();
+            router.replace('.');
         }
     };
 

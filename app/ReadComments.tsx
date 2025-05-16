@@ -33,7 +33,7 @@ export default function ReadReviews() {
     );
   }
 
-  console.log(comments.length);
+  //console.log(comments.length);
 
   return (
     <SafeAreaView style={styles.container}>

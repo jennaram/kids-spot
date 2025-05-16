@@ -65,7 +65,7 @@ export default function SendResetCode() {
      * Affiche un message de confirmation et redirige ou affiche une erreur
      */
     useEffect(() => {
-        console.log('success', success);
+        //console.log('success', success);
         if (success) {
             // En cas de succès, afficher un message et rediriger vers l'accueil
             Alert.alert('Succès', 'Mot de passe changé');

@@ -15,7 +15,7 @@ export function Card({ place }: Props) {
     // Gère l'erreur de chargement d'image
     const [imageError, setImageError] = useState(false);
     return (
-        <Link href={{ pathname: "/details_lieu", params: { id: place.id } }} asChild>
+        <Link href={{ pathname: "/details_lieu", params: { id: place.id,page:"/Places" } }} asChild>
             <Pressable>
                 <View style={styles.card}>
                     

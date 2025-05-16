@@ -94,7 +94,7 @@ export default function RegistrationScreen() {
       Alert.alert('Succès', 'Inscription réussie !');
       router.replace('/accueil');
     } else if (error) {
-      console.log(fieldErrors);
+      //console.log(fieldErrors);
       if (fieldErrors) {
         // Formater et afficher les erreurs de validation pour chaque champ
         const errorMessages = Object.entries(fieldErrors)

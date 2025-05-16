@@ -2,15 +2,23 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { StyleSheet, View, TouchableOpacity, Image, Text, Alert } from 'react-native';
 import { colorButtonFirst } from 'app/style/styles';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 type Props = {
     onPhotoSelected: (uri: string) => void;
+    initialImage?: string;
 }
 
-export function PhotoPickerButton({ onPhotoSelected }: Props) {
+export function PhotoPickerButton({ onPhotoSelected , initialImage}: Props) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Si une initialImage est fournie, mettez à jour l'état local
+        if (initialImage) {
+            setSelectedImage(initialImage);
+        }
+    }, [initialImage]);
 
     const pickImage = async (source: 'camera' | 'library') => {
         try {

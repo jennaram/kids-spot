@@ -15,7 +15,7 @@ export function useSendMAil() {
 
         try {
             const response = await sendMail(mail);
-            console.log(response)
+            //console.log(response)
             if (response.statusCode === 201 && response.data) {
                 setSuccess(true);
             } else if (isApiError(response)) {

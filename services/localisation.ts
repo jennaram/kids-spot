@@ -54,7 +54,7 @@ async function getUserLocation(): Promise<{ latitude: number; longitude: number 
 
     // Si la permission est refusée
     if (permissionStatus.status !== 'granted') {
-      console.log('Permission de localisation refusée');
+      //console.log('Permission de localisation refusée');
       return null;
     }
 

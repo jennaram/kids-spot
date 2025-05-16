@@ -38,11 +38,11 @@ const ReviewPage = () => {
   const { token, loading: authLoading } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log("État success:", success);
-    console.log("État error:", error);
+    //console.log("État success:", success);
+    //console.log("État error:", error);
     
     if (success) {
-      console.log("Succès détecté, affichage de la notification");
+      //console.log("Succès détecté, affichage de la notification");
       
       if (Platform.OS === 'web') {
         // Sur web, on utilise toast (déjà configuré)
@@ -62,7 +62,7 @@ const ReviewPage = () => {
 
   useEffect(() => {
     if (error) {
-      console.log("Erreur détectée:", error);
+      //console.log("Erreur détectée:", error);
       
       if (Platform.OS === 'web') {
         toast.error(error);
@@ -73,20 +73,20 @@ const ReviewPage = () => {
   }, [error]);
 
   const handleSubmit = () => {
-    console.log("Bouton de soumission cliqué");
+    //console.log("Bouton de soumission cliqué");
     
     if (!validateForm()) {
-      console.log("Validation du formulaire échouée");
+      //console.log("Validation du formulaire échouée");
       return;
     }
     
-    console.log("Formulaire validé, envoi de l'avis...");
+    //console.log("Formulaire validé, envoi de l'avis...");
     submitReview();
   };
 
   const validateForm = () => {
     if (!token) {
-      console.log("Erreur: utilisateur non connecté");
+      //console.log("Erreur: utilisateur non connecté");
       if (Platform.OS === 'web') {
         toast.error("Vous devez être connecté pour poster un avis");
       } else {
@@ -95,7 +95,7 @@ const ReviewPage = () => {
       return false;
     }
     if (!rating) {
-      console.log("Erreur: aucune note sélectionnée");
+      //console.log("Erreur: aucune note sélectionnée");
       if (Platform.OS === 'web') {
         toast.error("Veuillez sélectionner une note.");
       } else {
@@ -104,7 +104,7 @@ const ReviewPage = () => {
       return false;
     }
     if (comment.trim().length < 10) {
-      console.log("Erreur: commentaire trop court");
+      //console.log("Erreur: commentaire trop court");
       if (Platform.OS === 'web') {
         toast.error("Votre commentaire doit contenir au moins 10 caractères.");
       } else {
@@ -117,11 +117,11 @@ const ReviewPage = () => {
 
   const submitReview = async () => {
     if (lieuId <= 0) {
-      console.log("Erreur: ID de lieu invalide");
+      //console.log("Erreur: ID de lieu invalide");
       if (Platform.OS === 'web') {
         toast.error("Lieu invalide");
       } else {
-        console.log(lieuId);
+        //console.log(lieuId);
         Alert.alert("Erreur", "Lieu invalide");
       }
       return;
@@ -136,12 +136,12 @@ const ReviewPage = () => {
       token: token,
     };
     
-    console.log("Envoi des données à l'API:", reviewData);
+    //console.log("Envoi des données à l'API:", reviewData);
     try {
       await submitComment(reviewData, token);
-      console.log("Requête submitComment lancée");
+      //console.log("Requête submitComment lancée");
     } catch (e) {
-      console.error("Erreur lors de l'envoi du commentaire:", e);
+      //console.error("Erreur lors de l'envoi du commentaire:", e);
       if (Platform.OS === 'web') {
         toast.error("Erreur lors de l'envoi du commentaire");
       } else {

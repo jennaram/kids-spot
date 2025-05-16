@@ -10,8 +10,6 @@ import { useAuth } from "@/context/auth";
 export default function Index() {
   const router = useRouter();
   const { pseudo, grade } = useAuth();
-  console.log(pseudo)
-  console.log(grade)
   const handleConnexion = () => {
     // Rediriger vers la page de connexion
     router.push('/users/login');
@@ -25,6 +23,7 @@ export default function Index() {
   const handleModeInvite = () => {
     // Rediriger vers la carte en mode invité
     router.push('/main');
+    console.log("la carte")
   };
 
   return (

@@ -34,13 +34,13 @@ import BackButton from "./components/BackButton";
 import { useReadPlace } from "@/hooks/place/useReadPlace";
 import { IMAGE_BASE_URL } from '@/api/apiConfig';
 import { Row } from "@/components/Row";
-import { Button } from "@/components/Button";
+import { ButtonAdmin } from "@/components/ButtonAdmin";
 import { useDeletePlaceOrEvent } from "@/hooks/place/useDeletePlace";
 import { useLocation } from '@/context/locate/LocationContext';
 
 const DetailsLieu = () => {
   const { removePlaceOrEvent, error: errorDel, success: successDel } = useDeletePlaceOrEvent();
-  const params = useLocalSearchParams() as { id: string };
+  const params = useLocalSearchParams() as { id: string, page:string };
   const lieuId = Number(params.id?.toString() || "2");
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { refreshLocation } = useLocation();
@@ -123,25 +123,11 @@ const DetailsLieu = () => {
     );
   }
 
+  // Suppression d'un lieu
   const handleDelete = () => {
-    Alert.alert(
-      'Confirmation',
-      'Êtes-vous sûr de vouloir supprimer ce lieu ?',
-      [
-        {
-          text: 'Non',
-        },
-        {
-          text: 'Oui',
-          onPress: async () => {
-            if (token) {
-              await removePlaceOrEvent(lieuId, token);
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+    if (token) {
+      removePlaceOrEvent(lieuId, token);
+    }
   }
 
   useEffect(() => {
@@ -158,6 +144,14 @@ const DetailsLieu = () => {
       Alert.alert('Erreur', 'Erreur lors de la suppression du lieu');
     }
   }, [successDel, errorDel]);
+
+  // Edition d'un lieu
+  const handleEdit = () => {
+    router.push({
+      pathname: '/add-place',
+      params: { id: lieuId },
+    });
+  }
 
   const handleCall = () => {
     if (!place || !place.adresse.telephone) return;
@@ -200,14 +194,10 @@ const DetailsLieu = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <Row style={{ marginLeft: 0 }}>
-        <BackButton style={styles.backButton} />
+        <BackButton style={styles.backButton} navigateTo={params.page}/>
         {grade == 4 ? (
-  <View style={stylesBt.deleteButtonContainer}>
-    <View style={stylesBt.buttonWrapper}>
-      <Button imageName={""} onPress={handleDelete} />
-    </View>
-  </View>
-) : null}
+          <ButtonAdmin onPressDel={handleDelete} onPressEdit={handleEdit} />
+        ) : null}
       </Row>
 
       <View style={styles.mainContainer}>
@@ -295,15 +285,6 @@ const DetailsLieu = () => {
   );
 };
 
-const stylesBt = StyleSheet.create({
-  deleteButtonContainer: {
-    position: 'absolute',
-    right: 10,
-    // Vous pouvez ajouter top, bottom, etc., selon le positionnement vertical souhaité
-  },
-  buttonWrapper: {
-    // Styles supplémentaires pour l'enveloppe du bouton si nécessaire
-  },
-});
+
 
 export default DetailsLieu;

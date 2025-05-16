@@ -55,12 +55,12 @@ const Evenement = () => {
 
   useEffect(() => {
     if (nearbyPlaces) {
-      console.log('Nombre de lieux reçus:', nearbyPlaces.length);
+      //console.log('Nombre de lieux reçus:', nearbyPlaces.length);
       
       // Filtrer pour ne garder que les événements valides
       const validEvents = nearbyPlaces.filter(isEventValid);
 
-      console.log('Événements valides trouvés:', validEvents.length);
+      //console.log('Événements valides trouvés:', validEvents.length);
 
       // Initialiser les animations pour chaque événement
       validEvents.forEach((event) => {
