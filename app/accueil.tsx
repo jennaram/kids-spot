@@ -39,20 +39,19 @@ export default function Index() {
         </Text>
 
         {/* Boutons Connexion et À propos */}
-        {pseudo ? (
-          <Text style={{ fontSize: 18, marginBottom: 15 }}>
-            Bonjour {pseudo}
-          </Text>
-        ) : (
+        {!pseudo ? (
           <TouchableOpacity style={styles.submitButton} onPress={handleConnexion}>
             <Text style={styles.submitButtonText}>Se Connecter</Text>
           </TouchableOpacity>
-        )}
+        ) : (null)}
         <TouchableOpacity style={styles.submitButton} onPress={handleAPropos}>
           <Text style={styles.submitButtonText}>À propos</Text>
         </TouchableOpacity>
-      </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ textAlign: 'center' }}>Bonjour {pseudo}</Text>
+        </View>
 
+      </View>
       {/* Bouton Mode invité en bas */}
       <View style={{ alignItems: 'center', padding: 20 }}>
         <TouchableOpacity style={styles.submitButton} onPress={handleModeInvite}>
