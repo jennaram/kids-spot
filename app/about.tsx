@@ -8,22 +8,24 @@ import {
   Modal,
   TouchableOpacity,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
 
-import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
+import { BackButton } from './components/BackButton';
 import { Title } from "@/components/Title";
 import { SubmitButton } from "@/app/components/Form/SubmitButton";
 import { Navigation } from "@/components/NavBar/Navigation";
 import { styles } from "@/app/style/about.styles"; // Style principal
 import { modalStyles } from "@/app/style/about.styles"; // Style du modal
+import { router } from "expo-router";
 
 // Styles locaux pour le composant About
 const localStyles = StyleSheet.create({
   buttonSpacing: {
-    height: 10, // Espacement vertical entre les boutons
+    height: 5, // Espacement vertical entre les boutons
   }
 });
 
@@ -46,7 +48,15 @@ const About = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BurgerMenu />
+  <View style={{
+    position: 'absolute',
+    top: Platform.select({ ios: 10, android: 5 }),
+    left: 10,
+    zIndex: 100,
+  }}>
+    <BackButton onPress={() => router.back()} />
+  </View>
+      
       <Title text="À propos" />
       <View style={styles.outerContainer}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -83,8 +93,7 @@ const About = () => {
               <View style={styles.bulletPoint}>
                 <MaterialIcons name="star" size={20} color="#555" />
                 <Text style={styles.bulletText}>
-                  <Text style={styles.bold}>Avis vérifiés</Text> : Seuls les
-                  utilisateurs ayant visité peuvent noter.
+                  <Text style={styles.bold}>Avis</Text> : Possibilité de consulter les avis.
                 </Text>
               </View>
 

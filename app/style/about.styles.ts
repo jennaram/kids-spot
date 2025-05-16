@@ -6,25 +6,27 @@ export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colorButtonThird,
+    paddingBottom: Platform.OS === 'ios' ? -15 : -10,  // Ajustement iOS
   },
   outerContainer: {
     flex: 1,
     position: "relative",
   },
   scrollContent: {
-    
+    paddingBottom: Platform.OS === 'ios' ? -10 : -5, // Ajustez selon besoin
     paddingTop: 0
   },
   container: {
-    padding: 5,
-    backgroundColor: colorButtonThird,
-  },
+  padding: 15,
+  backgroundColor: colorButtonThird,
+  paddingBottom: 0, // Réduit ou supprime le padding bas
+},
   textContainer: {
     backgroundColor: "white",
     borderRadius: 10,
     padding: 15,
     marginTop: 10,
-    marginBottom: 15,
+    marginBottom: 0, // Suppression de la marge basse
   },
   description: {
     fontSize: 15,
@@ -58,10 +60,11 @@ export const styles = StyleSheet.create({
     maxWidth: "100%",
   },
   buttonContainer: {
-    marginBottom: 0,
+    marginBottom: Platform.OS === 'ios' ? -25 : -20, // Augmentez les valeurs négatives
+    marginTop: 10,
   },
-
 });
+
 // Styles pour le modal des mentions légales
 export const modalStyles = StyleSheet.create({
   centeredView: {
