@@ -50,7 +50,7 @@ const PlacePopUp: React.FC<PlacePopUpProps> = ({
     setTimeout(() => {
       router.push({
         pathname: '/details_lieu',
-        params: { id: place.id }
+        params: { id: place.id, page:"/main" }
       });
     }, 300);
   };

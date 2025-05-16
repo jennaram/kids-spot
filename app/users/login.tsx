@@ -55,7 +55,7 @@ export default function LoginScreen() {
       //console.log(data.grade)
       setToken(data.token, data.grade, data.pseudo, data.expiresIn * 1000);
       Alert.alert('Succès', 'Connexion réussie');
-      router.replace('/main');
+      router.push('/main');
     }
   }, [data, setToken]);
 

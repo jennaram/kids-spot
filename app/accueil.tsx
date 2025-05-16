@@ -23,6 +23,7 @@ export default function Index() {
   const handleModeInvite = () => {
     // Rediriger vers la carte en mode invité
     router.push('/main');
+    console.log("la carte")
   };
 
   return (

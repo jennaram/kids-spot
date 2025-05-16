@@ -40,7 +40,7 @@ import { useLocation } from '@/context/locate/LocationContext';
 
 const DetailsLieu = () => {
   const { removePlaceOrEvent, error: errorDel, success: successDel } = useDeletePlaceOrEvent();
-  const params = useLocalSearchParams() as { id: string };
+  const params = useLocalSearchParams() as { id: string, page:string };
   const lieuId = Number(params.id?.toString() || "2");
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { refreshLocation } = useLocation();
@@ -194,7 +194,7 @@ const DetailsLieu = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <Row style={{ marginLeft: 0 }}>
-        <BackButton style={styles.backButton} />
+        <BackButton style={styles.backButton} navigateTo={params.page}/>
         {grade == 4 ? (
           <ButtonAdmin onPressDel={handleDelete} onPressEdit={handleEdit} />
         ) : null}

@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 
 type AuthContextType = {
   token: string | null;
-  grade: number | 0;
+  grade: number | null;
   pseudo: string | null;
   setToken: (token: string | null, grade?: number, pseudo?: string, expirationDuration?: number | null) => void;
   loading: boolean;
