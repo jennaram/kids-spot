@@ -108,14 +108,14 @@ const EventCard: React.FC<EventCardProps> = ({
               {lieu.description}
             </Text>
 
-            {lieu.description && lieu.description.length > 100 && (
+            
               <TouchableOpacity
                 onPress={() => onOpenFullDescription(lieu.description, lieu.nom)}
                 style={styles.readMoreButton}
               >
-                <Text style={styles.readMoreText}>Lire plus...</Text>
+                <Text style={styles.readMoreText}>Voir plus...</Text>
               </TouchableOpacity>
-            )}
+            
           </View>
 
           <TouchableOpacity
