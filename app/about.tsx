@@ -8,12 +8,13 @@ import {
   Modal,
   TouchableOpacity,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
 
-import { BurgerMenu } from "@/components/BurgerMenu/BurgerMenu";
+import { BackButton } from "app/components/BackButton";
 import { Title } from "@/components/Title";
 import { SubmitButton } from "@/app/components/Form/SubmitButton";
 import { Navigation } from "@/components/NavBar/Navigation";
@@ -46,11 +47,23 @@ const About = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BurgerMenu />
-      <Title text="À propos" />
-      <View style={styles.outerContainer}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.container}>
+      {/* BOUTON RETOUR EN HAUT À GAUCHE */}
+      <View style={{
+        position: 'absolute',
+        top: Platform.select({ ios: 10, android: 5 }), // Position ultra-haute
+        left: 10,
+        zIndex: 100,
+      }}>
+        <BackButton onPress={() => navigation.goBack()} />
+      </View>
+
+      <ScrollView 
+        contentContainerStyle={[styles.scrollContent, { paddingTop: 50 }]}
+        showsVerticalScrollIndicator={false}
+      >
+        <Title text="À propos" />
+        
+        <View style={styles.container}>
             
              <View style={styles.textContainer}>
               <Text style={styles.description}>
@@ -83,8 +96,7 @@ const About = () => {
               <View style={styles.bulletPoint}>
                 <MaterialIcons name="star" size={20} color="#555" />
                 <Text style={styles.bulletText}>
-                  <Text style={styles.bold}>Avis vérifiés</Text> : Seuls les
-                  utilisateurs ayant visité peuvent noter.
+                  <Text style={styles.bold}>Avis</Text> : Possibilité de consulter les avis.
                 </Text>
               </View>
 
@@ -138,8 +150,8 @@ const About = () => {
                 <ScrollView style={modalStyles.modalScrollView} showsVerticalScrollIndicator={true}>
                   <Text style={modalStyles.legalText}>
                     MENTIONS LÉGALES{"\n\n"}
-                    
-                    1. PRÉSENTATION DU SITE{"\n"}
+
+                    1. PRÉSENTATION DE L'APPLICATION MOBILE{"\n"}
                     Conformément aux dispositions des articles 6-III et 19 de la Loi n° 2004-575 du 21 juin 2004 pour la Confiance dans l'économie numérique, dite L.C.E.N., nous portons à la connaissance des utilisateurs et visiteurs de l'application les informations suivantes :{"\n\n"}
                     
                     Propriétaire : Team Kids Spot{"\n\n"}
@@ -191,9 +203,9 @@ const About = () => {
           </Modal>
 
         </ScrollView>
-      </View>
-        {/* Navbar toujours collée en bas */}
-        <Navigation />
+
+      {/* Navbar toujours collée en bas */}
+      <Navigation />
       
     </SafeAreaView>
   );
