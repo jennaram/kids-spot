@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   burgerMenuContainer: {
     position: 'absolute',
     top: Platform.OS === 'ios' ? 50 : 30,
-    left: 20,
+    left: 0,
     zIndex: 1000,
   },
 });

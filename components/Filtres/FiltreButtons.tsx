@@ -12,7 +12,7 @@ const FiltreButtons: React.FC<FilterProps> = ({ selectedTypeIds, onPress }) => {
         <Row style={{ gap: 10 }}>
             {/* Bouton pour filtrer sur les Restaurants */}
             <FiltreButton
-                type="Restaurant"
+                type="Restaurants"
                 typeId={1}
                 onPress={onPress}
                 isSelected={selectedTypeIds.includes(1)}

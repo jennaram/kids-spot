@@ -10,11 +10,11 @@ export function handleApiError(error: unknown): string {
   ) {
     const responseData = (error as any).response.data; // Données d'erreur
 
-    console.log("Erreur complète API : ", responseData);  // Log de toute la réponse
+    //console.log("Erreur complète API : ", responseData);  // Log de toute la réponse
 
     // Si l'API retourne des erreurs détaillées sur les champs
     if (responseData.errors) {
-      console.log("Erreurs par champ : ", responseData.errors);
+      //console.log("Erreurs par champ : ", responseData.errors);
       return `${responseData.message} ${Object.values(responseData.errors).join(' ')}`.trim();
     }
 

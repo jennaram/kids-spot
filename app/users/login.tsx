@@ -52,7 +52,7 @@ export default function LoginScreen() {
    */
   useEffect(() => {
     if (data?.token) {
-      console.log(data.grade)
+      //console.log(data.grade)
       setToken(data.token, data.grade, data.pseudo, data.expiresIn * 1000);
       Alert.alert('Succès', 'Connexion réussie');
       router.replace('/main');
@@ -84,11 +84,15 @@ export default function LoginScreen() {
     // Affiche le modal de chargement et lance la connexion
     await submit(email, password);
 
-    // Gestion des erreurs de connexion
+
+  };
+
+  // Gestion des erreurs de connexion
+  useEffect(() => {
     if (error) {
       Alert.alert('Erreur de connexion', error);
     }
-  };
+  }, [error])
 
   return (
     <SafeAreaView style={styles.safeArea}>

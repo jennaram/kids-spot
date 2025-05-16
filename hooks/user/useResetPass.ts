@@ -19,7 +19,7 @@ export function useResetPass() {
         setFieldErrors(null);
         try{
             const response = await resetPass(userData);
-            console.log(response);
+            //console.log(response);
             if(response.statusCode === 201 && response.data){
                 setSuccess(true);
             }else if (isApiError(response)){

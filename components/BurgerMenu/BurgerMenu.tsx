@@ -52,7 +52,7 @@ export function BurgerMenu() {
     }
 
     function handleExit(): void {
-        console.log("exit?")
+        //console.log("exit?")
         onClose();
     }
 
@@ -63,8 +63,6 @@ export function BurgerMenu() {
         { imageName: "add-circle", text: "Ajouter un lieu", link: "/add-place" },
         { imageName: "information-circle", text: "À propos", link: "/about" },
         { imageName: "mail", text: "Contact", link: "/contact" },
-        { imageName: "code", text: "Page test API", link: "/TestAPI" },
-        { imageName: "code", text: "Ajout images à un lieu", link: "/AddImage" },
     ];
 
     return (
