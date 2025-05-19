@@ -236,7 +236,7 @@ export default function RegistrationScreen() {
             <AuthFooterLink
               text="Déjà un compte ?"
               linkText="Connectez-vous"
-              onPress={() => router.push('/login')}
+              onPress={() => router.push('/users/login')}
             />
           </View>
         </ScrollView>
