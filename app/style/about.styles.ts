@@ -12,8 +12,8 @@ export const styles = StyleSheet.create({
     position: "relative",
   },
   scrollContent: {
-    
-    paddingTop: 0
+    paddingTop: 0,
+    paddingBottom: 30, // Ajouté pour éviter que le bas soit masqué comme sur la page détail
   },
   container: {
     padding: 5,
