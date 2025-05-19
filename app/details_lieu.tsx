@@ -283,8 +283,9 @@ const DetailsLieu = () => {
         title={modalTitle}
       />
 
-      <Navigation />
+      
     </KeyboardAvoidingView>
+    <Navigation />
     </SafeAreaView>
   );
 };

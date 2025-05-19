@@ -44,7 +44,7 @@ export default function NearbyPlacesScreen() {
         return matchType && matchSearch;
     });
 
-    if (error) return <ErrorScreen message="Aucun lieu trouvé !" />;
+    //if (error) return <ErrorScreen message="Aucun lieu trouvé !" />;
     if (!userLocation) return <LoadingView />;
 
     return (
