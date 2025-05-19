@@ -38,3 +38,9 @@ yarn-error.*
 app-example
 # fichier IDEA
 .idea/
+
+tmp/
+
+.gradle/8.8/fileHashes/
+
+ios/

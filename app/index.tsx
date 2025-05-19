@@ -1,27 +1,28 @@
-import { Image, Text, View, Button } from "react-native";
+// src/pages/IndexPage.tsx
+import { useEffect } from "react";
 import { useRouter } from 'expo-router';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useAuth } from "@/context/auth";
+import Loader from "@/components/Loader";
+//import { refreshToken } from "@/services/apiPost";
+//import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-const Stack = createNativeStackNavigator();
-
-export default function Index() {
+export default function IndexPage() {
+  const { token, loading, setToken } = useAuth();
   const router = useRouter();
-  
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Image
-        source={require('../assets/images/Logo.png')}
-        style={{ width: 200, height: 200, resizeMode: 'contain', marginBottom: 20 }}
-      />
-      <Text>Bienvenue sur Kids Spot </Text>
-      <Button title="Voir la carte" onPress={() => router.push('/main')} />
-      <Button title="Evenement" onPress={() => router.push('/evenement')} />
-      <Button title="Voir le detail des lieux" onPress={() => router.push('/details_lieu')} />
-      <Button title="Ajouter un lieux" onPress={() => router.push('/add-place')} />
-      <Button title="Conexion" onPress={() => router.push('/login')} />
-      <Button title="A propos" onPress={() => router.push('/about')} />
-      <Button title="Menu burger" onPress={() => router.push('/components/menuburger')} />
-    </View>
-  );
+
+  useEffect(() => {
+    if (!loading) {
+      if (token) {
+        // Si un token existe déjà et est valide, on redirige directement
+        router.replace("/Places");
+      } else {
+        // Ce n'est que si aucun token valide n'existe qu'on tente l'auto-login
+        router.replace("/accueil")
+      }
+    }
+  }, [token, loading, router, setToken]);
+
+  if (loading) return <Loader />; // Si on attend que le token soit vérifié
+
+  return <></>;
 }

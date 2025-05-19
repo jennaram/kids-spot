@@ -1,3 +1,12 @@
+
+# Mon Projet
+
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+
+## 📜 Licence
+
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE.md) pour le texte complet.
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

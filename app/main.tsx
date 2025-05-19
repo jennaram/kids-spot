@@ -1,135 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Image,
-  Alert,
   Text,
   Platform,
   Linking,
-  Button,
   TouchableOpacity,
+  StyleSheet,
+  Button,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
-import { useFocusEffect, useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
+import { router, useFocusEffect } from 'expo-router';
+import { Navigation } from '@/components/NavBar/Navigation';
+import PlacePopUp from '@/components/MainMap/PlacePopUp';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
+import { useLocation } from '@/context/locate'; // Import du contexte
+import styles from '@/app/style/MapScreen.style'; // Ton style actuel
+import { SwitchMapButton } from '@/components/SwitchMapButton';
+import { Place } from '@/Types/place';
 
 // Icônes personnalisées
 const iconByType = {
   user: require('../assets/images/user-location.png'),
   switchmap: require('../assets/images/switchmap.png'),
+  Culture: require('../assets/images/icon-culture2.png'),
+  Restaurant: require('../assets/images/icon-food2.png'),
+  Loisirs: require('../assets/images/icon-loisirs2.png'),
 };
 
 export default function MapScreen() {
-  const router = useRouter();
-  const navigation = useNavigation(); // Si nécessaire plus tard
-  const [userLocation, setUserLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [locationSubscription, setLocationSubscription] =
-    useState<Location.LocationSubscription | null>(null);
+  // Utilisation du contexte Location
+  const { userLocation, nearbyPlaces, error, refreshLocation } = useLocation();
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [showPopup, setShowPopup] = useState(false);
 
-  // Démarrage de la géolocalisation
-  const startLocationTracking = async () => {
-    try {
-      // Android : Vérifie les services et permissions
-      if (Platform.OS === 'android') {
-        const [hasPlayServices, permissionStatus] = await Promise.all([
-          Location.hasServicesEnabledAsync(),
-          Location.requestForegroundPermissionsAsync(),
-        ]);
-
-        if (!hasPlayServices) {
-          Alert.alert(
-            'Services Google requis',
-            'Cette application nécessite Google Play Services pour la géolocalisation',
-            [
-              {
-                text: 'Activer',
-                onPress: () => Linking.openSettings(),
-              },
-              {
-                text: 'Annuler',
-                style: 'cancel',
-              },
-            ]
-          );
-          return;
-        }
-
-        if (permissionStatus.status !== 'granted') {
-          setError('Permission de localisation refusée');
-          return;
-        }
-      } else {
-        // iOS
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setError('Permission de localisation refusée');
-          return;
-        }
-      }
-
-      const initialLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
-      setUserLocation(initialLocation.coords);
-
-      const sub = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.BestForNavigation,
-          distanceInterval: 10,
-          timeInterval: 5000,
-          mayShowUserSettingsDialog: true,
-        },
-        (location) => {
-          setUserLocation(location.coords);
-        }
-      );
-
-      setLocationSubscription(sub);
-    } catch (err) {
-      console.error('Erreur de géolocalisation:', err);
-      setError(
-        Platform.OS === 'android'
-          ? "Erreur des services Google - Redémarrez l'application"
-          : 'Erreur de localisation'
-      );
-    }
-  };
-
-  // Timeout en cas de chargement long
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (Platform.OS === 'android' && !userLocation) {
-        setError('Initialisation lente - Vérifiez votre connexion');
-      }
-    }, 10000);
-
-    return () => clearTimeout(timer);
-  }, [userLocation]);
-
-  // Recharger la géoloc quand on revient sur l'écran
+  // Mise à jour lorsque le composant reprend le focus
   useFocusEffect(
     React.useCallback(() => {
-      startLocationTracking();
-      return () => {
-        locationSubscription?.remove();
-      };
+      refreshLocation(); // Recharge la localisation et les lieux à partir du contexte
+      return () => {};
     }, [])
   );
 
+  // Filtrer les lieux pour exclure les événements
+  const filteredPlaces = (nearbyPlaces ?? []).filter((place: Place) => {
+    return !place.est_evenement;
+  });
+
+  // Gestion des erreurs d'obtention de la localisation
   if (error) {
     return (
-      <View
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}
-      >
-        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>
-          {error}
-        </Text>
-        {Platform.OS === 'android' && (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        {Platform.OS === 'android' && error.includes('Google Play services') && (
           <Button
             title="Vérifier Google Play Services"
             onPress={() =>
@@ -141,31 +64,34 @@ export default function MapScreen() {
     );
   }
 
+  // Affichage de l'écran de chargement
   if (!userLocation) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loadingContainer}>
         <Text>Chargement de votre position...</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
+      {/* Carte */}
       <MapView
-        style={{ flex: 1 }}
+        style={styles.map}
         region={{
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         }}
-        showsUserLocation={false}
+        showsUserLocation={true}
         showsMyLocationButton={true}
         loadingEnabled={true}
         userLocationPriority="high"
         userLocationUpdateInterval={5000}
         provider={Platform.OS === 'android' ? 'google' : undefined}
       >
+        {/* Marqueur pour l'utilisateur */}
         <Marker
           coordinate={userLocation}
           anchor={{ x: 0.5, y: 0.5 }}
@@ -173,27 +99,59 @@ export default function MapScreen() {
         >
           <Image
             source={iconByType.user}
-            style={{ width: 40, height: 40 }}
+            style={styles.userMarker}
             resizeMode="contain"
           />
         </Marker>
+
+        {/* Marqueurs pour les lieux filtrés (sans événements) */}
+        {filteredPlaces.length > 0 && filteredPlaces.map((item) => (
+          <Marker
+            key={item.id}
+            coordinate={{
+              latitude: item.position.latitude,
+              longitude: item.position.longitude,
+            }}
+            onPress={() => {
+              setSelectedPlace(item);
+              setShowPopup(true);
+            }}
+            tracksInfoWindowChanges={false}
+          >
+            {item.type[0].nom === 'Culture' ? (
+              <Image source={iconByType.Culture} style={styles.cultureMarker} resizeMode="contain" />
+            ) : item.type[0].nom === 'Restaurant' ? (
+              <Image source={iconByType.Restaurant} style={styles.foodMarker} resizeMode="contain" />
+            ) : item.type[0].nom === 'Loisirs' ? (
+              <Image source={iconByType.Loisirs} style={styles.loisirsMarker} resizeMode="contain" />
+            ) : (
+              <View style={{ backgroundColor: 'blue', padding: 5, borderRadius: 10 }}>
+                <Text style={{ color: 'white' }}>{item.nom}</Text>
+              </View>
+            )}
+          </Marker>
+        ))}
       </MapView>
 
-      <TouchableOpacity
-        onPress={() => router.push('/listelieux')}
-        style={{
-          position: 'absolute',
-          bottom: 20,
-          right: 20,
-          borderRadius: 50,
-          padding: 10,
-        }}
-      >
-        <Image
-          source={iconByType.switchmap}
-          style={{ width: 40, height: 40 }}
-        />
-      </TouchableOpacity>
+      {/* Composant PopUp */}
+      <PlacePopUp
+        visible={showPopup}
+        onClose={() => setShowPopup(false)}
+        place={selectedPlace}
+        userLocation={userLocation}
+        iconByType={iconByType}
+      />
+
+      {/* Burger Menu flottant */}
+      <View style={styles.burgerMenuContainer}>
+        <BurgerMenu />
+      </View>
+
+      {/* Bouton pour changer la carte */}
+      <SwitchMapButton isMapView={true} />
+
+      {/* Barre de navigation */}
+      <Navigation />
     </View>
   );
-}
+};

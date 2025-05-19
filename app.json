@@ -16,7 +16,9 @@
           "locationAlwaysAndWhenInUsePermission": "Cette application a besoin d'accéder à votre position.",
           "locationWhenInUsePermission": "Cette application a besoin d'accéder à votre position."
         }
-      ]
+      ],
+      "@react-native-google-signin/google-signin",
+      "expo-font"
     ],
     "ios": {
       "infoPlist": {
@@ -25,10 +27,6 @@
     },
     "android": {
       "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION",
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",

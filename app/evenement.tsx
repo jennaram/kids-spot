@@ -1,158 +1,254 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, Animated, SafeAreaView, ScrollView, Modal } from 'react-native';
+import { eventCardStyles as styles } from './style/EventCardStyles';
+import { fontTitle } from './style/styles';
+import EventCard from './components/EventCard';
+import { BurgerMenu } from '@/components/BurgerMenu/BurgerMenu';
+import { Title } from '@/components/Title';
+import { Navigation } from '@/components/NavBar/Navigation';
+import { ExitButton } from './components/ExitButton';
+import { useLocation } from '@/context/locate';
+import { Place } from '@/Types/place';
+import AgeBadges  from '../components/Lieux/AgeBadges';
+import LieuActionButtons from '@/components/Lieux/LieuActionButtons';
+import { IconesLieux } from '@/components/IconesLieux';
+import { Alert, Linking, Platform } from 'react-native';
+const Evenement = () => {
+  // Récupérer la liste des lieux à partir du contexte
+  const { nearbyPlaces, error, refreshLocation } = useLocation();
+  // État pour stocker la liste des lieux filtrés pour les événements
+  const [lieux, setLieux] = useState<Place[]>([]);
+  // État pour gérer quel lieu est actuellement "flippé"
+  const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
+  // État pour gérer la modal de description complète
+  const [modalVisible, setModalVisible] = useState(false);
+  // État pour stocker la description à afficher dans la modal
+  const [currentDescription, setCurrentDescription] = useState('');
+  // État pour stocker le nom du lieu de la description
+  const [currentNom, setCurrentNom] = useState('');
+  // Extraire le lieu sélectionné pour la modale
+  const currentLieu = lieux.find(lieu => lieu.nom === currentNom);
 
-const CustomCard = () => {
-  const [flipped, setFlipped] = useState(false);
-  const flipAnimation = useRef(new Animated.Value(0)).current;
+  
 
-  const frontInterpolate = flipAnimation.interpolate({
-    inputRange: [0, 180],
-    outputRange: ['0deg', '180deg'],
-  });
+  // Référence pour les animations
+  const flipAnimations = useRef<{ [key: number]: Animated.Value }>({}).current;
 
-  const backInterpolate = flipAnimation.interpolate({
-    inputRange: [0, 180],
-    outputRange: ['180deg', '360deg'],
-  });
-
-  const flipCard = () => {
-    if (flipped) {
-      Animated.spring(flipAnimation, {
-        toValue: 0,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.spring(flipAnimation, {
-        toValue: 180,
-        useNativeDriver: true,
-      }).start();
+  // Fonction pour vérifier si un événement est encore valide (non expiré)
+  const isEventValid = (event: Place): boolean => {
+    if (!event.est_evenement || !event.date_evenement?.fin) return false;
+    
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Conversion de la date de fin (format YYYY-MM-DD)
+      const endDate = new Date(event.date_evenement.fin);
+      endDate.setHours(23, 59, 59, 999); // Fin de la journée
+      
+      return endDate >= today;
+    } catch (error) {
+      console.error("Erreur de traitement de date:", error);
+      return false;
     }
-    setFlipped(!flipped);
   };
 
-  return (
-    <View style={styles.cardContainer}>
-      {/* Face avant */}
-      <Animated.View
-        style={[
-          styles.card,
-          { transform: [{ rotateY: frontInterpolate }] },
-          { zIndex: flipped ? 0 : 1 },
-        ]}
-      >
-        <Image
-          source={require('../assets/images/Logo.png')}
-          style={styles.image}
-          resizeMode="contain"
-        />
-        <View style={styles.infoContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>Titre de l'événement</Text>
-            <Text style={styles.date}>12 avril 2025</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.infoButton}
-            onPress={flipCard}
-          >
-            <Text style={styles.infoText}>i</Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+  useEffect(() => {
+    if (nearbyPlaces) {
+      //console.log('Nombre de lieux reçus:', nearbyPlaces.length);
+      
+      // Filtrer pour ne garder que les événements valides
+      const validEvents = nearbyPlaces.filter(isEventValid);
 
-      {/* Face arrière */}
-      <Animated.View
-        style={[
-          styles.card,
-          styles.cardBack,
-          { transform: [{ rotateY: backInterpolate }] },
-          { position: 'absolute', top: 0 },
-        ]}
-      >
-        <View style={{ padding: 20 }}>
-          <Text style={styles.modalTitle}>Détails de l'événement</Text>
-          <Text style={styles.modalText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      //console.log('Événements valides trouvés:', validEvents.length);
+
+      // Initialiser les animations pour chaque événement
+      validEvents.forEach((event) => {
+        if (!flipAnimations[event.id]) {
+          flipAnimations[event.id] = new Animated.Value(0);
+        } else {
+          flipAnimations[event.id].setValue(0);
+        }
+      });
+
+      setLieux(validEvents);
+    }
+  }, [nearbyPlaces]);
+  const handleGpsPress = () => {
+    if (!currentLieu || !currentLieu.position) return;
+  
+    const { latitude, longitude } = currentLieu.position;
+  
+    Alert.alert(
+      "Choisissez une application",
+      "Quelle application voulez-vous utiliser pour l'itinéraire ?",
+      [
+        {
+          text: "Google Maps",
+          onPress: () => {
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Waze",
+          onPress: () => {
+            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Apple Plans",
+          onPress: () => {
+            const url = `http://maps.apple.com/?daddr=${latitude},${longitude}`;
+            Linking.openURL(url);
+          },
+          style: Platform.OS === "ios" ? "default" : "cancel",
+        },
+        {
+          text: "Annuler",
+          style: "cancel"
+        }
+      ]
+    );
+  };
+
+  const handleCall = () => {
+    if (!currentLieu || !currentLieu.adresse?.telephone) return;
+  
+    const phoneNumber = currentLieu.adresse.telephone.replace(/\s/g, '');
+  
+    Linking.openURL(`tel:${phoneNumber}`);
+  };
+  const handleWebsite = () => {
+    if (!currentLieu || !currentLieu.adresse?.site_web) return;
+  
+    let url = currentLieu.adresse.site_web.trim();
+  
+    // Ajoute "https://" si manquant
+    if (!/^https?:\/\//i.test(url)) {
+      url = `https://${url}`;
+    }
+  
+    Linking.openURL(url);
+  };
+  
+
+  const flipCard = (id: number) => {
+    if (flippedCardId !== null && flippedCardId !== id) {
+      Animated.timing(flipAnimations[flippedCardId], {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        Animated.timing(flipAnimations[id], {
+          toValue: 180,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+        setFlippedCardId(id);
+      });
+    } else if (flippedCardId === id) {
+      Animated.timing(flipAnimations[id], {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setFlippedCardId(null);
+      });
+    } else {
+      Animated.timing(flipAnimations[id], {
+        toValue: 180,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setFlippedCardId(id);
+      });
+    }
+  };
+
+  const openFullDescription = (description: string, nom: string) => {
+    setCurrentDescription(description);
+    setCurrentNom(nom);
+    setModalVisible(true);
+  };
+
+  if (lieux.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <BurgerMenu />
+        <Title text={'Événements'} />
+        <View>
+          <Text >
+            {nearbyPlaces 
+              ? "Aucun événement à venir actuellement" 
+              : "Chargement des événements..."}
           </Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={flipCard}
-          >
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Retour</Text>
-          </TouchableOpacity>
         </View>
-      </Animated.View>
-    </View>
+        <Navigation />
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <BurgerMenu />
+      <Title text={'Événements'} />
+
+      <ScrollView style={styles.scrollView}>
+        {lieux.map((lieu) => (
+          <EventCard
+            key={lieu.id}
+            lieu={lieu}
+            onOpenFullDescription={openFullDescription}
+            flipAnimations={flipAnimations}
+            flippedCardId={flippedCardId}
+            onFlipCard={flipCard}
+          />
+        ))}
+      </ScrollView>
+
+      {/* Barre de nav */}
+      <Navigation />
+
+      {/* Modal pour la description complète */}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={[fontTitle, styles.modalHeaderTitle]}>{currentNom}</Text>
+            <ExitButton onPress={() => setModalVisible(false)} style={styles.exitButtonCustom} />
+          </View>
+          <View style={styles.modalBody}>
+  <ScrollView style={styles.descriptionScroll}>
+    <Text style={styles.fullDescriptionText}>{currentDescription}</Text>
+  </ScrollView>
+
+  <View style={styles.modalFooter}>
+    {currentLieu && (
+      <>
+        <IconesLieux equipements={currentLieu.equipements} />
+        <AgeBadges tranchesAge={currentLieu.ages.map(age => age.nom)} />
+        <LieuActionButtons
+          onCall={handleCall}
+          onWebsite={handleWebsite}
+          onGps={handleGpsPress}
+          telephone={currentLieu.adresse?.telephone || null}
+          siteWeb={currentLieu.adresse?.site_web || null}
+        />
+      </>
+    )}
+  </View>
+</View>
+
+        </SafeAreaView>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  cardContainer: {
-    width: '100%',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  card: {
-    width: '90%',
-    height: 250,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-    elevation: 3,
-    backfaceVisibility: 'hidden',
-  },
-  cardBack: {
-    backgroundColor: '#ffffff',
-    justifyContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: 180,
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    padding: 10,
-  },
-  textContainer: {
-    flexDirection: 'column',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  date: {
-    fontSize: 14,
-    color: '#666',
-  },
-  infoButton: {
-    backgroundColor: '#007bff',
-    borderRadius: 20,
-    width: 30,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  infoText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  modalText: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 20,
-  },
-  closeButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 8,
-    alignSelf: 'flex-end',
-  },
-});
-
-export default CustomCard;
+export default Evenement;

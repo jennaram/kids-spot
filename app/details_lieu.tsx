@@ -1,334 +1,295 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
-  Alert
+  ActivityIndicator,
+  Share,
+  Alert,
+  Platform,
+  Linking,
+  StyleSheet
 } from "react-native";
-import MenuBurger from "app/components/menuburger";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "./types/navigation";
+import { colorButtonFirst } from "./style/styles";
+import { IconesLieux } from "@/components/IconesLieux";
+import { Navigation } from "@/components/NavBar/Navigation";
+import { AvisButton } from "../components/Lieux/AvisButton";
+import LieuActionButtons from "../components/Lieux/LieuActionButtons";
+import ShareButton from "../components/Lieux/ShareButton";
+import FavoriteButton from "@/components/Lieux/FavoriteButton";
+import AgeBadges from "@/components/Lieux/AgeBadges";
+import styles from "./style/DetailLieuxStyles";
+import { useAuth, } from "@/context/auth";
+import BottomModal from "../components/ModalRedirection";
+import { useIsFavorite } from "@/hooks/favorite/useIsFavorite";
+import BackButton from "./components/BackButton";
+import { useReadPlace } from "@/hooks/place/useReadPlace";
+import { IMAGE_BASE_URL } from '@/api/apiConfig';
+import { Row } from "@/components/Row";
+import { ButtonAdmin } from "@/components/ButtonAdmin";
+import { useDeletePlaceOrEvent } from "@/hooks/place/useDeletePlace";
+import { useLocation } from '@/context/locate/LocationContext';
+import { KeyboardAvoidingView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const DetailsLieu = ({ route, navigation }) => {
-  const lieu = {
-    nom: "Parc Montsouris - Paris 14",
-    description:
-      "Grand parc avec aires de jeux pour enfants et espace pique-nique. Parfait pour les familles avec des enfants de tous âges.",
-    horaires: "Tous les jours de 7h à 20h",
-    note: "4.8",
-    avis: "180 avis membres",
-    tranchesAge: ["0-2 ans", "3-6 ans", "7 ans +"],
-    imageUrl: require("../assets/images/parc_montsouris.jpg"),
+const DetailsLieu = () => {
+  const { removePlaceOrEvent, error: errorDel, success: successDel } = useDeletePlaceOrEvent();
+  const params = useLocalSearchParams() as { id: string, page:string };
+  const lieuId = Number(params.id?.toString() || "2");
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { refreshLocation } = useLocation();
+
+  const { place, loading, error } = useReadPlace(lieuId);
+
+  const { token, grade } = useAuth();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Connectez-vous pour continuer");
+
+  const { isFavorite } = useIsFavorite();
+  const EstFavori = isFavorite(lieuId);
+
+  const [imageError, setImageError] = useState(false);
+
+  const handleShare = async () => {
+    if (!place) return;
+    try {
+      const result = await Share.share({
+        message: `Viens découvrir ${place.nom} sur KidsPot ! 🎉 https://kidspot.app/lieu/${place.id}`,
+        title: "KidsPot - Sorties pour les enfants",
+      });
+    } catch (error: any) {
+      console.error("Erreur lors du partage:", error);
+    }
   };
 
   function handleFavoriteToggle() {
-    console.log("Favori cliqué");
+    if (!token) {
+      setModalTitle("Connectez-vous pour ajouter aux favoris");
+      setModalVisible(true);
+    }
   }
 
-  function handleShare() {
-    console.log("Partager cliqué");
+  function handleDonnerAvis() {
+    if (!token) {
+      setModalTitle("Connectez-vous pour donner votre avis");
+      setModalVisible(true);
+      return false;
+    }
+    return true;
   }
 
-  function handleMenuPress() {
-    Alert.alert("Menu", "Menu burger cliqué !");
+  const handleGpsPress = () => {
+    if (!place) return;
+
+    const { latitude, longitude } = place.position;
+
+    Alert.alert(
+      "Choisissez une application",
+      "Quelle application voulez-vous utiliser pour l'itinéraire ?",
+      [
+        {
+          text: "Google Maps",
+          onPress: () => {
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Waze",
+          onPress: () => {
+            const url = `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`;
+            Linking.openURL(url);
+          }
+        },
+        {
+          text: "Apple Plans",
+          onPress: () => {
+            const url = `http://maps.apple.com/?daddr=${latitude},${longitude}`;
+            Linking.openURL(url);
+          },
+          style: Platform.OS === "ios" ? "default" : "cancel",
+        },
+        {
+          text: "Annuler",
+          style: "cancel"
+        }
+      ]
+    );
   }
+
+  // Suppression d'un lieu
+  const handleDelete = () => {
+    if (token) {
+      removePlaceOrEvent(lieuId, token);
+    }
+  }
+
+  useEffect(() => {
+    if (successDel) {
+      refreshLocation();
+      Alert.alert(
+        'Succès',
+        'Le lieu a été supprimé avec succès',
+        [{ text: 'OK' }]
+      );
+      router.push('.');
+    }
+    if (errorDel) {
+      Alert.alert('Erreur', 'Erreur lors de la suppression du lieu');
+    }
+  }, [successDel, errorDel]);
+
+  // Edition d'un lieu
+  const handleEdit = () => {
+    router.push({
+      pathname: '/add-place',
+      params: { id: lieuId },
+    });
+  }
+
+  const handleCall = () => {
+    if (!place || !place.adresse.telephone) return;
+    const phoneNumber = place.adresse.telephone.replace(/\s/g, '');
+    Linking.openURL(`tel:${phoneNumber}`);
+  };
+
+  const handleWebsite = () => {
+    if (!place || !place.adresse.site_web) return;
+    Linking.openURL(place.adresse.site_web);
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.mainContainer, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color={colorButtonFirst} />
+        <Text style={styles.loadingText}>Chargement des informations...</Text>
+      </View>
+    );
+  }
+
+  if (error || !place) {
+    return (
+      <View style={[styles.mainContainer, styles.errorContainer]}>
+        <MaterialIcons name="error-outline" size={48} color="red" />
+        <Text style={styles.errorText}>{error || "Lieu non trouvé"}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.retryButtonText}>Retour</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const tranchesAge = place.ages.map(age => age.nom);
+  const imageUrl = `${IMAGE_BASE_URL}${place.id}.jpg` || require("../assets/images/parc_montsouris.jpg");
 
   return (
-    <View style={styles.mainContainer}>
-      {/* Header avec MenuBurger fixe en haut */}
-      <View style={styles.header}>
-        <MenuBurger onPress={handleMenuPress} />
-        <View style={{ flex: 1 }} />
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+  <KeyboardAvoidingView
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={styles.mainContainer}
+  >
+    <Row style={{ marginLeft: 0 }}>
+      <BackButton style={styles.backButton} navigateTo={params.page} />
+      {grade == 4 ? (
+        <ButtonAdmin onPressDel={handleDelete} onPressEdit={handleEdit} />
+      ) : null}
+    </Row>
+
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={
+            imageError
+              ? require('@/assets/images/Logo.png')
+              : { uri: `${IMAGE_BASE_URL}${place.id}.jpg` }
+          }
+          style={styles.headerImage}
+          onError={() => setImageError(true)}
+          resizeMode="cover"
+        />
+        <FavoriteButton
+          onToggle={handleFavoriteToggle}
+          idPlace={lieuId}
+          initialState={EstFavori}
+        />
       </View>
 
-      {/* Contenu scrollable */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Image principale */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={lieu.imageUrl}
-            style={styles.headerImage}
-            resizeMode="cover"
-          />
-          <View style={styles.favoriteIconContainer}>
-            <TouchableOpacity onPress={handleFavoriteToggle}>
-              <MaterialIcons name="favorite-border" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
+          <View style={styles.centeredContent}>
+            <View style={styles.ratingShareContainer}>
+              <View style={styles.ratingWrapper}>
+                <View style={styles.ratingContainer}>
+                  <Text style={styles.note}>{place.note_moyenne.toFixed(1)}</Text>
+                  <MaterialIcons
+                    name="star"
+                    size={18}
+                    color="black"
+                    style={styles.starIcon}
+                  />
+                  <Text style={styles.avis}>{place.nombre_commentaires} avis membres</Text>
+                </View>
+              </View>
+              <ShareButton onPress={handleShare} />
+            </View>
 
-        {/* Contenu principal */}
-        <View style={styles.centeredContent}>
-          <View style={styles.ratingShareContainer}>
-            <View style={styles.ratingWrapper}>
-              <View style={styles.ratingContainer}>
-                <Text style={styles.note}>{lieu.note}</Text>
-                <MaterialIcons
-                  name="star"
-                  size={18}
-                  color="black"
-                  style={styles.starIcon}
+            <Text style={styles.nom}>{place.nom}</Text>
+            <Text style={styles.description}>{place.description}</Text>
+            <View style={styles.horairesContainer}>
+              <Text style={styles.horaires}>{place.horaires}</Text>
+            </View>
+            <AgeBadges tranchesAge={tranchesAge} />
+            <IconesLieux equipements={place.equipements} />
+
+            <View style={styles.actionsContainer}>
+              <View style={styles.rowButtons}>
+                <AvisButton
+                  type="donner"
+                  nomLieu={place.nom}
+                  lieuId={place.id.toString()}
+                  onBeforeAction={handleDonnerAvis}
+
+
                 />
-                <Text style={styles.avis}>{lieu.avis}</Text>
+                <AvisButton
+                  type="voir"
+                  nomLieu={place.nom}
+                  lieuId={place.id.toString()}
+                />
               </View>
-            </View>
-            <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-              <MaterialIcons name="share" size={24} color="#333" />
-            </TouchableOpacity>
-          </View>
-          
-          <Text style={styles.nom}>{lieu.nom}</Text>
-          <Text style={styles.description}>{lieu.description}</Text>
-          
-          <View style={styles.horairesContainer}>
-            <Text style={styles.horaires}>{lieu.horaires}</Text>
-          </View>
-          
-          <View style={styles.ageContainer}>
-            {lieu.tranchesAge.map((age, index) => (
-              <View key={index} style={styles.ageBadge}>
-                <Text style={styles.ageBadgeText}>{age}</Text>
-              </View>
-            ))}
-          </View>
-          
-          <View style={styles.iconsContainer}>
-            <MaterialIcons name="sports-soccer" size={30} color="#333" />
-            <MaterialIcons name="stroller" size={30} color="#333" />
-            <MaterialIcons name="microwave" size={30} color="#333" />
-            <MaterialIcons name="baby-changing-station" size={30} color="#333" />
-            <MaterialIcons name="restaurant" size={30} color="#333" />
-          </View>
-          
-          <View style={styles.actionsContainer}>
-            <View style={styles.rowButtons}>
-              <TouchableOpacity style={[styles.smallButton, styles.avisButton]}>
-                <Text style={styles.smallButtonText}>Donner mon avis</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.smallButton, styles.voirAvisButton]}>
-                <Text style={styles.smallButtonText}>Voir les avis</Text>
-              </TouchableOpacity>
-            </View>
-            
-            <View style={styles.newButtonsContainer}>
-              <TouchableOpacity style={styles.iconButton}>
-                <MaterialIcons name="phone" size={24} color="#333" />
-                <Text style={styles.iconButtonText}>Appeler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton}>
-                <MaterialIcons name="language" size={24} color="#333" />
-                <Text style={styles.iconButtonText}>Site web</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton}>
-                <MaterialIcons name="place" size={24} color="#333" />
-                <Text style={styles.iconButtonText}>Y aller</Text>
-              </TouchableOpacity>
+
+              <LieuActionButtons
+                onCall={handleCall}
+                onWebsite={handleWebsite}
+                onGps={handleGpsPress}
+                telephone={place.adresse.telephone}
+                siteWeb={place.adresse.site_web}
+              />
             </View>
           </View>
-        </View>
-      </ScrollView>
-    </View>
+        </ScrollView>      
+
+      <BottomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title={modalTitle}
+      />
+
+      
+    </KeyboardAvoidingView>
+    <Navigation />
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    paddingTop: 50,
-    backgroundColor: 'transparent',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    backgroundColor: "white",
-    paddingTop: 80, // Espace pour le header
-  },
-  imageContainer: {
-    width: "100%",
-    marginTop: 10, // Espace supplémentaire sous le header
-    padding: 15,
-    borderRadius: 15,
-    overflow: "hidden",
-    backgroundColor: "white",
-    position: "relative",
-  },
-  headerImage: {
-    width: "100%",
-    height: 250,
-    borderRadius: 15,
-  },
-  centeredContent: {
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-  },
-  ratingShareContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 10,
-    marginTop: 15,
-    marginBottom: 10,
-  },
-  ratingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  nom: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 15,
-    textAlign: "center",
-  },
-  note: {
-    fontSize: 18,
-    color: "#D37230",
-    fontWeight: "bold",
-    marginRight: 5,
-  },
-  starIcon: {
-    marginRight: 5,
-  },
-  avis: {
-    fontSize: 16,
-    color: "#333",
-  },
-  shareButton: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 8,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  avisButton: {
-    backgroundColor: "#D37230",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  voirAvisButton: {
-    backgroundColor: "#D37230",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: "#333",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  horairesContainer: {
-    marginBottom: 20,
-  },
-  horaires: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
-    textAlign: "center",
-  },
-  ageContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    marginBottom: 25,
-  },
-  ageBadge: {
-    backgroundColor: "#28603E",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    marginHorizontal: 5,
-    marginBottom: 10,
-  },
-  ageBadgeText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  actionsContainer: {
-    width: "100%",
-    maxWidth: 400,
-    marginTop: 20,
-  },
-  rowButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
-  },
-  smallButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  smallButtonText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  newButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  iconButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 10,
-    flex: 1,
-    marginHorizontal: 10,
-  },
-  iconButtonText: {
-    fontSize: 12,
-    color: "#333",
-    marginTop: 5,
-    textAlign: "center",
-  },
-  iconsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-    width: "100%",
-    maxWidth: 400,
-  },
-  favoriteIconContainer: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: 20,
-    padding: 5,
-    zIndex: 10,
-  },
-  ratingWrapper: {
-    flex: 1,
-    alignItems: "center",
-  },
-});
+
 
 export default DetailsLieu;
