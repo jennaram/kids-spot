@@ -60,7 +60,9 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     marginBottom: 0,
   },
-
+  bottomSpacer: {
+    height: 100,
+  },
 });
 // Styles pour le modal des mentions légales
 export const modalStyles = StyleSheet.create({
