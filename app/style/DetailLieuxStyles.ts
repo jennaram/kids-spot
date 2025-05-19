@@ -21,6 +21,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+    scrollContainer: {
+    flexGrow: 1,
+    backgroundColor: "white",
+    paddingBottom: 30, // ✅ Ajouté pour éviter que le bas soit masqué
+  },
  
   errorContainer: {
     flex: 1,
@@ -53,10 +58,6 @@ const styles = StyleSheet.create({
     color: "#721c24",
     textAlign: "center",
     marginTop: 10,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    backgroundColor: "white",
   },
   imageContainer: {
     width: "100%",

@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  SafeAreaView,
   Share,
   Alert,
   Platform,
@@ -37,6 +36,8 @@ import { Row } from "@/components/Row";
 import { ButtonAdmin } from "@/components/ButtonAdmin";
 import { useDeletePlaceOrEvent } from "@/hooks/place/useDeletePlace";
 import { useLocation } from '@/context/locate/LocationContext';
+import { KeyboardAvoidingView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DetailsLieu = () => {
   const { removePlaceOrEvent, error: errorDel, success: successDel } = useDeletePlaceOrEvent();
@@ -192,33 +193,36 @@ const DetailsLieu = () => {
   const imageUrl = `${IMAGE_BASE_URL}${place.id}.jpg` || require("../assets/images/parc_montsouris.jpg");
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Row style={{ marginLeft: 0 }}>
-        <BackButton style={styles.backButton} navigateTo={params.page}/>
-        {grade == 4 ? (
-          <ButtonAdmin onPressDel={handleDelete} onPressEdit={handleEdit} />
-        ) : null}
-      </Row>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+  <KeyboardAvoidingView
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={styles.mainContainer}
+  >
+    <Row style={{ marginLeft: 0 }}>
+      <BackButton style={styles.backButton} navigateTo={params.page} />
+      {grade == 4 ? (
+        <ButtonAdmin onPressDel={handleDelete} onPressEdit={handleEdit} />
+      ) : null}
+    </Row>
 
-      <View style={styles.mainContainer}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={
-                imageError
-                  ? require('@/assets/images/Logo.png') // Utilise le logo comme image par défaut
-                  : { uri: `${IMAGE_BASE_URL}${place.id}.jpg` }
-              }
-              style={styles.headerImage}
-              onError={() => setImageError(true)}
-              resizeMode="cover"
-            />
-            <FavoriteButton
-              onToggle={handleFavoriteToggle}
-              idPlace={lieuId}
-              initialState={EstFavori}
-            />
-          </View>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={
+            imageError
+              ? require('@/assets/images/Logo.png')
+              : { uri: `${IMAGE_BASE_URL}${place.id}.jpg` }
+          }
+          style={styles.headerImage}
+          onError={() => setImageError(true)}
+          resizeMode="cover"
+        />
+        <FavoriteButton
+          onToggle={handleFavoriteToggle}
+          idPlace={lieuId}
+          initialState={EstFavori}
+        />
+      </View>
 
           <View style={styles.centeredContent}>
             <View style={styles.ratingShareContainer}>
@@ -271,8 +275,7 @@ const DetailsLieu = () => {
               />
             </View>
           </View>
-        </ScrollView>
-      </View>
+        </ScrollView>      
 
       <BottomModal
         visible={modalVisible}
@@ -281,6 +284,7 @@ const DetailsLieu = () => {
       />
 
       <Navigation />
+    </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

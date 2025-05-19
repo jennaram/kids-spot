@@ -3,7 +3,6 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   View,
   Text,
-  SafeAreaView,
   ScrollView,
   Modal,
   TouchableOpacity,
@@ -13,6 +12,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BackButton } from "app/components/BackButton";
 import { Title } from "@/components/Title";
@@ -46,7 +46,7 @@ const About = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       {/* BOUTON RETOUR EN HAUT À GAUCHE */}
       <View style={{
         position: 'absolute',
@@ -202,11 +202,10 @@ const About = () => {
             </View>
           </Modal>
 
-        </ScrollView>
+          <View style={styles.bottomSpacer} />
 
-      {/* Navbar toujours collée en bas */}
+        </ScrollView>
       <Navigation />
-      
     </SafeAreaView>
   );
 };

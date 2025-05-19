@@ -3,7 +3,7 @@ import { useAuth } from '@/context/auth';
 import { useAddPlaceOrEvent } from '@/hooks/place/useAddPlace';
 import {
   View, Text, Switch, TextInput, ScrollView, TouchableOpacity,
-  Image, Alert, SafeAreaView, Modal, ActivityIndicator, Platform,
+  Image, Alert, Modal, ActivityIndicator, Platform,
   StyleSheet
 } from 'react-native';
 import MapView, { Marker, LatLng } from 'react-native-maps';
@@ -11,7 +11,7 @@ import * as Location from 'expo-location';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Composants
 import { Navigation } from '@/components/NavBar/Navigation';
@@ -584,14 +584,13 @@ const AddPlaceScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <BurgerMenu />
       {lieuId ? (
         <Title text={'Editer un lieu'} />
       ) :
         (<Title text={'Ajouter un lieu'} />)
       }
-
 
       <ScrollView style={styles.scrollView}>
         <View style={styles.section}>
@@ -796,20 +795,6 @@ const AddPlaceScreen = () => {
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
-
-      <Modal
-        visible={loading}
-        transparent
-        animationType="fade"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <ActivityIndicator size="large" color="#007AFF" />
-            <Text style={styles.modalText}>Ajout du lieu en cours...</Text>
-          </View>
-        </View>
-      </Modal>
-
       <Navigation />
     </SafeAreaView>
   );

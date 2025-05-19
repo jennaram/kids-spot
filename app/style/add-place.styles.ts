@@ -9,6 +9,7 @@ export default StyleSheet.create({
   scrollView: {
     flex: 1,
     paddingHorizontal: 20,
+    paddingBottom: 30, // Ajouté pour éviter que le bas soit masqué comme sur la page détail
   },
   section: {
     marginBottom: 20,
