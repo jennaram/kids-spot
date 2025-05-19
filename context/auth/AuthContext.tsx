@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       logoutTimeout.current = setTimeout(() => {
         //console.log("Token expiré automatiquement (via setToken)");
-        router.push('accueil');
+        router.replace('/accueil');
         setToken(null);
         setGradeState(0);
         setPseudo('');

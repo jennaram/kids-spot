@@ -138,7 +138,7 @@ const DetailsLieu = () => {
         'Le lieu a été supprimé avec succès',
         [{ text: 'OK' }]
       );
-      router.back();
+      router.push('.');
     }
     if (errorDel) {
       Alert.alert('Erreur', 'Erreur lors de la suppression du lieu');

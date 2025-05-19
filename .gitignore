@@ -42,3 +42,5 @@ app-example
 tmp/
 
 .gradle/8.8/fileHashes/
+
+ios/

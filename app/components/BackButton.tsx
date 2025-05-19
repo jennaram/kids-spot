@@ -30,7 +30,12 @@ export function BackButton({ navigateTo, onPress, style, imageStyle }: BackButto
         } else if (navigateTo) {
             router.replace(navigateTo);
         } else {
-            router.replace('.');
+            if (router.canGoBack()) {
+                router.back();
+            } else {
+                router.replace('/accueil'); // ou une autre page par défaut
+            }
+            //router.push('.');
         }
     };
 
